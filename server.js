@@ -33,8 +33,8 @@ app.use(cors({
 
 // ── Rate limiting global ──
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
+  windowMs: 5 * 60 * 1000,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { erro: 'Muitas requisições. Tente novamente em alguns minutos.' },

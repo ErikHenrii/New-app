@@ -346,12 +346,37 @@ async function salvarPerfil() {
 
   try {
     const result = await API.perfil.atualizar(dados);
-    showAlert('profileAlert', 'Perfil salvo com sucesso!' + (result.perfil_completo ? ' ✓ Perfil completo!' : ''), 'success');
+    showAlert('profileAlert', '✅ Perfil salvo com sucesso!' + (result.perfil_completo ? ' Perfil completo!' : ''), 'success');
+
     // Atualiza progresso
     const progressBar = document.getElementById('profileProgress');
     const progressText = document.getElementById('profileProgressText');
     if (progressBar) progressBar.style.width = calcularCompletude(dados) + '%';
     if (progressText) progressText.textContent = calcularCompletude(dados) + '%';
+
+    // Atualiza avatar no header se a foto mudou
+    if (dados.foto_perfil) {
+      const avatarEl = document.getElementById('userAvatar');
+      if (avatarEl) {
+        avatarEl.innerHTML = `<img src="${dados.foto_perfil}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+    }
+
+    // Fecha todas as seções colapsáveis abertas
+    const secoes = ['secFoto', 'secPessoal', 'secEndereco', 'secFamilia', 'secEspiritual', 'secEmergencia', 'secSocial', 'secPrefs'];
+    secoes.forEach(secId => {
+      const body = document.getElementById(secId);
+      const header = body ? body.previousElementSibling : null;
+      if (body && !body.classList.contains('collapsed')) {
+        body.classList.add('collapsed');
+        if (header) header.classList.add('collapsed');
+      }
+    });
+
+    // Scroll suave para o topo da área de perfil
+    const profileTab = document.getElementById('tab-perfil');
+    if (profileTab) profileTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   } catch (err) {
     showAlert('profileAlert', err.message);
   }
