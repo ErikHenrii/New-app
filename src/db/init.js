@@ -9,7 +9,17 @@ const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const pool = require('../config/database');
 
+// Estado global — outras partes do código podem checar se o banco está pronto
+global.bancoPronto = false;
+
 async function initDatabase() {
+  // Verifica se DATABASE_URL existe
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL não definida! Crie um PostgreSQL no Render e copie a Internal Database URL para a variável de ambiente DATABASE_URL.');
+  }
+
+  console.log('📊 DATABASE_URL encontrada (primeiros 30 chars):', process.env.DATABASE_URL.substring(0, 30) + '...');
+
   const client = await pool.connect();
   try {
     // 1. Executa o schema.sql
@@ -34,9 +44,9 @@ async function initDatabase() {
     } else {
       console.log('ℹ️  Admin já existe:', adminEmail);
     }
-  } catch (err) {
-    console.error('❌ Erro ao inicializar banco:', err.message);
-    // Não derruba o servidor — tenta de novo na próxima requisição
+
+    global.bancoPronto = true;
+    console.log('✅ Banco de dados totalmente operacional!');
   } finally {
     client.release();
   }

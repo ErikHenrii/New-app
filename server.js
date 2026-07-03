@@ -43,7 +43,26 @@ app.use('/api/', limiter);
 
 // ── Health check (Render usa isso) ──
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    banco: global.bancoPronto ? 'conectado' : 'aguardando',
+    database_url: process.env.DATABASE_URL ? 'definida' : 'NÃO DEFINIDA',
+  });
+});
+
+// ── Middleware: avisa se o banco não está pronto ──
+// Todas as rotas /api/ passam por aqui primeiro
+app.use('/api/', (req, res, next) => {
+  if (!global.bancoPronto && !req.path.includes('/health')) {
+    return res.status(503).json({
+      erro: 'Banco de dados ainda não conectado. Veja os logs do Render.',
+      detalhe: process.env.DATABASE_URL
+        ? 'DATABASE_URL está definida mas o PostgreSQL pode estar iniciando.'
+        : 'DATABASE_URL NÃO está definida! Crie um banco PostgreSQL no Render e adicione a variável DATABASE_URL.',
+    });
+  }
+  next();
 });
 
 // ── Rotas da API ──
@@ -77,8 +96,6 @@ app.use((err, req, res, next) => {
 
 // ═══════════════════════════════════════════════════════════
 //  STARTUP — Abre o servidor PRIMEIRO, banco DEPOIS
-//  O Render precisa que a porta esteja ouvindo para considerar
-//  o deploy bem-sucedido. O banco inicializa em background.
 // ═══════════════════════════════════════════════════════════
 
 app.listen(PORT, '0.0.0.0', () => {
@@ -86,28 +103,51 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`   API:  http://localhost:${PORT}/api/health`);
   console.log(`   Site: http://localhost:${PORT}/`);
   console.log(`   Ambiente: ${process.env.NODE_ENV || 'development'}`);
+
+  if (!process.env.DATABASE_URL) {
+    console.log('');
+    console.log('⚠️  ═══════════════════════════════════════════════════════');
+    console.log('⚠️  ATENÇÃO: DATABASE_URL não está definida!');
+    console.log('⚠️  Para o sistema de membros funcionar, você precisa:');
+    console.log('⚠️  1. No Render, vá em "New" → "PostgreSQL"');
+    console.log('⚠️  2. Dê o nome "reviver-db" e crie o banco');
+    console.log('⚠️  3. Copie a "Internal Database URL"');
+    console.log('⚠️  4. Vá no seu Web Service → Environment');
+    console.log('⚠️  5. Adicione a variável DATABASE_URL com a URL copiada');
+    console.log('⚠️  6. Salve e aguarde o redeploy automático');
+    console.log('⚠️  ═══════════════════════════════════════════════════════');
+    console.log('');
+    console.log('   O site institucional funciona normalmente sem banco.');
+    console.log('   Apenas login/registro/membros precisam do PostgreSQL.');
+  }
 });
 
 // Inicializa o banco em background (não bloqueia o servidor)
 async function initBancoBackground() {
+  if (!process.env.DATABASE_URL) {
+    console.log('📊 Banco não inicializado — DATABASE_URL ausente. Site funciona, API de membros aguarda configuração.');
+    return;
+  }
+
   let tentativa = 0;
-  while (tentativa < 10) {
+  const maxTentativas = 15;
+  while (tentativa < maxTentativas) {
     tentativa++;
     try {
-      console.log(`📊 Conectando ao banco (tentativa ${tentativa}/10)...`);
+      console.log(`📊 Conectando ao banco (tentativa ${tentativa}/${maxTentativas})...`);
       await initDatabase();
       console.log('✅ Banco inicializado com sucesso!');
-      return; // Sucesso, para de tentar
+      return;
     } catch (err) {
-      console.error(`❌ Banco ainda não pronto (tentativa ${tentativa}): ${err.message}`);
-      if (tentativa < 10) {
+      console.error(`❌ Banco não conectou (tentativa ${tentativa}/${maxTentativas}): ${err.message}`);
+      if (tentativa < maxTentativas) {
         console.log(`   Tentando novamente em 5 segundos...`);
         await new Promise(r => setTimeout(r, 5000));
       }
     }
   }
-  console.error('❌ Não foi possível conectar ao banco após 10 tentativas.');
-  console.error('   Verifique a variável DATABASE_URL no Render.');
+  console.error('❌ Não foi possível conectar ao banco após ' + maxTentativas + ' tentativas.');
+  console.error('   Verifique a variável DATABASE_URL no Render Dashboard → Environment.');
 }
 
 initBancoBackground();
