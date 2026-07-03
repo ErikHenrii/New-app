@@ -9,8 +9,6 @@
   <link rel="stylesheet" href="css/auth.css" />
   <style>
     /* === ADMIN — Squircle + Neumorfismo + Glassmorphism === */
-
-    /* Modals (Glassmorphism) */
     .modal-overlay {
       display:none; position:fixed; top:0; left:0; width:100%; height:100%;
       background:rgba(10,42,110,0.3);
@@ -41,15 +39,12 @@
     }
     .modal-close:hover { color: var(--blue-dark); transform: rotate(90deg); }
 
-    /* Member profile sections in modal */
     .member-info-section { margin-bottom: 20px; }
     .member-info-section h3 {
       font-size: 0.88rem; color: var(--blue-dark); margin-bottom: 10px;
       padding-bottom: 6px; border-bottom: 1px solid var(--gray-light);
     }
-    .info-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-    }
+    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .info-item {
       display: flex; flex-direction: column; gap: 2px;
       background: var(--bg-light);
@@ -61,63 +56,79 @@
       font-size: 0.72rem; color: var(--gray-text); text-transform: uppercase;
       letter-spacing: 0.5px; font-weight: 600;
     }
-    .info-value {
-      font-size: 0.88rem; color: var(--text-dark); font-weight: 500;
-    }
+    .info-value { font-size: 0.88rem; color: var(--text-dark); font-weight: 500; }
 
-    /* Filter chips (Squircle + Glass) */
     .filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
     .chip {
-      padding: 7px 16px;
-      border-radius: var(--squircle);
-      font-size: 0.78rem; font-weight: 600;
-      cursor: pointer; border: 1px solid var(--gray-light);
-      background: var(--bg-light);
-      color: var(--gray-text);
-      transition: all 0.25s;
-      box-shadow: var(--neu-out-sm);
+      padding: 7px 16px; border-radius: var(--squircle);
+      font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--gray-light); background: var(--bg-light);
+      color: var(--gray-text); transition: all 0.25s; box-shadow: var(--neu-out-sm);
     }
     .chip.active {
       background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
-      color: var(--white);
-      border-color: transparent;
+      color: var(--white); border-color: transparent;
       box-shadow: 0 4px 15px rgba(10,42,110,0.25);
     }
     .chip:hover { transform: translateY(-1px); box-shadow: var(--neu-out); }
     .chip.active:hover { box-shadow: 0 6px 20px rgba(10,42,110,0.35); }
 
-    /* Scrollbar styling */
     .modal-lg::-webkit-scrollbar { width: 6px; }
     .modal-lg::-webkit-scrollbar-track { background: var(--bg); border-radius: 3px; }
     .modal-lg::-webkit-scrollbar-thumb { background: var(--blue-mid); border-radius: 3px; }
 
-    /* Birthday items (Neumorphism + Squircle) */
     .birthday-list { display:flex; flex-direction:column; gap:10px; }
     .birthday-item {
-      background: var(--bg-light);
-      border-radius: var(--radius-sm);
-      padding: 14px 20px;
-      display: flex; align-items: center; gap: 14px;
-      box-shadow: var(--neu-out-sm);
-      border: none;
+      background: var(--bg-light); border-radius: var(--radius-sm);
+      padding: 14px 20px; display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--neu-out-sm); border: none;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .birthday-item:hover { transform: translateY(-1px); box-shadow: var(--neu-out); }
     .birthday-avatar {
-      width: 44px; height: 44px;
-      border-radius: 36% 36%;
+      width: 44px; height: 44px; border-radius: 36% 36%;
       background: linear-gradient(135deg, var(--teal), var(--blue-light));
       display: flex; align-items: center; justify-content: center;
       color: var(--white); font-weight: 700; font-size: 1.1rem;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(0,180,200,0.25);
+      flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,180,200,0.25);
     }
     .birthday-item .b-info { flex: 1; }
     .birthday-item .b-name { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
     .birthday-item .b-date { font-size: 0.78rem; color: var(--gray-text); }
     .birthday-item .b-icon { font-size: 1.4rem; }
 
-    /* Table responsive on mobile */
+    /* Lideranças cards */
+    .lider-card {
+      background: var(--bg-light); border-radius: var(--radius-md);
+      padding: 20px; display: flex; gap: 16px; align-items: center;
+      box-shadow: var(--neu-out-sm); transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .lider-card:hover { transform: translateY(-2px); box-shadow: var(--neu-out); }
+    .lider-foto {
+      width: 60px; height: 60px; border-radius: 36% 36%;
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); font-weight: 700; font-size: 1.3rem; flex-shrink: 0;
+      overflow: hidden;
+    }
+    .lider-foto img { width: 100%; height: 100%; object-fit: cover; }
+    .lider-info { flex: 1; }
+    .lider-nome { font-weight: 700; font-size: 1rem; color: var(--text-dark); }
+    .lider-cargo { font-size: 0.86rem; color: var(--blue-mid); font-weight: 600; }
+    .lider-desc { font-size: 0.8rem; color: var(--gray-text); margin-top: 4px; }
+    .lider-contato { font-size: 0.78rem; color: var(--gray-text); margin-top: 2px; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--blue-dark); margin-bottom: 4px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid var(--gray-light); border-radius: var(--radius-xs);
+      font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+      background: var(--bg-light); font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--blue-mid); }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+
     @media (max-width: 700px) {
       .table-wrapper { overflow-x: scroll; }
       table { min-width: 700px; }
@@ -144,7 +155,7 @@
         <span id="userName">—</span>
         <span class="badge badge-admin" id="userRole">admin</span>
         <a href="../index.html" class="btn btn-secondary btn-sm" style="text-decoration:none;width:auto;">← Site</a>
-      <button onclick="logout()" class="btn btn-secondary btn-sm">Sair</button>
+        <button onclick="logout()" class="btn btn-secondary btn-sm">Sair</button>
       </div>
     </div>
 
@@ -172,12 +183,12 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab('usuarios', this)">👥 Usuários</button>
       <button class="tab" onclick="switchTab('aniversariantes', this)">🎂 Aniversariantes</button>
+      <button class="tab" onclick="switchTab('liderancas', this)">✝️ Lideranças</button>
       <button class="tab" onclick="switchTab('audit', this)">📋 Auditoria</button>
     </div>
 
     <!-- USUÁRIOS -->
     <div class="tab-content active" id="tab-usuarios">
-      <!-- Busca + Filtros -->
       <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
         <input type="text" id="searchInput" placeholder="🔍 Buscar por nome ou email..."
                style="padding:10px 16px;border:2px solid var(--gray-light);border-radius:12px;font-size:0.9rem;flex:1;outline:none;min-width:200px;"
@@ -187,7 +198,6 @@
                 class="btn btn-primary" style="width:auto;padding:10px 20px;">+ Novo Usuário</button>
       </div>
 
-      <!-- Chips de filtro rápido -->
       <div class="filter-chips">
         <div class="chip active" onclick="filterByChip(this,'all')">Todos</div>
         <div class="chip" onclick="filterByChip(this,'membro')">Membros</div>
@@ -197,7 +207,6 @@
         <div class="chip" onclick="filterByChip(this,'incompleto')">Perfil Incompleto</div>
       </div>
 
-      <!-- Tabela -->
       <div class="table-wrapper">
         <table>
           <thead>
@@ -238,6 +247,20 @@
       </div>
     </div>
 
+    <!-- LIDERANÇAS -->
+    <div class="tab-content" id="tab-liderancas">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <h3 style="font-family:var(--font-display);color:var(--blue-dark);">Lideranças da Igreja</h3>
+        <button onclick="abrirModalLideranca()" class="btn btn-primary" style="width:auto;padding:10px 20px;">+ Nova Liderança</button>
+      </div>
+      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
+        ✝️ Gerencie pastores, anciãos, diáconos e outras lideranças da igreja.
+      </p>
+      <div id="liderancasList" style="display:flex;flex-direction:column;gap:12px;">
+        <p style="text-align:center;color:var(--gray-text);padding:20px;">Carregando...</p>
+      </div>
+    </div>
+
     <!-- AUDITORIA -->
     <div class="tab-content" id="tab-audit">
       <div class="table-wrapper">
@@ -257,9 +280,9 @@
     </div>
   </div>
 
-  <!-- MODAL: Ver Membro (ficha completa) -->
+  <!-- MODAL: Ver/Editar Membro -->
   <div class="modal-overlay" id="memberModal">
-    <div class="modal modal-lg">
+    <div class="modal modal-lg" style="max-width:800px;">
       <button class="modal-close" onclick="closeModal('memberModal')">×</button>
       <div id="memberModalBody"></div>
     </div>
@@ -268,44 +291,172 @@
   <!-- MODAL: Novo Usuário -->
   <div class="modal-overlay" id="newUserModal">
     <div class="modal">
-      <button class="modal-close" onclick="document.getElementById('newUserModal').classList.remove('show')">×</button>
+      <button class="modal-close" onclick="closeModal('newUserModal')">×</button>
       <h2>Novo Usuário</h2>
-      <div class="alert alert-error" id="newUserAlert"></div>
-      <form id="newUserForm" onsubmit="event.preventDefault(); adminCriarUsuario();">
-        <div class="form-group">
-          <label for="newNome">Nome completo</label>
-          <input type="text" id="newNome" required />
-        </div>
-        <div class="form-group">
-          <label for="newEmail">E-mail</label>
-          <input type="email" id="newEmail" required />
-        </div>
-        <div class="form-group">
-          <label for="newTelefone">Telefone (opcional)</label>
-          <input type="tel" id="newTelefone" placeholder="(31) 99999-9999" />
-        </div>
-        <div class="form-group">
-          <label for="newSenha">Senha temporária</label>
-          <input type="password" id="newSenha" placeholder="Mín. 8 caracteres" required />
-        </div>
-        <div class="form-group">
-          <label for="newRole">Tipo de usuário</label>
-          <select id="newRole" style="width:100%;padding:12px 16px;border:2px solid var(--gray-light);border-radius:12px;font-size:0.95rem;">
-            <option value="membro">Membro</option>
-            <option value="admin">Administrador</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Criar Usuário</button>
-      </form>
+      <div class="form-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="newUserName" placeholder="Nome do membro" />
+      </div>
+      <div class="form-group">
+        <label>E-mail *</label>
+        <input type="email" id="newUserEmail" placeholder="email@exemplo.com" />
+      </div>
+      <div class="form-group">
+        <label>Telefone</label>
+        <input type="text" id="newUserPhone" placeholder="(31) 99999-9999" />
+      </div>
+      <div class="form-group">
+        <label>Senha *</label>
+        <input type="password" id="newUserPass" placeholder="Mínimo 6 caracteres" />
+      </div>
+      <div class="form-group">
+        <label>Função</label>
+        <select id="newUserRole">
+          <option value="membro">Membro</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+      <button onclick="criarUsuarioAdmin()" class="btn btn-primary" style="width:100%;margin-top:8px;">Criar Usuário</button>
+      <div id="newUserAlert" style="margin-top:12px;"></div>
     </div>
   </div>
 
-  
+  <!-- MODAL: Liderança (criar/editar) -->
+  <div class="modal-overlay" id="liderModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('liderModal')">×</button>
+      <h2 id="liderModalTitle">Nova Liderança</h2>
+      <input type="hidden" id="liderId" />
+      <div class="form-group">
+        <label>Nome *</label>
+        <input type="text" id="liderNome" placeholder="Ex: Pr. João Silva" />
+      </div>
+      <div class="form-group">
+        <label>Cargo / Função *</label>
+        <input type="text" id="liderCargo" placeholder="Ex: Pastor Presidente, Ancião, Diácono..." />
+      </div>
+      <div class="form-group">
+        <label>Descrição</label>
+        <textarea id="liderDescricao" placeholder="Breve descrição da função..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Telefone</label>
+        <input type="text" id="liderTelefone" placeholder="(31) 99999-9999" />
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="liderEmail" placeholder="email@missaoreviver.com.br" />
+      </div>
+      <div class="form-group">
+        <label>Ordem de exibição</label>
+        <input type="number" id="liderOrdem" value="0" min="0" style="width:80px;" />
+      </div>
+      <div class="form-group">
+        <label>Foto (URL ou Base64)</label>
+        <input type="text" id="liderFoto" placeholder="Cole aqui a URL ou base64 da foto" />
+      </div>
+      <button onclick="salvarLideranca()" class="btn btn-primary" style="width:100%;margin-top:8px;">Salvar</button>
+      <div id="liderAlert" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script src="js/auth-frontend.js"></script>
   <script>
-    // Filtro por chips
+    // ═══════════════════════════════════════════════════════════
+    //  ADMIN FRONTEND — Lógica do painel administrativo
+    // ═══════════════════════════════════════════════════════════
+
     let currentFilter = 'all';
+    let adminUsersCache = [];
+
+    // ── Inicialização ──
+    async function initAdmin() {
+      try {
+        const sessao = await API.auth.sessao();
+        if (!sessao.autenticado || sessao.membro.role !== 'admin') {
+          window.location.href = 'login.html';
+          return;
+        }
+        document.getElementById('userName').textContent = sessao.membro.nome_completo;
+        document.getElementById('userRole').textContent = sessao.membro.role;
+
+        await Promise.all([
+          loadStats(),
+          loadAdminUsers(''),
+          loadAdminAniversariantes(),
+        ]);
+      } catch (err) {
+        window.location.href = 'login.html';
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const stats = await API.admin.stats();
+        document.getElementById('statTotal').textContent = stats.totalUsuarios;
+        document.getElementById('statMembros').textContent = stats.totalMembros;
+        document.getElementById('statAdmins').textContent = stats.totalAdmins;
+        document.getElementById('statAcessos').textContent = stats.acessosHoje;
+      } catch (err) { console.error('Stats:', err); }
+    }
+
+    // ── Usuários ──
+    async function loadAdminUsers(busca = '') {
+      try {
+        const data = await API.admin.listarUsuarios();
+        let users = data.usuarios || [];
+        adminUsersCache = users;
+
+        if (currentFilter === 'membro') users = users.filter(u => u.role === 'membro');
+        else if (currentFilter === 'admin') users = users.filter(u => u.role === 'admin');
+        else if (currentFilter === 'ativo') users = users.filter(u => u.status === 'ativo');
+        else if (currentFilter === 'suspenso') users = users.filter(u => u.status !== 'ativo');
+        else if (currentFilter === 'incompleto') users = users.filter(u => !u.perfil_completo);
+
+        if (busca) {
+          users = users.filter(u =>
+            (u.nome_completo || '').toLowerCase().includes(busca.toLowerCase()) ||
+            (u.email || '').toLowerCase().includes(busca.toLowerCase()));
+        }
+
+        const tbody = document.getElementById('usersTableBody');
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray-text);">Nenhum usuário encontrado.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+          const iniciais = (u.nome_completo || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+          const ultimoAcesso = u.ultimo_acesso
+            ? new Date(u.ultimo_acesso).toLocaleDateString('pt-BR')
+            : 'Nunca';
+          return `
+            <tr style="cursor:pointer;" onclick="verMembro('${u.id}')">
+              <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  ${u.foto_perfil
+                    ? `<img src="${u.foto_perfil}" style="width:32px;height:32px;border-radius:36%;object-fit:cover;">`
+                    : `<div class="birthday-avatar" style="width:32px;height:32px;font-size:0.8rem;">${iniciais}</div>`}
+                  <strong>${u.nome_completo}</strong>
+                </div>
+              </td>
+              <td>${u.email}</td>
+              <td><span class="badge badge-${u.role}">${u.role}</span></td>
+              <td><span class="badge ${u.status === 'ativo' ? 'badge-active' : 'badge-inactive'}">${u.status}</span></td>
+              <td>${u.endereco_cidade || '—'}</td>
+              <td>${u.ministerio || '—'}</td>
+              <td>${ultimoAcesso}</td>
+              <td onclick="event.stopPropagation();">
+                <button onclick="verMembro('${u.id}')" class="btn btn-primary btn-sm">👁️ Ver</button>
+              </td>
+            </tr>`;
+        }).join('');
+      } catch (err) {
+        document.getElementById('usersTableBody').innerHTML =
+          `<tr><td colspan="8" style="text-align:center;color:red;">Erro: ${err.message}</td></tr>`;
+      }
+    }
 
     function filterByChip(el, filter) {
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -314,65 +465,510 @@
       loadAdminUsers(document.getElementById('searchInput')?.value || '');
     }
 
-    // Override loadAdminUsers para aplicar filtro de chips
-    const originalLoadAdminUsers = loadAdminUsers;
-    loadAdminUsers = async function(busca = '') {
+    // ── Ver/Editar Membro ──
+    async function verMembro(userId) {
       try {
-        let data = await API.admin.listarUsuarios();
-        let users = data.usuarios || [];
+        const data = await API.admin.verUsuario(userId);
+        const m = data.membro;
+        const logs = data.auditoria || [];
 
-        // Aplica filtro de chips
-        if (currentFilter === 'membro') users = users.filter(u => u.role === 'membro');
-        else if (currentFilter === 'admin') users = users.filter(u => u.role === 'admin');
-        else if (currentFilter === 'ativo') users = users.filter(u => u.status === 'ativo');
-        else if (currentFilter === 'suspenso') users = users.filter(u => u.status !== 'ativo');
-        else if (currentFilter === 'incompleto') users = users.filter(u => !u.perfil_completo);
+        const fmtDate = (val) => {
+          if (!val) return '<span style="color:var(--gray-text);">Não informado</span>';
+          if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+            const parts = val.split('T')[0].split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+          }
+          try { return new Date(val).toLocaleDateString('pt-BR'); } catch { return '—'; }
+        };
+        const iniciais = (m.nome_completo || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
 
-        // Aplica busca por texto
-        if (busca) {
-          users = users.filter(u =>
-            u.nome_completo.toLowerCase().includes(busca.toLowerCase()) ||
-            u.email.toLowerCase().includes(busca.toLowerCase()));
+        document.getElementById('memberModalBody').innerHTML = `
+          <div style="display:flex;gap:20px;align-items:center;margin-bottom:24px;">
+            ${m.foto_perfil
+              ? `<img src="${m.foto_perfil}" style="width:80px;height:80px;border-radius:36%;object-fit:cover;">`
+              : `<div class="birthday-avatar" style="width:80px;height:80px;font-size:1.8rem;">${iniciais}</div>`}
+            <div>
+              <h2 style="margin:0 0 4px;">${m.nome_completo}</h2>
+              <p style="margin:0;color:var(--gray-text);">${m.email}</p>
+              <div style="margin-top:8px;display:flex;gap:8px;">
+                <span class="badge badge-${m.role}">${m.role}</span>
+                <span class="badge ${m.status === 'ativo' ? 'badge-active' : 'badge-inactive'}">${m.status}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Abas do modal -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--gray-light);padding-bottom:0;">
+            <button onclick="document.getElementById('mViewInfo').style.display='block';document.getElementById('mEditInfo').style.display='none';"
+                    style="padding:8px 16px;border:none;background:none;font-weight:600;color:var(--blue-dark);cursor:pointer;border-bottom:2px solid var(--blue-dark);margin-bottom:-2px;">📋 Visualizar</button>
+            <button onclick="document.getElementById('mViewInfo').style.display='none';document.getElementById('mEditInfo').style.display='block';"
+                    style="padding:8px 16px;border:none;background:none;font-weight:600;color:var(--gray-text);cursor:pointer;">✏️ Editar</button>
+          </div>
+
+          <!-- ABA: Visualizar -->
+          <div id="mViewInfo">
+            <div class="member-info-section">
+              <h3>Dados Pessoais</h3>
+              <div class="info-grid">
+                <div class="info-item"><span class="info-label">Telefone</span><span class="info-value">${m.telefone || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Nascimento</span><span class="info-value">${fmtDate(m.data_nascimento)}</span></div>
+                <div class="info-item"><span class="info-label">Gênero</span><span class="info-value">${m.genero || '—'}</span></div>
+                <div class="info-item"><span class="info-label">CPF</span><span class="info-value">${m.cpf || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Estado Civil</span><span class="info-value">${m.estado_civil || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Cidade/UF</span><span class="info-value">${m.endereco_cidade ? m.endereco_cidade + '/' + (m.endereco_estado || '') : '—'}</span></div>
+              </div>
+            </div>
+            <div class="member-info-section">
+              <h3>Vida Espiritual</h3>
+              <div class="info-grid">
+                <div class="info-item"><span class="info-label">Ministério</span><span class="info-value">${m.ministerio || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Função</span><span class="info-value">${m.funcao_igreja || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Conversão</span><span class="info-value">${fmtDate(m.data_conversao)}</span></div>
+                <div class="info-item"><span class="info-label">Batismo</span><span class="info-value">${fmtDate(m.data_batismo)}</span></div>
+                <div class="info-item"><span class="info-label">Igreja Anterior</span><span class="info-value">${m.igreja_anterior || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Dons Espirituais</span><span class="info-value">${m.dons_espirituais || '—'}</span></div>
+              </div>
+            </div>
+            <div class="member-info-section">
+              <h3>Família</h3>
+              <div class="info-grid">
+                <div class="info-item"><span class="info-label">Cônjuge</span><span class="info-value">${m.nome_conjuge || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Data Casamento</span><span class="info-value">${fmtDate(m.data_casamento)}</span></div>
+                <div class="info-item"><span class="info-label">Filhos</span><span class="info-value">${m.filhos ? m.qtd_filhos + ' filho(s)' : 'Não'}</span></div>
+              </div>
+            </div>
+            <div class="member-info-section">
+              <h3>Contato de Emergência</h3>
+              <div class="info-grid">
+                <div class="info-item"><span class="info-label">Nome</span><span class="info-value">${m.emergencia_nome || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Telefone</span><span class="info-value">${m.emergencia_telefone || '—'}</span></div>
+                <div class="info-item"><span class="info-label">Parentesco</span><span class="info-value">${m.emergencia_parentesco || '—'}</span></div>
+              </div>
+            </div>
+            ${m.testemunho ? `<div class="member-info-section"><h3>Testemunho</h3><p style="font-style:italic;color:var(--gray-text);">${m.testemunho}</p></div>` : ''}
+            <div class="member-info-section">
+              <h3>Metadados</h3>
+              <div class="info-grid">
+                <div class="info-item"><span class="info-label">Cadastrado em</span><span class="info-value">${fmtDate(m.criado_em)}</span></div>
+                <div class="info-item"><span class="info-label">Último acesso</span><span class="info-value">${m.ultimo_acesso ? new Date(m.ultimo_acesso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Nunca'}</span></div>
+                <div class="info-item"><span class="info-label">Perfil completo</span><span class="info-value">${m.perfil_completo ? 'Sim' : 'Não'}</span></div>
+                <div class="info-item"><span class="info-label">Divulgar aniversário</span><span class="info-value">${m.participar_aniversarios ? 'Sim' : 'Não'}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABA: Editar -->
+          <div id="mEditInfo" style="display:none;">
+            <div class="form-group"><label>Nome Completo</label><input type="text" id="editMNome" value="${m.nome_completo || ''}" /></div>
+            <div class="form-group"><label>Telefone</label><input type="text" id="editMTelefone" value="${m.telefone || ''}" /></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group"><label>Data Nascimento</label><input type="date" id="editMDataNasc" value="${(m.data_nascimento || '').split('T')[0]}" /></div>
+              <div class="form-group"><label>Gênero</label>
+                <select id="editMGenero">
+                  <option value="">—</option>
+                  <option value="masculino" ${m.genero==='masculino'?'selected':''}>Masculino</option>
+                  <option value="feminino" ${m.genero==='feminino'?'selected':''}>Feminino</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group"><label>Estado Civil</label>
+                <select id="editMEstadoCivil">
+                  <option value="">—</option>
+                  <option value="solteiro" ${m.estado_civil==='solteiro'?'selected':''}>Solteiro(a)</option>
+                  <option value="casado" ${m.estado_civil==='casado'?'selected':''}>Casado(a)</option>
+                  <option value="divorciado" ${m.estado_civil==='divorciado'?'selected':''}>Divorciado(a)</option>
+                  <option value="viuvo" ${m.estado_civil==='viuvo'?'selected':''}>Viúvo(a)</option>
+                </select>
+              </div>
+              <div class="form-group"><label>CPF</label><input type="text" id="editMCPF" value="${m.cpf || ''}" /></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group"><label>Cidade</label><input type="text" id="editMCidade" value="${m.endereco_cidade || ''}" /></div>
+              <div class="form-group"><label>Estado (UF)</label><input type="text" id="editMEstado" value="${m.endereco_estado || ''}" maxlength="2" /></div>
+            </div>
+            <div class="form-group"><label>Ministério</label><input type="text" id="editMMinisterio" value="${m.ministerio || ''}" /></div>
+            <div class="form-group"><label>Função na Igreja</label><input type="text" id="editMFuncao" value="${m.funcao_igreja || ''}" /></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group"><label>Data Conversão</label><input type="date" id="editMConversao" value="${(m.data_conversao || '').split('T')[0]}" /></div>
+              <div class="form-group"><label>Data Batismo</label><input type="date" id="editMBatismo" value="${(m.data_batismo || '').split('T')[0]}" /></div>
+            </div>
+            <div class="form-group"><label>Cônjuge</label><input type="text" id="editMConjuge" value="${m.nome_conjuge || ''}" /></div>
+            <div class="form-group"><label>Contato Emergência</label><input type="text" id="editMEmergencia" value="${m.emergencia_nome || ''}" placeholder="Nome" /></div>
+            <div class="form-group"><label>Tel. Emergência</label><input type="text" id="editMEmergenciaTel" value="${m.emergencia_telefone || ''}" /></div>
+            <div class="form-group"><label>Instagram</label><input type="text" id="editMInstagram" value="${m.instagram || ''}" /></div>
+            <div class="form-group">
+              <label><input type="checkbox" id="editMAniv" ${m.participar_aniversarios ? 'checked' : ''} /> Divulgar aniversário</label>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group"><label>Role</label>
+                <select id="editMRole">
+                  <option value="membro" ${m.role==='membro'?'selected':''}>Membro</option>
+                  <option value="admin" ${m.role==='admin'?'selected':''}>Administrador</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Status</label>
+                <select id="editMStatus">
+                  <option value="ativo" ${m.status==='ativo'?'selected':''}>Ativo</option>
+                  <option value="suspenso" ${m.status==='suspenso'?'selected':''}>Suspenso</option>
+                  <option value="inativo" ${m.status==='inativo'?'selected':''}>Inativo</option>
+                </select>
+              </div>
+            </div>
+            <button onclick="salvarEdicaoMembro('${m.id}')" class="btn btn-primary" style="width:100%;margin-top:8px;">💾 Salvar Alterações</button>
+            <div id="editMembroAlert" style="margin-top:12px;"></div>
+          </div>
+
+          <!-- Ações administrativas -->
+          <div style="margin-top:24px;padding-top:20px;border-top:2px solid var(--gray-light);display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="toggleRole('${m.id}','${m.role}')">Trocar Role</button>
+            <button class="btn btn-secondary" onclick="toggleStatus('${m.id}','${m.status}')">Trocar Status</button>
+            <button class="btn btn-danger" onclick="deleteUser('${m.id}','${m.nome_completo}')">Excluir (LGPD)</button>
+          </div>
+
+          ${logs.length > 0 ? `
+            <div style="margin-top:24px;">
+              <h4 style="margin-bottom:8px;">Histórico de Auditoria</h4>
+              <div style="max-height:200px;overflow-y:auto;">
+                ${logs.slice(0, 20).map(l => `<div style="padding:6px 0;border-bottom:1px solid var(--gray-light);font-size:0.8rem;"><strong>${l.acao}</strong> — ${l.detalhes || ''} <span style="color:var(--gray-text);">${new Date(l.timestamp).toLocaleString('pt-BR')}</span></div>`).join('')}
+              </div>
+            </div>` : ''}
+        `;
+
+        document.getElementById('memberModal').classList.add('show');
+      } catch (err) {
+        alert('Erro ao carregar membro: ' + err.message);
+      }
+    }
+
+    async function salvarEdicaoMembro(userId) {
+      const dados = {
+        nome_completo: document.getElementById('editMNome')?.value?.trim() || null,
+        telefone: document.getElementById('editMTelefone')?.value?.trim() || null,
+        data_nascimento: document.getElementById('editMDataNasc')?.value || null,
+        genero: document.getElementById('editMGenero')?.value || null,
+        cpf: document.getElementById('editMCPF')?.value?.trim() || null,
+        estado_civil: document.getElementById('editMEstadoCivil')?.value || null,
+        endereco_cidade: document.getElementById('editMCidade')?.value?.trim() || null,
+        endereco_estado: document.getElementById('editMEstado')?.value?.trim()?.toUpperCase() || null,
+        ministerio: document.getElementById('editMMinisterio')?.value?.trim() || null,
+        funcao_igreja: document.getElementById('editMFuncao')?.value?.trim() || null,
+        data_conversao: document.getElementById('editMConversao')?.value || null,
+        data_batismo: document.getElementById('editMBatismo')?.value || null,
+        nome_conjuge: document.getElementById('editMConjuge')?.value?.trim() || null,
+        emergencia_nome: document.getElementById('editMEmergencia')?.value?.trim() || null,
+        emergencia_telefone: document.getElementById('editMEmergenciaTel')?.value?.trim() || null,
+        instagram: document.getElementById('editMInstagram')?.value?.trim() || null,
+        participar_aniversarios: document.getElementById('editMAniv')?.checked ?? true,
+        role: document.getElementById('editMRole')?.value || 'membro',
+        status: document.getElementById('editMStatus')?.value || 'ativo',
+      };
+
+      try {
+        await API.admin.atualizarUsuario(userId, dados);
+        const alertEl = document.getElementById('editMembroAlert');
+        if (alertEl) {
+          alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;font-size:0.86rem;">✅ Membro atualizado com sucesso!</div>';
         }
+        setTimeout(() => {
+          closeModal('memberModal');
+          loadAdminUsers(document.getElementById('searchInput')?.value || '');
+        }, 1200);
+      } catch (err) {
+        const alertEl = document.getElementById('editMembroAlert');
+        if (alertEl) {
+          alertEl.innerHTML = `<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;font-size:0.86rem;">❌ ${err.message}</div>`;
+        }
+      }
+    }
 
-        const tbody = document.getElementById('usersTableBody');
-        if (!tbody) return;
+    async function criarUsuarioAdmin() {
+      const nome = document.getElementById('newUserName').value.trim();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const telefone = document.getElementById('newUserPhone').value.trim();
+      const senha = document.getElementById('newUserPass').value;
+      const role = document.getElementById('newUserRole').value;
 
-        if (users.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray-text);">Nenhum usuário encontrado.</td></tr>';
+      if (!nome || !email || !senha) {
+        document.getElementById('newUserAlert').innerHTML =
+          '<div style="color:red;font-size:0.86rem;">Preencha nome, e-mail e senha.</div>';
+        return;
+      }
+
+      try {
+        await API.admin.criarUsuario({ nome_completo: nome, email, senha, telefone, role });
+        document.getElementById('newUserAlert').innerHTML =
+          '<div style="color:green;font-size:0.86rem;">✅ Usuário criado com sucesso!</div>';
+        setTimeout(() => {
+          closeModal('newUserModal');
+          loadAdminUsers('');
+        }, 1200);
+      } catch (err) {
+        document.getElementById('newUserAlert').innerHTML =
+          `<div style="color:red;font-size:0.86rem;">❌ ${err.message}</div>`;
+      }
+    }
+
+    async function toggleRole(userId, currentRole) {
+      const newRole = currentRole === 'admin' ? 'membro' : 'admin';
+      if (!confirm(`Trocar role para ${newRole}?`)) return;
+      try {
+        await API.admin.atualizarUsuario(userId, { role: newRole });
+        alert('Role alterado com sucesso!');
+        verMembro(userId);
+        loadAdminUsers('');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function toggleStatus(userId, currentStatus) {
+      const newStatus = currentStatus === 'ativo' ? 'suspenso' : 'ativo';
+      if (!confirm(`Trocar status para ${newStatus}?`)) return;
+      try {
+        await API.admin.atualizarUsuario(userId, { status: newStatus });
+        alert('Status alterado com sucesso!');
+        verMembro(userId);
+        loadAdminUsers('');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function deleteUser(userId, nome) {
+      if (!confirm(`Confirmar exclusão de ${nome}?\n\nOs dados serão anonimizados conforme a LGPD.`)) return;
+      try {
+        await API.admin.excluirUsuario(userId);
+        alert('Usuário excluído (dados anonimizados).');
+        closeModal('memberModal');
+        loadAdminUsers('');
+      } catch (err) { alert(err.message); }
+    }
+
+    // ── Aniversariantes ──
+    async function loadAdminAniversariantes() {
+      try {
+        const now = new Date();
+        const mes = now.getMonth() + 1;
+        const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        document.getElementById('adminAnivTitulo').textContent = `Aniversariantes — ${meses[mes - 1]}`;
+
+        const data = await API.aniversariantesAdmin(mes);
+        const lista = data.aniversariantes || [];
+
+        const container = document.getElementById('adminAnivList');
+        if (lista.length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:var(--gray-text);padding:20px;">Nenhum aniversariante este mês.</p>';
           return;
         }
 
-        tbody.innerHTML = users.map(u => `
-          <tr style="cursor:pointer;" onclick="verMembro('${u.id}')">
-            <td>
-              <strong>${u.nome_completo}</strong>
-              ${u.perfil_completo ? '<span style="color:var(--success);font-size:0.7rem;margin-left:6px;">✓</span>' : '<span style="color:var(--warning);font-size:0.7rem;margin-left:6px;">⚠</span>'}
-            </td>
-            <td>${u.email}</td>
-            <td><span class="badge badge-${u.role}">${u.role}</span></td>
-            <td style="color:${u.status === 'ativo' ? 'var(--success)' : 'var(--error)'};">● ${u.status}</td>
-            <td>${u.endereco_cidade ? u.endereco_cidade + '/' + (u.endereco_estado||'') : '—'}</td>
-            <td>${u.ministerio || '—'}</td>
-            <td>${u.ultimo_acesso ? new Date(u.ultimo_acesso).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—'}</td>
-            <td style="display:flex;gap:6px;flex-wrap:wrap;" onclick="event.stopPropagation();">
-              <button onclick="verMembro('${u.id}')" class="btn btn-primary btn-sm">👁️ Ver</button>
-              <button onclick="toggleRole('${u.id}', '${u.role}'); event.stopPropagation();" class="btn btn-secondary btn-sm">
-                ${u.role === 'admin' ? '↓' : '↑'}
-              </button>
-              <button onclick="deleteUser('${u.id}', '${u.nome_completo}'); event.stopPropagation();" class="btn btn-danger btn-sm">Excluir</button>
-            </td>
-          </tr>
-        `).join('');
-      } catch (err) { console.error(err); }
-    };
+        container.innerHTML = lista.map(p => {
+          const iniciais = (p.nome_completo || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+          const dia = p.data_nascimento ? p.data_nascimento.split('-')[2] : '—';
+          const telefone = (p.telefone || '').replace(/\D/g, '');
+          const msg = `Olá ${p.nome_completo}! 🎉\\n\\nA Missão Reviver deseja um feliz aniversário! Que Deus abençoe sua vida com saúde, alegria e paz. 🙏\\n\\n"Porque eu bem sei os pensamentos que penso de vós, diz o SENHOR; pensamentos de paz, e não de mal, para vos dar o fim que esperais." - Jeremias 29:11\\n\\nCom amor, Missão Reviver 💙`;
+          const waLink = telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(msg)}` : '#';
 
-    // Fecha modal ao clicar fora
-    document.addEventListener('click', (e) => {
-      if (e.target.classList?.contains('modal-overlay')) {
-        e.target.classList.remove('show');
+          return `
+            <div class="birthday-item">
+              ${p.foto_perfil
+                ? `<img src="${p.foto_perfil}" style="width:44px;height:44px;border-radius:36%;object-fit:cover;">`
+                : `<div class="birthday-avatar">${iniciais}</div>`}
+              <div class="b-info">
+                <div class="b-name">${p.nome_completo}</div>
+                <div class="b-date">Dia ${dia} • ${(p.data_nascimento || '').split('-')[0] ? new Date().getFullYear() - (p.data_nascimento || '').split('-')[0] : '—'} anos</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                ${telefone ? `<a href="${waLink}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none;">📱 WhatsApp</a>` : '<span style="color:var(--gray-text);font-size:0.8rem;">Sem telefone</span>'}
+              </div>
+            </div>`;
+        }).join('');
+      } catch (err) {
+        document.getElementById('adminAnivList').innerHTML =
+          `<p style="color:red;text-align:center;">Erro: ${err.message}</p>`;
       }
-    });
+    }
+
+    // ── Lideranças ──
+    async function loadLiderancas() {
+      try {
+        const data = await API.liderancas.listarTodas();
+        const lista = data.liderancas || [];
+        const container = document.getElementById('liderancasList');
+
+        if (lista.length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:var(--gray-text);padding:20px;">Nenhuma liderança cadastrada. Clique em "+ Nova Liderança".</p>';
+          return;
+        }
+
+        container.innerHTML = lista.map(l => {
+          const iniciais = (l.nome || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
+          return `
+            <div class="lider-card">
+              ${l.foto
+                ? `<div class="lider-foto"><img src="${l.foto}" alt="${l.nome}"></div>`
+                : `<div class="lider-foto">${iniciais}</div>`}
+              <div class="lider-info">
+                <div class="lider-nome">${l.nome}</div>
+                <div class="lider-cargo">${l.cargo}</div>
+                ${l.descricao ? `<div class="lider-desc">${l.descricao}</div>` : ''}
+                ${l.telefone ? `<div class="lider-contato">📞 ${l.telefone}</div>` : ''}
+                ${l.email ? `<div class="lider-contato">✉️ ${l.email}</div>` : ''}
+                ${!l.ativo ? '<div style="color:var(--gray-text);font-size:0.78rem;font-style:italic;">(Inativo)</div>' : ''}
+              </div>
+              <div style="display:flex;gap:8px;flex-shrink:0;">
+                <button onclick="abrirModalLideranca('${l.id}')" class="btn btn-secondary btn-sm">✏️ Editar</button>
+                <button onclick="removerLideranca('${l.id}','${l.nome}')" class="btn btn-danger btn-sm">🗑️</button>
+              </div>
+            </div>`;
+        }).join('');
+      } catch (err) {
+        document.getElementById('liderancasList').innerHTML =
+          `<p style="color:red;text-align:center;">Erro: ${err.message}</p>`;
+      }
+    }
+
+    async function abrirModalLideranca(id) {
+      // Limpa formulário
+      document.getElementById('liderModal').classList.add('show');
+      document.getElementById('liderAlert').innerHTML = '';
+      document.getElementById('liderId').value = '';
+      document.getElementById('liderNome').value = '';
+      document.getElementById('liderCargo').value = '';
+      document.getElementById('liderDescricao').value = '';
+      document.getElementById('liderTelefone').value = '';
+      document.getElementById('liderEmail').value = '';
+      document.getElementById('liderOrdem').value = '0';
+      document.getElementById('liderFoto').value = '';
+      document.getElementById('liderModalTitle').textContent = 'Nova Liderança';
+
+      if (id) {
+        // Modo edição — busca os dados
+        try {
+          const data = await API.liderancas.listarTodas();
+          const lider = (data.liderancas || []).find(l => l.id === id);
+          if (lider) {
+            document.getElementById('liderId').value = lider.id;
+            document.getElementById('liderNome').value = lider.nome || '';
+            document.getElementById('liderCargo').value = lider.cargo || '';
+            document.getElementById('liderDescricao').value = lider.descricao || '';
+            document.getElementById('liderTelefone').value = lider.telefone || '';
+            document.getElementById('liderEmail').value = lider.email || '';
+            document.getElementById('liderOrdem').value = lider.ordem || 0;
+            document.getElementById('liderFoto').value = lider.foto || '';
+            document.getElementById('liderModalTitle').textContent = 'Editar Liderança';
+          }
+        } catch (err) { alert(err.message); }
+      }
+    }
+
+    async function salvarLideranca() {
+      const id = document.getElementById('liderId').value;
+      const dados = {
+        nome: document.getElementById('liderNome').value.trim(),
+        cargo: document.getElementById('liderCargo').value.trim(),
+        descricao: document.getElementById('liderDescricao').value.trim() || null,
+        telefone: document.getElementById('liderTelefone').value.trim() || null,
+        email: document.getElementById('liderEmail').value.trim() || null,
+        ordem: parseInt(document.getElementById('liderOrdem').value) || 0,
+        foto: document.getElementById('liderFoto').value.trim() || null,
+      };
+
+      if (!dados.nome || !dados.cargo) {
+        document.getElementById('liderAlert').innerHTML =
+          '<div style="color:red;font-size:0.86rem;">Nome e cargo são obrigatórios.</div>';
+        return;
+      }
+
+      try {
+        if (id) {
+          await API.liderancas.atualizar(id, dados);
+        } else {
+          await API.liderancas.criar(dados);
+        }
+        document.getElementById('liderAlert').innerHTML =
+          '<div style="color:green;font-size:0.86rem;">✅ Salvo com sucesso!</div>';
+        setTimeout(() => {
+          closeModal('liderModal');
+          loadLiderancas();
+        }, 1200);
+      } catch (err) {
+        document.getElementById('liderAlert').innerHTML =
+          `<div style="color:red;font-size:0.86rem;">❌ ${err.message}</div>`;
+      }
+    }
+
+    async function removerLideranca(id, nome) {
+      if (!confirm(`Remover ${nome} das lideranças?`)) return;
+      try {
+        await API.liderancas.excluir(id);
+        loadLiderancas();
+      } catch (err) { alert(err.message); }
+    }
+
+    // ── Auditoria ──
+    async function loadAudit() {
+      try {
+        const data = await API.admin.auditoria();
+        const logs = data.logs || [];
+        const tbody = document.getElementById('auditTableBody');
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--gray-text);">Nenhum registro.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = logs.map(l => `
+          <tr>
+            <td><strong>${l.acao}</strong></td>
+            <td>${l.detalhes || '—'}</td>
+            <td>${new Date(l.timestamp).toLocaleString('pt-BR')}</td>
+          </tr>`).join('');
+      } catch (err) {
+        document.getElementById('auditTableBody').innerHTML =
+          `<tr><td colspan="3" style="color:red;">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    // ── Exportar CSV ──
+    async function exportarCSV() {
+      try {
+        const data = await API.admin.listarUsuarios();
+        const users = data.usuarios || [];
+        const headers = ['Nome', 'Email', 'Telefone', 'Role', 'Status', 'Nascimento', 'Cidade', 'Estado', 'Ministerio', 'Funcao', 'Instagram'];
+        const rows = users.map(u => [
+          `"${u.nome_completo || ''}"`,
+          `"${u.email || ''}"`,
+          `"${u.telefone || ''}"`,
+          `"${u.role || ''}"`,
+          `"${u.status || ''}"`,
+          `"${(u.data_nascimento || '').split('T')[0]}"`,
+          `"${u.endereco_cidade || ''}"`,
+          `"${u.endereco_estado || ''}"`,
+          `"${u.ministerio || ''}"`,
+          `"${u.funcao_igreja || ''}"`,
+          `"${u.instagram || ''}"`,
+        ].join(','));
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `membros-missao-reviver-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      } catch (err) { alert('Erro ao exportar: ' + err.message); }
+    }
+
+    // ── Tabs ──
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'audit') loadAudit();
+      if (tabId === 'liderancas') loadLiderancas();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    // ── Start ──
+    initAdmin();
   </script>
 </body>
 </html>

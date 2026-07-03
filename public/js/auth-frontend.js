@@ -377,6 +377,12 @@ async function salvarPerfil() {
     const profileTab = document.getElementById('tab-perfil');
     if (profileTab) profileTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+    // Recarrega os dados do perfil do backend para garantir consistência
+    try {
+      const { perfil } = await API.perfil.obter();
+      if (perfil) popularFormPerfil(perfil);
+    } catch (e) { /* ignora erro de recarga */ }
+
   } catch (err) {
     showAlert('profileAlert', err.message);
   }
@@ -505,7 +511,7 @@ async function verMembro(userId) {
     const fmtBool = (v) => v ? 'Sim' : 'Não';
     const iniciais = (m.nome_completo || '?').split(' ').map(w=>w[0]).slice(0,2).join('');
 
-    const modalBody = document.getElementById('modalMemberBody');
+    const modalBody = document.getElementById('memberModalBody');
     if (!modalBody) return;
 
     modalBody.innerHTML = `

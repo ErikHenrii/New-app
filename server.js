@@ -17,6 +17,7 @@ const profileRoutes = require('./src/routes/profileRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const anivRoutes = require('./src/routes/aniversariantesRoutes');
 const lgpdRoutes = require('./src/routes/lgpdRoutes');
+const liderancaRoutes = require('./src/routes/liderancaRoutes');
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use('/api/perfil', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/aniversariantes', anivRoutes);
 app.use('/api/lgpd', lgpdRoutes);
+app.use('/api/liderancas', liderancaRoutes);
 
 // ── Arquivos estáticos (frontend) ──
 app.use(express.static(path.join(__dirname, 'public')));

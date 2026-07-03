@@ -75,6 +75,30 @@ CREATE TABLE IF NOT EXISTS auditoria (
   timestamp  TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- ── Tabela: liderancas ──
+CREATE TABLE IF NOT EXISTS liderancas (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome        VARCHAR(150) NOT NULL,
+  cargo       VARCHAR(100) NOT NULL,
+  descricao   TEXT,
+  telefone    VARCHAR(20),
+  email       VARCHAR(255),
+  foto        TEXT,
+  ordem       INTEGER DEFAULT 0,
+  ativo       BOOLEAN DEFAULT true,
+  criado_em   TIMESTAMP NOT NULL DEFAULT NOW(),
+  atualizado_em TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- ── Seed: Lideranças iniciais ──
+INSERT INTO liderancas (nome, cargo, descricao, ordem)
+SELECT * FROM (VALUES
+  ('Pastor', 'Pastor Presidente', 'Líder espiritual da igreja', 1),
+  ('Ancião', 'Ancião', 'Liderança administrativa', 2),
+  ('Diácono', 'Diácono', 'Serviço e apoio à comunidade', 3)
+) AS t(nome, cargo, descricao, ordem)
+WHERE NOT EXISTS (SELECT 1 FROM liderancas LIMIT 1);
+
 -- ── Índices ──
 CREATE INDEX IF NOT EXISTS idx_membros_email ON membros(email);
 CREATE INDEX IF NOT EXISTS idx_membros_status ON membros(status);
@@ -82,3 +106,4 @@ CREATE INDEX IF NOT EXISTS idx_membros_role ON membros(role);
 CREATE INDEX IF NOT EXISTS idx_membros_data_nascimento ON membros(data_nascimento);
 CREATE INDEX IF NOT EXISTS idx_auditoria_membro_id ON auditoria(membro_id);
 CREATE INDEX IF NOT EXISTS idx_auditoria_timestamp ON auditoria(timestamp);
+CREATE INDEX IF NOT EXISTS idx_liderancas_ativo ON liderancas(ativo);

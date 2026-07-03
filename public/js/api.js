@@ -94,6 +94,15 @@ const API = {
   aniversariantes: (mes) => request(`/aniversariantes${mes ? `?mes=${mes}` : ''}`),
   aniversariantesAdmin: (mes) => request(`/aniversariantes/admin${mes ? `?mes=${mes}` : ''}`),
 
+  // ── Lideranças ──
+  liderancas: {
+    listar: () => request('/liderancas'),
+    listarTodas: () => request('/liderancas/todas'),
+    criar: (dados) => request('/liderancas', { method: 'POST', body: dados }),
+    atualizar: (id, dados) => request(`/liderancas/${id}`, { method: 'PUT', body: dados }),
+    excluir: (id) => request(`/liderancas/${id}`, { method: 'DELETE' }),
+  },
+
   // ── LGPD ──
   lgpd: {
     exportarDados: () => request('/lgpd/exportar-dados'),
