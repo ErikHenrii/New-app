@@ -6,9 +6,10 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const pool = require('../config/database');
-const { adminOnly } = require('../middleware/adminOnly');
+const { authMiddleware } = require('../middleware/auth');
+const adminOnly = require('../middleware/adminOnly');
 
-// ── GET /api/liderancas — Lista todas (público para membros) ──
+// ── GET /api/liderancas — Lista todas ativas (público para membros) ──
 router.get('/', async (req, res, next) => {
   try {
     const { rows } = await pool.query(
@@ -22,7 +23,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // ── GET /api/liderancas/todas — Lista todas incluindo inativas (admin) ──
-router.get('/todas', adminOnly, async (req, res, next) => {
+router.get('/todas', authMiddleware, adminOnly, async (req, res, next) => {
   try {
     const { rows } = await pool.query(
       `SELECT * FROM liderancas ORDER BY ativo DESC, ordem ASC, nome ASC`
@@ -34,7 +35,7 @@ router.get('/todas', adminOnly, async (req, res, next) => {
 });
 
 // ── POST /api/liderancas — Admin cria nova liderança ──
-router.post('/', adminOnly, async (req, res, next) => {
+router.post('/', authMiddleware, adminOnly, async (req, res, next) => {
   try {
     const { nome, cargo, descricao, telefone, email, foto, ordem } = req.body;
     if (!nome || !cargo) return res.status(400).json({ erro: 'Nome e cargo são obrigatórios' });
@@ -58,7 +59,7 @@ router.post('/', adminOnly, async (req, res, next) => {
 });
 
 // ── PUT /api/liderancas/:id — Admin atualiza liderança ──
-router.put('/:id', adminOnly, async (req, res, next) => {
+router.put('/:id', authMiddleware, adminOnly, async (req, res, next) => {
   try {
     const camposPermitidos = ['nome', 'cargo', 'descricao', 'telefone', 'email', 'foto', 'ordem', 'ativo'];
     const sets = [];
@@ -98,7 +99,7 @@ router.put('/:id', adminOnly, async (req, res, next) => {
 });
 
 // ── DELETE /api/liderancas/:id — Admin remove liderança ──
-router.delete('/:id', adminOnly, async (req, res, next) => {
+router.delete('/:id', authMiddleware, adminOnly, async (req, res, next) => {
   try {
     const result = await pool.query('DELETE FROM liderancas WHERE id = $1', [req.params.id]);
     if (result.rowCount === 0) return res.status(404).json({ erro: 'Liderança não encontrada' });
