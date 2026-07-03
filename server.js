@@ -21,6 +21,10 @@ const liderancaRoutes = require('./src/routes/liderancaRoutes');
 
 const app = express();
 
+// CRÍTICO: Render usa proxy — sem isso o rate-limit vê TODAS as
+// requisições como vindo de um único IP (o do proxy), estourando o limite
+app.set('trust proxy', 1);
+
 // O Render obriga o uso de process.env.PORT
 const PORT = process.env.PORT || 3000;
 
@@ -32,10 +36,10 @@ app.use(cors({
   credentials: true,
 }));
 
-// ── Rate limiting global ──
+// ── Rate limiting global (aumentado + trust proxy) ──
 const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 500,
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 2000, // 2000 req por IP em 15 min (generoso)
   standardHeaders: true,
   legacyHeaders: false,
   message: { erro: 'Muitas requisições. Tente novamente em alguns minutos.' },
@@ -53,7 +57,6 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── Middleware: avisa se o banco não está pronto ──
-// Todas as rotas /api/ passam por aqui primeiro
 app.use('/api/', (req, res, next) => {
   if (!global.bancoPronto && !req.path.includes('/health')) {
     return res.status(503).json({
@@ -108,16 +111,8 @@ app.listen(PORT, '0.0.0.0', () => {
 
   if (!process.env.DATABASE_URL) {
     console.log('');
-    console.log('⚠️  ═══════════════════════════════════════════════════════');
     console.log('⚠️  ATENÇÃO: DATABASE_URL não está definida!');
-    console.log('⚠️  Para o sistema de membros funcionar, você precisa:');
-    console.log('⚠️  1. No Render, vá em "New" → "PostgreSQL"');
-    console.log('⚠️  2. Dê o nome "reviver-db" e crie o banco');
-    console.log('⚠️  3. Copie a "Internal Database URL"');
-    console.log('⚠️  4. Vá no seu Web Service → Environment');
-    console.log('⚠️  5. Adicione a variável DATABASE_URL com a URL copiada');
-    console.log('⚠️  6. Salve e aguarde o redeploy automático');
-    console.log('⚠️  ═══════════════════════════════════════════════════════');
+    console.log('⚠️  Crie um PostgreSQL no Render e adicione a variável DATABASE_URL.');
     console.log('');
     console.log('   O site institucional funciona normalmente sem banco.');
     console.log('   Apenas login/registro/membros precisam do PostgreSQL.');

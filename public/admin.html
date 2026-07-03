@@ -562,7 +562,7 @@
             <div class="form-group"><label>Nome Completo</label><input type="text" id="editMNome" value="${m.nome_completo || ''}" /></div>
             <div class="form-group"><label>Telefone</label><input type="text" id="editMTelefone" value="${m.telefone || ''}" /></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Data Nascimento</label><input type="date" id="editMDataNasc" value="${(m.data_nascimento || '').split('T')[0]}" /></div>
+              <div class="form-group"><label>Data Nascimento</label><input type="date" id="editMDataNasc" value="${m.data_nascimento ? new Date(m.data_nascimento).toISOString().split('T')[0] : ''}" /></div>
               <div class="form-group"><label>Gênero</label>
                 <select id="editMGenero">
                   <option value="">—</option>
@@ -590,8 +590,8 @@
             <div class="form-group"><label>Ministério</label><input type="text" id="editMMinisterio" value="${m.ministerio || ''}" /></div>
             <div class="form-group"><label>Função na Igreja</label><input type="text" id="editMFuncao" value="${m.funcao_igreja || ''}" /></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Data Conversão</label><input type="date" id="editMConversao" value="${(m.data_conversao || '').split('T')[0]}" /></div>
-              <div class="form-group"><label>Data Batismo</label><input type="date" id="editMBatismo" value="${(m.data_batismo || '').split('T')[0]}" /></div>
+              <div class="form-group"><label>Data Conversão</label><input type="date" id="editMConversao" value="${m.data_conversao ? new Date(m.data_conversao).toISOString().split('T')[0] : ''}" /></div>
+              <div class="form-group"><label>Data Batismo</label><input type="date" id="editMBatismo" value="${m.data_batismo ? new Date(m.data_batismo).toISOString().split('T')[0] : ''}" /></div>
             </div>
             <div class="form-group"><label>Cônjuge</label><input type="text" id="editMConjuge" value="${m.nome_conjuge || ''}" /></div>
             <div class="form-group"><label>Contato Emergência</label><input type="text" id="editMEmergencia" value="${m.emergencia_nome || ''}" placeholder="Nome" /></div>
@@ -645,7 +645,7 @@
       const dados = {
         nome_completo: document.getElementById('editMNome')?.value?.trim() || null,
         telefone: document.getElementById('editMTelefone')?.value?.trim() || null,
-        data_nascimento: document.getElementById('editMDataNasc')?.value || null,
+        data_nascimento: document.getElementById('editMDataNasc')?.value || undefined,
         genero: document.getElementById('editMGenero')?.value || null,
         cpf: document.getElementById('editMCPF')?.value?.trim() || null,
         estado_civil: document.getElementById('editMEstadoCivil')?.value || null,
@@ -653,8 +653,8 @@
         endereco_estado: document.getElementById('editMEstado')?.value?.trim()?.toUpperCase() || null,
         ministerio: document.getElementById('editMMinisterio')?.value?.trim() || null,
         funcao_igreja: document.getElementById('editMFuncao')?.value?.trim() || null,
-        data_conversao: document.getElementById('editMConversao')?.value || null,
-        data_batismo: document.getElementById('editMBatismo')?.value || null,
+        data_conversao: document.getElementById('editMConversao')?.value || undefined,
+        data_batismo: document.getElementById('editMBatismo')?.value || undefined,
         nome_conjuge: document.getElementById('editMConjuge')?.value?.trim() || null,
         emergencia_nome: document.getElementById('editMEmergencia')?.value?.trim() || null,
         emergencia_telefone: document.getElementById('editMEmergenciaTel')?.value?.trim() || null,

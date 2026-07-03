@@ -67,6 +67,8 @@ function formatDateOnly(dateStr) {
 async function handleLogin(e) {
   e.preventDefault();
   clearErrors();
+  if (document.body.dataset.loggingIn === '1') return;
+  document.body.dataset.loggingIn = '1';
 
   const email = document.getElementById('email').value.trim();
   const senha = document.getElementById('senha').value;
@@ -82,6 +84,8 @@ async function handleLogin(e) {
     showAlert('loginAlert', `Bem-vindo, ${data.membro.nome_completo}!`, 'success');
     setTimeout(() => redirectToDashboard(data.membro.role), 800);
   } catch (err) {
+    document.body.dataset.loggingIn = '0';
+  } catch (err) {
     showAlert('loginAlert', err.message);
   }
 }
@@ -93,6 +97,9 @@ async function handleLogin(e) {
 async function handleRegister(e) {
   e.preventDefault();
   clearErrors();
+  // Anti-submit duplo
+  if (document.body.dataset.registering === '1') return;
+  document.body.dataset.registering = '1';
 
   const nome = document.getElementById('nome').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -113,6 +120,8 @@ async function handleRegister(e) {
     API.setToken(data.token);
     showAlert('registerAlert', `Cadastro realizado! Bem-vindo, ${data.membro.nome_completo}!`, 'success');
     setTimeout(() => redirectToDashboard(data.membro.role), 1200);
+  } catch (err) {
+    document.body.dataset.registering = '0';
   } catch (err) {
     showAlert('registerAlert', err.message);
   }
@@ -189,13 +198,26 @@ function calcularCompletude(perfil) {
 }
 
 function popularFormPerfil(p) {
+  // Converte Date do PostgreSQL (objeto Date) para string YYYY-MM-DD
+  const toDateStr = (val) => {
+    if (!val) return '';
+    if (typeof val === 'string') return val.split('T')[0];
+    if (val instanceof Date) {
+      const y = val.getFullYear();
+      const m = String(val.getMonth() + 1).padStart(2, '0');
+      const d = String(val.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    return '';
+  };
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  const setDate = (id, val) => { const el = document.getElementById(id); if (el) el.value = toDateStr(val); };
   const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val !== false; };
 
   // Dados pessoais
   set('editNome', p.nome_completo);
   set('editTelefone', p.telefone);
-  set('editDataNasc', p.data_nascimento);
+  setDate('editDataNasc', p.data_nascimento);
   set('editGenero', p.genero);
   set('editCPF', p.cpf);
   set('editEstadoCivil', p.estado_civil);
@@ -210,13 +232,13 @@ function popularFormPerfil(p) {
 
   // Família
   set('editConjuge', p.nome_conjuge);
-  set('editDataCasamento', p.data_casamento);
+  setDate('editDataCasamento', p.data_casamento);
   set('editFilhos', p.filhos);
   set('editQtdFilhos', p.qtd_filhos);
 
   // Vida espiritual
-  set('editDataConversao', p.data_conversao);
-  set('editDataBatismo', p.data_batismo);
+  setDate('editDataConversao', p.data_conversao);
+  setDate('editDataBatismo', p.data_batismo);
   set('editMinisterio', p.ministerio);
   set('editFuncao', p.funcao_igreja);
   set('editIgrejaAnterior', p.igreja_anterior);
@@ -303,8 +325,9 @@ function removerFoto() {
 // ═══════════════════════════════════════════════
 
 async function salvarPerfil() {
-  const get = (id) => document.getElementById(id)?.value?.trim() || null;
-  const getCheck = (id) => document.getElementById(id)?.checked;
+  // Retorna undefined (não null) para campos vazios — assim o backend NÃO sobrescreve
+  const get = (id) => { const el = document.getElementById(id); const v = el?.value?.trim(); return v || undefined; };
+  const getCheck = (id) => { const el = document.getElementById(id); return el ? el.checked : undefined; };
 
   const fotoBase64 = document.getElementById('fotoBase64')?.value || null;
 
@@ -323,8 +346,8 @@ async function salvarPerfil() {
     endereco_cep: get('editCEP'),
     nome_conjuge: get('editConjuge'),
     data_casamento: get('editDataCasamento'),
-    filhos: get('editFilhos'),
-    qtd_filhos: parseInt(get('editQtdFilhos')) || 0,
+    filhos: get('editFilhos') ? true : (document.getElementById('editFilhos') ? false : undefined),
+    qtd_filhos: get('editQtdFilhos') ? parseInt(get('editQtdFilhos')) : undefined,
     data_conversao: get('editDataConversao'),
     data_batismo: get('editDataBatismo'),
     ministerio: get('editMinisterio'),

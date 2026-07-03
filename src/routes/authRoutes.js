@@ -13,11 +13,11 @@ const { authMiddleware, gerarToken } = require('../middleware/auth');
 
 // ── Rate limit específico para login (mais restritivo) ──
 const loginLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 30,
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { erro: 'Muitas tentativas de login. Tente novamente em 5 minutos.' },
+  message: { erro: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
 });
 
 // ── POST /api/auth/registrar ──
