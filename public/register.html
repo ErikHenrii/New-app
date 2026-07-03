@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro — Missão Reviver</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <style>
+    .form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    .form-grid .form-group { margin-bottom:0; }
+    .form-grid select {
+      width:100%; padding:12px 16px; border:none;
+      border-radius:var(--radius-xs); font-size:0.95rem; font-family:var(--font-body);
+      outline:none; background:var(--bg-light);
+      box-shadow:var(--neu-in-sm);
+      transition:box-shadow 0.25s; color:var(--text-dark);
+    }
+    .form-grid select:focus {
+      box-shadow:var(--neu-in), 0 0 0 2px rgba(0,180,200,0.3);
+    }
+    @media(max-width:600px){ .form-grid{ grid-template-columns:1fr; } }
+    .step-indicator {
+      display:flex; gap:8px; margin-bottom:24px;
+    }
+    .step-dot {
+      flex:1; height:4px;
+      border-radius:var(--squircle);
+      background:var(--gray-light);
+    }
+    .step-dot.active { background:var(--teal); }
+    hr { border:none; box-shadow: var(--neu-in-sm); height:2px; background:transparent; border-radius:10px; }
+  </style>
+</head>
+<body data-page="register">
+
+  <nav class="auth-navbar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0a2a6e" stroke-width="2.5">
+        <path d="M12 2v20M5 9h14" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span>Missão Reviver</span>
+  </nav>
+
+  <div class="auth-container">
+    <div class="auth-card" style="max-width:560px;">
+      <h1>Crie sua conta</h1>
+      <p class="subtitle">Junte-se à nossa comunidade. Campos com * são obrigatórios.</p>
+
+      <div class="alert alert-error" id="registerAlert"></div>
+
+      <form id="registerForm" autocomplete="on">
+        <!-- Dados básicos (obrigatórios) -->
+        <div class="form-group">
+          <label for="nome">Nome completo *</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" placeholder="Seu nome completo" required />
+          <span class="form-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="email">E-mail *</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="seu@email.com" required />
+          <span class="form-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="telefone">Telefone / WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone" autocomplete="tel" placeholder="(31) 99999-9999" />
+          <span class="form-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="senha">Senha *</label>
+          <input type="password" id="senha" name="senha" autocomplete="new-password" placeholder="Mín. 8 caracteres" required />
+          <span class="form-error"></span>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--gray-light);margin:20px 0;">
+        <p style="font-size:0.82rem;color:var(--gray-text);margin-bottom:16px;">
+          💡 <strong>Dados opcionais</strong> — você pode preencher agora ou completar depois no seu perfil.
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="regDataNasc">Data de nascimento</label>
+            <input type="date" id="regDataNasc" />
+          </div>
+          <div class="form-group">
+            <label for="regGenero">Gênero</label>
+            <select id="regGenero">
+              <option value="">Selecione...</option>
+              <option value="masculino">Masculino</option>
+              <option value="feminino">Feminino</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="regEstadoCivil">Estado civil</label>
+            <select id="regEstadoCivil">
+              <option value="">Selecione...</option>
+              <option value="solteiro">Solteiro(a)</option>
+              <option value="casado">Casado(a)</option>
+              <option value="uniao_estavel">União Estável</option>
+              <option value="divorciado">Divorciado(a)</option>
+              <option value="viuvo">Viúvo(a)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="regCidade">Cidade</label>
+            <input type="text" id="regCidade" placeholder="Sua cidade" />
+          </div>
+        </div>
+
+        <div class="lgpd-consent">
+          <input type="checkbox" id="consentimento" name="consentimento" required />
+          <label for="consentimento">
+            Li e concordo com a <a href="privacy-policy.html" target="_blank">Política de Privacidade</a> e com o
+            tratamento dos meus dados pessoais conforme a <strong>LGPD</strong> (Lei 13.709/2018).
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+      </form>
+
+      <p class="auth-link">
+        Já tem conta? <a href="login.html">Entrar</a>
+      </p>
+    </div>
+  </div>
+
+  <footer class="auth-footer">
+    Comunidade Cristã Missão Reviver · Betim — MG<br>
+    <a href="../index.html" style="color:var(--gray-text);">← Voltar ao site</a>
+  </footer>
+
+  
+  <script src="js/api.js"></script>
+  <script src="js/auth-frontend.js"></script>
+  <script>
+    // Override do handleRegister para incluir campos opcionais
+    const originalHandleRegister = handleRegister;
+    handleRegister = async function(e) {
+      e.preventDefault();
+      clearErrors();
+
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const telefone = document.getElementById('telefone').value.trim();
+      const senha = document.getElementById('senha').value;
+      const consentimento = document.getElementById('consentimento').checked;
+
+      let hasError = false;
+      if (nome.length < 3) { setFieldError('nome', 'Nome muito curto'); hasError = true; }
+      if (!email.includes('@')) { setFieldError('email', 'E-mail inválido'); hasError = true; }
+      if (senha.length < 8) { setFieldError('senha', 'Mínimo 8 caracteres'); hasError = true; }
+      if (hasError) return;
+
+      // Campos opcionais do registro
+      const data_nascimento = document.getElementById('regDataNasc')?.value || null;
+      const genero = document.getElementById('regGenero')?.value || null;
+      const estado_civil = document.getElementById('regEstadoCivil')?.value || null;
+      const endereco_cidade = document.getElementById('regCidade')?.value.trim() || null;
+
+      try {
+        const user = await ReviverAuth.registrar({
+          nome_completo: nome, email, telefone, senha, consentimento,
+          data_nascimento, genero, estado_civil, endereco_cidade
+        });
+        showAlert('registerAlert', `Cadastro realizado! Bem-vindo, ${user.nome_completo}! Complete seu perfil no dashboard.`, 'success');
+        setTimeout(() => redirectToDashboard(user.role), 1500);
+      } catch (err) {
+        showAlert('registerAlert', err.message);
+      }
+    };
+
+    // Re-binda o evento
+    document.getElementById('registerForm').onsubmit = handleRegister;
+  </script>
+</body>
+</html>

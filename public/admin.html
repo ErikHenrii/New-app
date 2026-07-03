@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Admin — Missão Reviver</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <style>
+    /* === ADMIN — Squircle + Neumorfismo + Glassmorphism === */
+
+    /* Modals (Glassmorphism) */
+    .modal-overlay {
+      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(10,42,110,0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index:1000; align-items:center; justify-content:center;
+      padding:20px; overflow-y:auto;
+    }
+    .modal-overlay.show { display:flex; }
+    .modal {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      max-width: 480px; width: 90%;
+      box-shadow: var(--neu-out), 0 20px 60px rgba(10,42,110,0.2);
+      border: 1px solid var(--glass-border);
+    }
+    .modal-lg {
+      max-width: 720px; max-height: 90vh; overflow-y: auto;
+    }
+    .modal h2 { font-family: var(--font-display); color: var(--blue-dark); margin-bottom: 16px; }
+    .modal-close {
+      float: right; cursor: pointer; font-size: 1.4rem; color: var(--gray-text);
+      border: none; background: none; padding: 4px 8px;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .modal-close:hover { color: var(--blue-dark); transform: rotate(90deg); }
+
+    /* Member profile sections in modal */
+    .member-info-section { margin-bottom: 20px; }
+    .member-info-section h3 {
+      font-size: 0.88rem; color: var(--blue-dark); margin-bottom: 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--gray-light);
+    }
+    .info-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    }
+    .info-item {
+      display: flex; flex-direction: column; gap: 2px;
+      background: var(--bg-light);
+      border-radius: var(--radius-xs);
+      padding: 10px 14px;
+      box-shadow: var(--neu-in-sm);
+    }
+    .info-label {
+      font-size: 0.72rem; color: var(--gray-text); text-transform: uppercase;
+      letter-spacing: 0.5px; font-weight: 600;
+    }
+    .info-value {
+      font-size: 0.88rem; color: var(--text-dark); font-weight: 500;
+    }
+
+    /* Filter chips (Squircle + Glass) */
+    .filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .chip {
+      padding: 7px 16px;
+      border-radius: var(--squircle);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--gray-light);
+      background: var(--bg-light);
+      color: var(--gray-text);
+      transition: all 0.25s;
+      box-shadow: var(--neu-out-sm);
+    }
+    .chip.active {
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+      color: var(--white);
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(10,42,110,0.25);
+    }
+    .chip:hover { transform: translateY(-1px); box-shadow: var(--neu-out); }
+    .chip.active:hover { box-shadow: 0 6px 20px rgba(10,42,110,0.35); }
+
+    /* Scrollbar styling */
+    .modal-lg::-webkit-scrollbar { width: 6px; }
+    .modal-lg::-webkit-scrollbar-track { background: var(--bg); border-radius: 3px; }
+    .modal-lg::-webkit-scrollbar-thumb { background: var(--blue-mid); border-radius: 3px; }
+
+    /* Birthday items (Neumorphism + Squircle) */
+    .birthday-list { display:flex; flex-direction:column; gap:10px; }
+    .birthday-item {
+      background: var(--bg-light);
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--neu-out-sm);
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .birthday-item:hover { transform: translateY(-1px); box-shadow: var(--neu-out); }
+    .birthday-avatar {
+      width: 44px; height: 44px;
+      border-radius: 36% 36%;
+      background: linear-gradient(135deg, var(--teal), var(--blue-light));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); font-weight: 700; font-size: 1.1rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,180,200,0.25);
+    }
+    .birthday-item .b-info { flex: 1; }
+    .birthday-item .b-name { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
+    .birthday-item .b-date { font-size: 0.78rem; color: var(--gray-text); }
+    .birthday-item .b-icon { font-size: 1.4rem; }
+
+    /* Table responsive on mobile */
+    @media (max-width: 700px) {
+      .table-wrapper { overflow-x: scroll; }
+      table { min-width: 700px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .modal-lg { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body data-page="admin">
+
+  <nav class="auth-navbar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+        <path d="M12 2v20M5 9h14" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span>Missão Reviver</span>
+  </nav>
+
+  <div class="dashboard">
+    <div class="dashboard-header">
+      <h1>Painel Administrativo</h1>
+      <div class="user-info">
+        <span id="userName">—</span>
+        <span class="badge badge-admin" id="userRole">admin</span>
+        <a href="../index.html" class="btn btn-secondary btn-sm" style="text-decoration:none;width:auto;">← Site</a>
+      <button onclick="logout()" class="btn btn-secondary btn-sm">Sair</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total de Usuários</div>
+        <div class="value" id="statTotal">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Membros Ativos</div>
+        <div class="value" id="statMembros">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Administradores</div>
+        <div class="value" id="statAdmins">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Acessos Hoje</div>
+        <div class="value" id="statAcessos">—</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('usuarios', this)">👥 Usuários</button>
+      <button class="tab" onclick="switchTab('aniversariantes', this)">🎂 Aniversariantes</button>
+      <button class="tab" onclick="switchTab('audit', this)">📋 Auditoria</button>
+    </div>
+
+    <!-- USUÁRIOS -->
+    <div class="tab-content active" id="tab-usuarios">
+      <!-- Busca + Filtros -->
+      <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar por nome ou email..."
+               style="padding:10px 16px;border:2px solid var(--gray-light);border-radius:12px;font-size:0.9rem;flex:1;outline:none;min-width:200px;"
+               oninput="loadAdminUsers(this.value)" />
+        <button onclick="exportarCSV()" class="btn btn-secondary" style="width:auto;padding:10px 20px;">⬇ Exportar CSV</button>
+        <button onclick="document.getElementById('newUserModal').classList.add('show')"
+                class="btn btn-primary" style="width:auto;padding:10px 20px;">+ Novo Usuário</button>
+      </div>
+
+      <!-- Chips de filtro rápido -->
+      <div class="filter-chips">
+        <div class="chip active" onclick="filterByChip(this,'all')">Todos</div>
+        <div class="chip" onclick="filterByChip(this,'membro')">Membros</div>
+        <div class="chip" onclick="filterByChip(this,'admin')">Admins</div>
+        <div class="chip" onclick="filterByChip(this,'ativo')">Ativos</div>
+        <div class="chip" onclick="filterByChip(this,'suspenso')">Suspensos</div>
+        <div class="chip" onclick="filterByChip(this,'incompleto')">Perfil Incompleto</div>
+      </div>
+
+      <!-- Tabela -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Cidade</th>
+              <th>Ministério</th>
+              <th>Último Acesso</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="8" style="text-align:center;color:var(--gray-text);">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:20px;font-size:0.78rem;color:var(--gray-text);">
+        ℹ️ Clique em qualquer linha ou no botão <strong>👁️ Ver</strong> para ver a ficha completa do membro.
+        A exclusão anonimiza os dados conforme a LGPD (Art. 18, VI).
+      </p>
+    </div>
+
+    <!-- ANIVERSARIANTES -->
+    <div class="tab-content" id="tab-aniversariantes">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <h3 id="adminAnivTitulo" style="font-family:var(--font-display);color:var(--blue-dark);">Aniversariantes do Mês</h3>
+        <button onclick="exportarCSV()" class="btn btn-secondary btn-sm">⬇ Exportar Lista Completa</button>
+      </div>
+      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
+        📱 Clique em <strong>WhatsApp</strong> para enviar uma mensagem de felicitação automática ao aniversariante.
+      </p>
+      <div class="birthday-list" id="adminAnivList">
+        <p style="text-align:center;color:var(--gray-text);padding:20px;">Carregando...</p>
+      </div>
+    </div>
+
+    <!-- AUDITORIA -->
+    <div class="tab-content" id="tab-audit">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Ação</th>
+              <th>Detalhes</th>
+              <th>Data/Hora</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <tr><td colspan="3" style="text-align:center;color:var(--gray-text);">Clique na aba para carregar...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Ver Membro (ficha completa) -->
+  <div class="modal-overlay" id="memberModal">
+    <div class="modal modal-lg">
+      <button class="modal-close" onclick="closeModal('memberModal')">×</button>
+      <div id="memberModalBody"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: Novo Usuário -->
+  <div class="modal-overlay" id="newUserModal">
+    <div class="modal">
+      <button class="modal-close" onclick="document.getElementById('newUserModal').classList.remove('show')">×</button>
+      <h2>Novo Usuário</h2>
+      <div class="alert alert-error" id="newUserAlert"></div>
+      <form id="newUserForm" onsubmit="event.preventDefault(); adminCriarUsuario();">
+        <div class="form-group">
+          <label for="newNome">Nome completo</label>
+          <input type="text" id="newNome" required />
+        </div>
+        <div class="form-group">
+          <label for="newEmail">E-mail</label>
+          <input type="email" id="newEmail" required />
+        </div>
+        <div class="form-group">
+          <label for="newTelefone">Telefone (opcional)</label>
+          <input type="tel" id="newTelefone" placeholder="(31) 99999-9999" />
+        </div>
+        <div class="form-group">
+          <label for="newSenha">Senha temporária</label>
+          <input type="password" id="newSenha" placeholder="Mín. 8 caracteres" required />
+        </div>
+        <div class="form-group">
+          <label for="newRole">Tipo de usuário</label>
+          <select id="newRole" style="width:100%;padding:12px 16px;border:2px solid var(--gray-light);border-radius:12px;font-size:0.95rem;">
+            <option value="membro">Membro</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Criar Usuário</button>
+      </form>
+    </div>
+  </div>
+
+  
+  <script src="js/api.js"></script>
+  <script src="js/auth-frontend.js"></script>
+  <script>
+    // Filtro por chips
+    let currentFilter = 'all';
+
+    function filterByChip(el, filter) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentFilter = filter;
+      loadAdminUsers(document.getElementById('searchInput')?.value || '');
+    }
+
+    // Override loadAdminUsers para aplicar filtro de chips
+    const originalLoadAdminUsers = loadAdminUsers;
+    loadAdminUsers = async function(busca = '') {
+      try {
+        let users = await ReviverAuth.listarUsuarios();
+
+        // Aplica filtro de chips
+        if (currentFilter === 'membro') users = users.filter(u => u.role === 'membro');
+        else if (currentFilter === 'admin') users = users.filter(u => u.role === 'admin');
+        else if (currentFilter === 'ativo') users = users.filter(u => u.status === 'ativo');
+        else if (currentFilter === 'suspenso') users = users.filter(u => u.status !== 'ativo');
+        else if (currentFilter === 'incompleto') users = users.filter(u => !u.perfil_completo);
+
+        // Aplica busca por texto
+        if (busca) {
+          users = users.filter(u =>
+            u.nome_completo.toLowerCase().includes(busca.toLowerCase()) ||
+            u.email.toLowerCase().includes(busca.toLowerCase()));
+        }
+
+        const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
+
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray-text);">Nenhum usuário encontrado.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => `
+          <tr style="cursor:pointer;" onclick="verMembro('${u.id}')">
+            <td>
+              <strong>${u.nome_completo}</strong>
+              ${u.perfil_completo ? '<span style="color:var(--success);font-size:0.7rem;margin-left:6px;">✓</span>' : '<span style="color:var(--warning);font-size:0.7rem;margin-left:6px;">⚠</span>'}
+            </td>
+            <td>${u.email}</td>
+            <td><span class="badge badge-${u.role}">${u.role}</span></td>
+            <td style="color:${u.status === 'ativo' ? 'var(--success)' : 'var(--error)'};">● ${u.status}</td>
+            <td>${u.endereco_cidade ? u.endereco_cidade + '/' + (u.endereco_estado||'') : '—'}</td>
+            <td>${u.ministerio || '—'}</td>
+            <td>${u.ultimo_acesso ? new Date(u.ultimo_acesso).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap;" onclick="event.stopPropagation();">
+              <button onclick="verMembro('${u.id}')" class="btn btn-primary btn-sm">👁️ Ver</button>
+              <button onclick="toggleRole('${u.id}', '${u.role}'); event.stopPropagation();" class="btn btn-secondary btn-sm">
+                ${u.role === 'admin' ? '↓' : '↑'}
+              </button>
+              <button onclick="deleteUser('${u.id}', '${u.nome_completo}'); event.stopPropagation();" class="btn btn-danger btn-sm">Excluir</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) { console.error(err); }
+    };
+
+    // Fecha modal ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (e.target.classList?.contains('modal-overlay')) {
+        e.target.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>
