@@ -164,12 +164,13 @@
       const endereco_cidade = document.getElementById('regCidade')?.value.trim() || null;
 
       try {
-        const user = await ReviverAuth.registrar({
+        const data = await API.auth.registrar({
           nome_completo: nome, email, telefone, senha, consentimento,
           data_nascimento, genero, estado_civil, endereco_cidade
         });
-        showAlert('registerAlert', `Cadastro realizado! Bem-vindo, ${user.nome_completo}! Complete seu perfil no dashboard.`, 'success');
-        setTimeout(() => redirectToDashboard(user.role), 1500);
+        API.setToken(data.token);
+        showAlert('registerAlert', `Cadastro realizado! Bem-vindo, ${data.membro.nome_completo}! Complete seu perfil no dashboard.`, 'success');
+        setTimeout(() => redirectToDashboard(data.membro.role), 1500);
       } catch (err) {
         showAlert('registerAlert', err.message);
       }

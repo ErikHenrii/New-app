@@ -269,7 +269,7 @@ async function renderWelcome(usuario) {
 
   // Tenta mostrar a foto no banner se existir
   try {
-    const perfil = await ReviverAuth.obterPerfil();
+    const { perfil } = await API.perfil.obter();
     if (perfil.foto_perfil) {
       const banner = document.querySelector('.welcome-banner');
       if (banner) {
@@ -524,7 +524,8 @@ async function submitPrayer() {
     return;
   }
 
-  const sessao = await ReviverAuth.sessaoAtual();
+  const sessaoData = await API.auth.sessao();
+  const sessao = sessaoData.autenticado ? sessaoData.membro : null;
   if (!sessao) return;
 
   const pedido = {
@@ -602,7 +603,8 @@ const originalInitDashboard = window.initDashboard;
 async function initDashboardComplete() {
   await originalInitDashboard();
 
-  const sessao = await ReviverAuth.sessaoAtual();
+  const sessaoData = await API.auth.sessao();
+  const sessao = sessaoData.autenticado ? sessaoData.membro : null;
   if (!sessao) return;
 
   await renderWelcome(sessao);

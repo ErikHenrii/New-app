@@ -318,7 +318,8 @@
     const originalLoadAdminUsers = loadAdminUsers;
     loadAdminUsers = async function(busca = '') {
       try {
-        let users = await ReviverAuth.listarUsuarios();
+        let data = await API.admin.listarUsuarios();
+        let users = data.usuarios || [];
 
         // Aplica filtro de chips
         if (currentFilter === 'membro') users = users.filter(u => u.role === 'membro');
