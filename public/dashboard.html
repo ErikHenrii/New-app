@@ -660,6 +660,7 @@
                 <label for="inputFoto" class="btn btn-primary" style="cursor:pointer;width:auto;padding:10px 20px;margin:0;">
                   📷 Escolher Foto
                 </label>
+                <input type="hidden" id="fotoBase64" value="" />
                 <input type="file" id="inputFoto" accept="image/*" style="display:none;" onchange="handleFotoUpload(this)" />
                 <button onclick="removerFoto()" class="btn btn-secondary" style="width:auto;padding:10px 20px;">
                   🗑️ Remover Foto

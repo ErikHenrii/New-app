@@ -208,7 +208,7 @@ function popularFormPerfil(p) {
     }
     return '';
   };
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = (val === null || val === undefined) ? '' : String(val); };
   const setDate = (id, val) => { const el = document.getElementById(id); if (el) el.value = toDateStr(val); };
   const setCheck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val !== false; };
 
@@ -246,7 +246,7 @@ function popularFormPerfil(p) {
   // Emergência
   set('editEmergenciaNome', p.emergencia_nome);
   set('editEmergenciaTel', p.emergencia_telefone);
-  set('editEmergenciaParentesco', p.emergencia_parentesco);
+  set('editEmergenciaParent', p.emergencia_parentesco);
 
   // Redes sociais
   set('editInstagram', p.instagram);
@@ -305,7 +305,10 @@ function handleFotoUpload(input) {
       atualizarFotoPreview(base64);
       // Marca que precisa salvar
       const hiddenInput = document.getElementById('fotoBase64');
-      if (hiddenInput) hiddenInput.value = base64;
+      if (hiddenInput) {
+        hiddenInput.value = base64;
+        hiddenInput.dataset.alterada = '1';
+      }
     };
     img.src = e.target.result;
   };
@@ -315,7 +318,10 @@ function handleFotoUpload(input) {
 function removerFoto() {
   atualizarFotoPreview(null);
   const hiddenInput = document.getElementById('fotoBase64');
-  if (hiddenInput) hiddenInput.value = '';
+  if (hiddenInput) {
+    hiddenInput.value = '';
+    hiddenInput.dataset.alterada = '1';
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -327,7 +333,9 @@ async function salvarPerfil() {
   const get = (id) => { const el = document.getElementById(id); const v = el?.value?.trim(); return v || undefined; };
   const getCheck = (id) => { const el = document.getElementById(id); return el ? el.checked : undefined; };
 
-  const fotoBase64 = document.getElementById('fotoBase64')?.value || null;
+  const fotoHidden = document.getElementById('fotoBase64');
+  const fotoAlterada = fotoHidden?.dataset.alterada === '1';
+  const fotoBase64 = fotoHidden?.value || null;
 
   const dados = {
     nome_completo: get('editNome'),
@@ -344,8 +352,8 @@ async function salvarPerfil() {
     endereco_cep: get('editCEP'),
     nome_conjuge: get('editConjuge'),
     data_casamento: get('editDataCasamento'),
-    filhos: get('editFilhos') ? true : (document.getElementById('editFilhos') ? false : undefined),
-    qtd_filhos: get('editQtdFilhos') ? parseInt(get('editQtdFilhos')) : undefined,
+    filhos: get('editFilhos'),  // texto com nomes dos filhos
+    qtd_filhos: get('editQtdFilhos') !== undefined ? parseInt(get('editQtdFilhos')) || 0 : undefined,
     data_conversao: get('editDataConversao'),
     data_batismo: get('editDataBatismo'),
     ministerio: get('editMinisterio'),
@@ -355,7 +363,7 @@ async function salvarPerfil() {
     testemunho: get('editTestemunho'),
     emergencia_nome: get('editEmergenciaNome'),
     emergencia_telefone: get('editEmergenciaTel'),
-    emergencia_parentesco: get('editEmergenciaParentesco'),
+    emergencia_parentesco: get('editEmergenciaParent'),
     instagram: get('editInstagram'),
     facebook: get('editFacebook'),
     notificar_email: getCheck('editNotifEmail'),
@@ -363,7 +371,11 @@ async function salvarPerfil() {
     participar_aniversarios: getCheck('editPartAniv'),
   };
 
-  if (fotoBase64 !== null) dados.foto_perfil = fotoBase64;
+  if (fotoAlterada) {
+    dados.foto_perfil = fotoBase64 || null;
+    // Limpa flag após salvar
+    if (fotoHidden) fotoHidden.dataset.alterada = '0';
+  }
 
   try {
     const result = await API.perfil.atualizar(dados);
