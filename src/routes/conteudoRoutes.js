@@ -1,107 +1,64 @@
 // ═══════════════════════════════════════════════════════════
-//  conteudoRoutes.js — BUG #4 e #5
-//  Bug #4: Rotas GET (público) e PUT (admin) para todas as seções
-//  Bug #5: Rota para horário de atendimento
+//  routes/conteudoRoutes.js — Conteúdo dinâmico do site
+//  Permite ao admin editar: cultos, eventos, avisos, etc.
 // ═══════════════════════════════════════════════════════════
 
 const express = require('express');
 const router = express.Router();
-const { getPool } = require('../db/init');
-const { exigeAuth, exigeAdmin } = require('../middleware/auth');
+const pool = require('../config/database');
+const { authMiddleware } = require('../middleware/auth');
+const adminOnly = require('../middleware/adminOnly');
 
-// ── Lista de seções válidas ──
-const SECOES_VALIDAS = [
-  'agenda',
-  'estudos',
-  'oracao',
-  'ministerios',
-  'avisos',
-  'dizimos',
-  'galeria',
-  'devocional',
-  'escalas',
-  'contato_pastoral',
-  'horario_atendimento', // BUG #5: nova seção
-];
+// Seções válidas para edição
+const SECOES_VALIDAS = ['cultos', 'eventos', 'avisos', 'devocionais', 'estudos', 'escalas', 'config_igreja'];
 
-// ── GET /api/conteudo — retorna todas as seções (público) ──
-router.get('/', async (req, res) => {
+// ── GET /api/conteudo — Lista todo conteúdo (público, não precisa de auth) ──
+router.get('/', async (req, res, next) => {
   try {
-    const pool = getPool();
-    const result = await pool.query('SELECT secao, dados FROM conteudo ORDER BY secao ASC;');
-
-    const conteudo = {};
-    for (const row of result.rows) {
-      conteudo[row.secao] = row.dados;
-    }
-
-    return res.status(200).json(conteudo);
-  } catch (err) {
-    // Se o banco não estiver pronto, retorna conteúdo padrão vazio
-    console.error('Erro ao buscar conteúdo:', err);
-    return res.status(200).json({});
-  }
+    const { rows } = await pool.query('SELECT secao, dados FROM site_conteudo');
+    const resultado = {};
+    rows.forEach(r => { resultado[r.secao] = r.dados; });
+    res.json({ conteudo: resultado });
+  } catch (err) { next(err); }
 });
 
-// ── GET /api/conteudo/:secao — retorna uma seção específica (público) ──
-router.get('/:secao', async (req, res) => {
+// ── GET /api/conteudo/:secao — Busca uma seção específica ──
+router.get('/:secao', async (req, res, next) => {
   try {
-    const { secao } = req.params;
-
-    if (!SECOES_VALIDAS.includes(secao)) {
-      return res.status(404).json({ erro: 'Seção não encontrada.' });
-    }
-
-    const pool = getPool();
-    const result = await pool.query('SELECT dados FROM conteudo WHERE secao = $1;', [secao]);
-
-    if (result.rows.length === 0) {
-      return res.status(200).json({ secao, dados: {} });
-    }
-
-    return res.status(200).json({ secao, dados: result.rows[0].dados });
-  } catch (err) {
-    console.error('Erro ao buscar seção:', err);
-    return res.status(500).json({ erro: 'Erro ao buscar conteúdo.' });
-  }
+    const { rows } = await pool.query('SELECT dados FROM site_conteudo WHERE secao = $1', [req.params.secao]);
+    if (rows.length === 0) return res.status(404).json({ erro: 'Seção não encontrada' });
+    res.json({ secao: req.params.secao, dados: rows[0].dados });
+  } catch (err) { next(err); }
 });
 
-// ── PUT /api/conteudo/:secao — BUG #4 CORRIGIDO: salva edição do admin ──
-router.put('/:secao', exigeAuth, exigeAdmin, async (req, res) => {
+// ── PUT /api/conteudo/:secao — Admin atualiza uma seção ──
+router.put('/:secao', authMiddleware, adminOnly, async (req, res, next) => {
   try {
     const { secao } = req.params;
-    const { dados } = req.body;
-
     if (!SECOES_VALIDAS.includes(secao)) {
-      return res.status(404).json({ erro: 'Seção não encontrada.' });
+      return res.status(400).json({ erro: `Seção inválida. Válidas: ${SECOES_VALIDAS.join(', ')}` });
     }
 
+    const dados = req.body.dados || req.body;
     if (!dados || typeof dados !== 'object') {
-      return res.status(400).json({ erro: 'Campo "dados" é obrigatório e deve ser um objeto.' });
+      return res.status(400).json({ erro: 'Dados inválidos' });
     }
-
-    const pool = getPool();
 
     // Upsert: insere se não existe, atualiza se existe
-    const result = await pool.query(
-      `INSERT INTO conteudo (secao, dados, updated_at, updated_by)
-       VALUES ($1, $2, NOW(), $3)
-       ON CONFLICT (secao)
-       DO UPDATE SET dados = $2, updated_at = NOW(), updated_by = $3
-       RETURNING secao, dados, updated_at;`,
-      [secao, JSON.stringify(dados), req.usuario.id]
+    await pool.query(`
+      INSERT INTO site_conteudo (secao, dados, atualizado_por, atualizado_em)
+      VALUES ($1, $2, $3, NOW())
+      ON CONFLICT (secao) DO UPDATE
+      SET dados = $2, atualizado_por = $3, atualizado_em = NOW()
+    `, [secao, JSON.stringify(dados), req.user.id]);
+
+    await pool.query(
+      'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
+      [req.user.id, 'CONTEUDO_ATUALIZADO', `Admin atualizou seção: ${secao}`]
     );
 
-    return res.status(200).json({
-      mensagem: 'Conteúdo atualizado com sucesso!',
-      secao: result.rows[0].secao,
-      dados: result.rows[0].dados,
-      updated_at: result.rows[0].updated_at,
-    });
-  } catch (err) {
-    console.error('Erro ao salvar conteúdo:', err);
-    return res.status(500).json({ erro: 'Erro ao salvar conteúdo.' });
-  }
+    res.json({ sucesso: true, mensagem: `Seção "${secao}" atualizada com sucesso` });
+  } catch (err) { next(err); }
 });
 
 module.exports = router;

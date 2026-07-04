@@ -75,6 +75,7 @@ async function handleLogin(e) {
 
   if (!email || !senha) {
     showAlert('loginAlert', 'Preencha todos os campos.');
+    document.body.dataset.loggingIn = '0';
     return;
   }
 
@@ -861,6 +862,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (page === 'admin') {
-    initAdmin();
+    // initAdmin() é chamado pelo script inline do admin.html
+    // Não chamamos aqui para evitar execução duplicada
   }
 });

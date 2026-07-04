@@ -1,34 +1,54 @@
 // ═══════════════════════════════════════════════════════════
-//  auth.js — Middlewares de autenticação (JWT)
+//  middleware/auth.js — Verifica JWT e injeta req.user
 // ═══════════════════════════════════════════════════════════
 
 const jwt = require('jsonwebtoken');
+const pool = require('../config/database');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'reviver-dev-secret-change-in-prod';
+const JWT_SECRET = process.env.JWT_SECRET || 'reviver-dev-secret-change-me';
+const JWT_EXPIRES = '7d';
 
-// ── Middleware: exige token válido ──
-function exigeAuth(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ erro: 'Token não fornecido.' });
-  }
+function gerarToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES }
+  );
+}
 
-  const token = authHeader.split(' ')[1];
+async function authMiddleware(req, res, next) {
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.usuario = payload; // { id, email, role, nome }
+    const header = req.headers.authorization;
+    if (!header || !header.startsWith('Bearer ')) {
+      return res.status(401).json({ erro: 'Token não fornecido' });
+    }
+
+    const token = header.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    // Busca o usuário no banco para garantir que ainda existe e está ativo
+    const { rows } = await pool.query(
+      'SELECT id, nome_completo, email, role, status FROM membros WHERE id = $1',
+      [decoded.id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(401).json({ erro: 'Usuário não encontrado' });
+    }
+
+    const user = rows[0];
+    if (user.status !== 'ativo') {
+      return res.status(403).json({ erro: 'Conta inativa. Contate um administrador.' });
+    }
+
+    req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({ erro: 'Token inválido ou expirado.' });
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(401).json({ erro: 'Sessão expirada ou inválida' });
+    }
+    next(err);
   }
 }
 
-// ── Middleware: exige role admin ──
-function exigeAdmin(req, res, next) {
-  if (!req.usuario || req.usuario.role !== 'admin') {
-    return res.status(403).json({ erro: 'Acesso restrito a administradores.' });
-  }
-  next();
-}
-
-module.exports = { exigeAuth, exigeAdmin, JWT_SECRET };
+module.exports = { authMiddleware, gerarToken, JWT_SECRET, JWT_EXPIRES };

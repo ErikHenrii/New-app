@@ -470,9 +470,9 @@ function gerarLinkWhatsAppMembro(telefone, nome) {
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 }
 
-// (renderDevotional movido para versão com API)\n
 
-// (renderScales movido para versão com API)\n
+
+
 
 function renderPastoral() {
   const el = document.getElementById('pastoralGrid');
@@ -693,7 +693,7 @@ function renderStudies() {
   `}).join('');
 }
 
-// (função movida para versão com suporte a API)\n
+
 
 function renderAnnouncements() {
   const el = document.getElementById('announcementsContent');
