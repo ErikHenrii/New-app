@@ -470,31 +470,9 @@ function gerarLinkWhatsAppMembro(telefone, nome) {
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 }
 
-function renderDevotional() {
-  const el = document.getElementById('devotionalContent');
-  if (!el) return;
-  el.innerHTML = IGREJA_DADOS.devocionais.map(d => `
-    <div class="devotional-card" style="margin-bottom:16px;">
-      <div class="dev-date">${d.data}</div>
-      <h3>${d.titulo}</h3>
-      <div class="dev-verse">${d.verso}<br><span style="font-style:normal;font-weight:600;">— ${d.ref}</span></div>
-      <div class="dev-text">${d.texto}</div>
-    </div>
-  `).join('');
-}
+// (renderDevotional movido para versão com API)\n
 
-function renderScales() {
-  const el = document.getElementById('scaleTableBody');
-  if (!el) return;
-  el.innerHTML = IGREJA_DADOS.escalas.map(s => `
-    <tr>
-      <td>${s.data}</td>
-      <td>${s.culto}</td>
-      <td class="scale-role">${s.funcao}</td>
-      <td>${s.responsavel}</td>
-    </tr>
-  `).join('');
-}
+// (renderScales movido para versão com API)\n
 
 function renderPastoral() {
   const el = document.getElementById('pastoralGrid');
@@ -595,6 +573,173 @@ function switchTabByName(name) {
 }
 
 // ═════════════════════════════════════════════
+//  CONTEÚDO DINÂMICO — Carrega da API com fallback
+// ═════════════════════════════════════════════
+
+let conteudoAPI = null; // cache do conteúdo do backend
+
+async function carregarConteudoAPI() {
+  if (conteudoAPI !== null) return conteudoAPI;
+  try {
+    if (typeof API !== 'undefined' && API.conteudo) {
+      const data = await API.conteudo.listarTudo();
+      conteudoAPI = data.conteudo || {};
+      console.log('📦 Conteúdo carregado da API');
+    }
+  } catch (e) {
+    console.log('📦 Usando dados padrão (API indisponível)');
+    conteudoAPI = {};
+  }
+  return conteudoAPI;
+}
+
+// ═════════════════════════════════════════════
+//  RENDERIZAÇÃO — Usa API se disponível, fallback IGREJA_DADOS
+// ═════════════════════════════════════════════
+
+function renderUpcomingEvents() {
+  const el = document.getElementById('upcomingEvents');
+  if (!el) return;
+  const eventos = (conteudoAPI?.eventos?.itens) || IGREJA_DADOS.eventos;
+  el.innerHTML = eventos.slice(0, 3).map(e => `
+    <div class="event-mini">
+      <div class="event-mini-date">${e.dia}<span>${e.mes}</span></div>
+      <div class="event-mini-info">
+        <strong>${e.nome}</strong>
+        <span>${e.hora || ''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderWeeklyServices() {
+  const el = document.getElementById('weeklyServices');
+  if (!el) return;
+  const cultosAPI = conteudoAPI?.cultos?.itens;
+  if (cultosAPI && cultosAPI.length > 0) {
+    // Agrupa por dia
+    const porDia = {};
+    cultosAPI.forEach(c => {
+      if (!porDia[c.dia]) porDia[c.dia] = [];
+      porDia[c.dia].push(c);
+    });
+    el.innerHTML = Object.entries(porDia).map(([dia, horarios]) => `
+      <div class="service-day">
+        <div class="service-day-name">${dia}</div>
+        ${horarios.map(h => `
+          <div class="service-item">
+            <div class="service-time">${h.hora}</div>
+            <div class="service-info">
+              <strong>${h.nome}</strong>
+              <span>${h.desc || ''}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+  } else {
+    el.innerHTML = IGREJA_DADOS.cultos.map(c => c.horarios.map(h => `
+      <div class="service-day">
+        <div class="service-day-name">${c.dia}</div>
+        <div class="service-item">
+          <div class="service-time">${h.hora}</div>
+          <div class="service-info">
+            <strong>${h.nome}</strong>
+            <span>${h.desc}</span>
+          </div>
+        </div>
+      </div>
+    `).join('')).join('');
+  }
+}
+
+function renderSpecialEvents() {
+  const el = document.getElementById('specialEvents');
+  if (!el) return;
+  const eventos = (conteudoAPI?.eventos?.itens) || IGREJA_DADOS.eventos;
+  el.innerHTML = eventos.map(e => `
+    <div class="content-card event-card-special">
+      <div class="event-date-badge">${e.dia}<span>${e.mes}</span></div>
+      <div class="event-details">
+        <h4>${e.nome}</h4>
+        <p>${e.desc}</p>
+        <div class="event-meta">🕐 ${e.hora || ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderStudies() {
+  const el = document.getElementById('studiesContent');
+  if (!el) return;
+  const estudos = (conteudoAPI?.estudos?.itens) || IGREJA_DADOS.estudos;
+  el.innerHTML = estudos.map(s => {
+    const tags = (s.tags || []).map(t => `<span class="study-tag">${t}</span>`).join('');
+    return `
+    <div class="content-card study-card">
+      <div class="study-header">
+        <h4>${s.titulo}</h4>
+        <span class="study-type">${s.tipo || ''}</span>
+      </div>
+      <div class="study-meta">
+        <span>👤 ${s.autor || ''}</span>
+        <span>📅 ${s.data || ''}</span>
+        <span>⏱️ ${s.duracao || ''}</span>
+      </div>
+      <p>${s.resumo || ''}</p>
+      <div class="study-tags">${tags}</div>
+      <a href="${s.link || '#'}" class="btn btn-primary btn-sm" style="text-decoration:none;margin-top:8px;">📖 Acessar Estudo</a>
+    </div>
+  `}).join('');
+}
+
+// (função movida para versão com suporte a API)\n
+
+function renderAnnouncements() {
+  const el = document.getElementById('announcementsContent');
+  if (!el) return;
+  const avisos = (conteudoAPI?.avisos?.itens) || IGREJA_DADOS.avisos;
+  const tipoCor = { urgente: '#dc3545', evento: '#28a745', geral: '#007bff', espiritual: '#6f42c1' };
+  el.innerHTML = avisos.map(a => `
+    <div class="content-card announcement-card" style="border-left:4px solid ${tipoCor[a.tipo] || '#007bff'};">
+      <div class="announcement-header">
+        <h4>${a.titulo}</h4>
+        <span class="announcement-date">${a.data || ''}</span>
+      </div>
+      <p>${a.texto}</p>
+    </div>
+  `).join('');
+}
+
+function renderDevotional() {
+  const el = document.getElementById('devotionalContent');
+  if (!el) return;
+  const devocionais = (conteudoAPI?.devocionais?.itens) || IGREJA_DADOS.devocionais;
+  el.innerHTML = devocionais.map(d => `
+    <div class="devotional-card" style="margin-bottom:16px;">
+      <div class="dev-date">${d.data}</div>
+      <h3>${d.titulo}</h3>
+      <div class="dev-verse">${d.verso}<br><span style="font-style:normal;font-weight:600;">— ${d.ref}</span></div>
+      <div class="dev-text">${d.texto}</div>
+    </div>
+  `).join('');
+}
+
+function renderScales() {
+  const el = document.getElementById('scaleTableBody');
+  if (!el) return;
+  const escalas = (conteudoAPI?.escalas?.itens) || IGREJA_DADOS.escalas;
+  el.innerHTML = escalas.map(s => `
+    <tr>
+      <td>${s.data}</td>
+      <td>${s.culto}</td>
+      <td class="scale-role">${s.funcao}</td>
+      <td>${s.responsavel}</td>
+    </tr>
+  `).join('');
+}
+
+// ═════════════════════════════════════════════
 //  INIT — Renderiza tudo ao carregar
 // ═════════════════════════════════════════════
 
@@ -606,6 +751,9 @@ async function initDashboardComplete() {
   const sessaoData = await API.auth.sessao();
   const sessao = sessaoData.autenticado ? sessaoData.membro : null;
   if (!sessao) return;
+
+  // Carrega conteúdo da API PRIMEIRO (com fallback)
+  await carregarConteudoAPI();
 
   await renderWelcome(sessao);
   renderUpcomingEvents();

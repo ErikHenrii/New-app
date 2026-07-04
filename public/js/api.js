@@ -40,7 +40,6 @@ async function request(endpoint, options = {}) {
     const data = await res.json();
 
     if (!res.ok) {
-      // Se token expirou, limpa e redireciona
       if (res.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/registrar')) {
         setToken(null);
         if (window.location.pathname.includes('/dashboard') || window.location.pathname.includes('/admin')) {
@@ -52,7 +51,6 @@ async function request(endpoint, options = {}) {
 
     return data;
   } catch (err) {
-    // Erro de rede
     if (err.message === 'Failed to fetch') {
       throw new Error('Não foi possível conectar ao servidor. Verifique sua internet.');
     }
@@ -101,6 +99,13 @@ const API = {
     criar: (dados) => request('/liderancas', { method: 'POST', body: dados }),
     atualizar: (id, dados) => request(`/liderancas/${id}`, { method: 'PUT', body: dados }),
     excluir: (id) => request(`/liderancas/${id}`, { method: 'DELETE' }),
+  },
+
+  // ── Conteúdo dinâmico do site (cultos, eventos, avisos, etc.) ──
+  conteudo: {
+    listarTudo: () => request('/conteudo'),
+    obter: (secao) => request(`/conteudo/${secao}`),
+    atualizar: (secao, dados) => request(`/conteudo/${secao}`, { method: 'PUT', body: { dados } }),
   },
 
   // ── LGPD ──

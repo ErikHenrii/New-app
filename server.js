@@ -18,6 +18,7 @@ const adminRoutes = require('./src/routes/adminRoutes');
 const anivRoutes = require('./src/routes/aniversariantesRoutes');
 const lgpdRoutes = require('./src/routes/lgpdRoutes');
 const liderancaRoutes = require('./src/routes/liderancaRoutes');
+const conteudoRoutes = require('./src/routes/conteudoRoutes');
 
 const app = express();
 
@@ -36,10 +37,10 @@ app.use(cors({
   credentials: true,
 }));
 
-// ── Rate limiting global (aumentado + trust proxy) ──
+// ── Rate limiting global (generoso para não bloquear uso normal) ──
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 2000, // 2000 req por IP em 15 min (generoso)
+  max: 5000, // 5000 req por IP em 15 min
   standardHeaders: true,
   legacyHeaders: false,
   message: { erro: 'Muitas requisições. Tente novamente em alguns minutos.' },
@@ -57,8 +58,9 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── Middleware: avisa se o banco não está pronto ──
+// Rotas públicas que não precisam de banco: /api/health, /api/conteudo (GET)
 app.use('/api/', (req, res, next) => {
-  if (!global.bancoPronto && !req.path.includes('/health')) {
+  if (!global.bancoPronto && !req.path.includes('/health') && !req.path.startsWith('/conteudo')) {
     return res.status(503).json({
       erro: 'Banco de dados ainda não conectado. Veja os logs do Render.',
       detalhe: process.env.DATABASE_URL
@@ -76,6 +78,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/aniversariantes', anivRoutes);
 app.use('/api/lgpd', lgpdRoutes);
 app.use('/api/liderancas', liderancaRoutes);
+app.use('/api/conteudo', conteudoRoutes);
 
 // ── Arquivos estáticos (frontend) ──
 app.use(express.static(path.join(__dirname, 'public')));

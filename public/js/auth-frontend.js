@@ -110,7 +110,7 @@ async function handleRegister(e) {
   if (nome.length < 3) { setFieldError('nome', 'Nome muito curto'); hasError = true; }
   if (!email.includes('@')) { setFieldError('email', 'E-mail inválido'); hasError = true; }
   if (senha.length < 6) { setFieldError('senha', 'Mínimo 6 caracteres'); hasError = true; }
-  if (hasError) return;
+  if (hasError) { document.body.dataset.registering = '0'; return; }
 
   try {
     const data = await API.auth.registrar({
@@ -175,8 +175,14 @@ async function initDashboard() {
     }
   } catch (err) {
     console.error('Erro ao carregar dashboard:', err);
-    if (err.message.includes('Sessão expirada') || err.message.includes('inválida')) {
+    if (err.message.includes('Sessão expirada') || err.message.includes('inválida') || err.message.includes('Token')) {
       window.location.href = 'login.html';
+    } else {
+      // Mostra erro na tela em vez de falhar silenciosamente
+      const perfilInfo = document.getElementById('perfilInfo');
+      if (perfilInfo) {
+        perfilInfo.innerHTML = '<div style="color:#dc3545;padding:12px;background:#f8d7da;border-radius:8px;">⚠️ Erro ao carregar perfil: ' + err.message + '</div>';
+      }
     }
   }
 }
@@ -329,6 +335,7 @@ function removerFoto() {
 // ═══════════════════════════════════════════════
 
 async function salvarPerfil() {
+  console.log('📝 salvarPerfil iniciado...');
   // Retorna undefined (não null) para campos vazios — assim o backend NÃO sobrescreve
   const get = (id) => { const el = document.getElementById(id); const v = el?.value?.trim(); return v || undefined; };
   const getCheck = (id) => { const el = document.getElementById(id); return el ? el.checked : undefined; };
@@ -377,9 +384,15 @@ async function salvarPerfil() {
     if (fotoHidden) fotoHidden.dataset.alterada = '0';
   }
 
+  // Desabilita botão durante o save
+  const saveBtn = document.querySelector('button[onclick="salvarPerfil()"]');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Salvando...'; }
+
   try {
+    console.log('📤 Enviando dados para /api/perfil:', Object.keys(dados).filter(k => dados[k] !== undefined));
     const result = await API.perfil.atualizar(dados);
-    showAlert('profileAlert', '✅ Perfil salvo com sucesso!' + (result.perfil_completo ? ' Perfil completo!' : ''), 'success');
+    console.log('✅ Resposta do servidor:', result);
+    showAlert('perfilAlert', '✅ Perfil salvo com sucesso!' + (result.perfil_completo ? ' Perfil completo!' : ''), 'success');
 
     // Atualiza progresso
     const progressBar = document.getElementById('profileProgress');
@@ -417,7 +430,11 @@ async function salvarPerfil() {
     } catch (e) { /* ignora erro de recarga */ }
 
   } catch (err) {
-    showAlert('profileAlert', err.message);
+    console.error('❌ Erro ao salvar perfil:', err);
+    showAlert('perfilAlert', '❌ Erro ao salvar: ' + err.message);
+  } finally {
+    // Reabilita botão
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Salvar Todas as Informações'; }
   }
 }
 
@@ -478,13 +495,21 @@ async function initAdmin() {
 async function loadAdminStats() {
   try {
     const stats = await API.admin.stats();
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    console.log('📊 Stats recebidas:', stats);
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '—'; };
     set('statTotal', stats.total_membros);
-    set('statAtivos', stats.ativos);
+    set('statMembros', stats.ativos);
     set('statAdmins', stats.admins);
-    set('statHoje', stats.logins_hoje);
-    set('statPendentes', stats.perfil_incompleto);
-  } catch (err) { console.error(err); }
+    set('statAcessos', stats.logins_hoje);
+  } catch (err) {
+    console.error('❌ Erro ao carregar stats:', err);
+    // Mostra erro nas stats em vez de deixar "—"
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('statTotal', '0');
+    set('statMembros', '0');
+    set('statAdmins', '0');
+    set('statAcessos', '0');
+  }
 }
 
 async function loadAdminUsers(busca = '') {

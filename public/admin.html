@@ -185,6 +185,8 @@
       <button class="tab" onclick="switchTab('aniversariantes', this)">🎂 Aniversariantes</button>
       <button class="tab" onclick="switchTab('liderancas', this)">✝️ Lideranças</button>
       <button class="tab" onclick="switchTab('audit', this)">📋 Auditoria</button>
+      <button class="tab" onclick="switchTab('conteudo', this)">📝 Conteúdo</button>
+      <button class="tab" onclick="switchTab('config', this)">⚙️ Configurações</button>
     </div>
 
     <!-- USUÁRIOS -->
@@ -359,6 +361,111 @@
       <div id="liderAlert" style="margin-top:12px;"></div>
     </div>
   </div>
+
+    <!-- CONTEÚDO DO SITE -->
+    <div class="tab-content" id="tab-conteudo">
+      <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">📝 Conteúdo do Site</h3>
+      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
+        Edite o conteúdo exibido para os membros. As alterações são salvas no banco de dados e refletem imediatamente.
+      </p>
+
+      <!-- Sub-tabs de conteúdo -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+        <button class="chip active" onclick="switchConteudoTab(this,'cultos')">church Cultos</button>
+        <button class="chip" onclick="switchConteudoTab(this,'eventos')">📅 Eventos</button>
+        <button class="chip" onclick="switchConteudoTab(this,'avisos')">📢 Avisos</button>
+        <button class="chip" onclick="switchConteudoTab(this,'devocionais')">✨ Devocionais</button>
+        <button class="chip" onclick="switchConteudoTab(this,'estudos')">📖 Estudos</button>
+        <button class="chip" onclick="switchConteudoTab(this,'escalas')">📋 Escalas</button>
+      </div>
+
+      <!-- Painel de edição: CULTOS -->
+      <div id="conteudoPanel-cultos" class="conteudo-panel">
+        <h4>Horários de Culto</h4>
+        <div id="cultosList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <button onclick="addCulto()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Culto</button>
+        <button onclick="salvarConteudo('cultos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Cultos</button>
+      </div>
+
+      <!-- Painel: EVENTOS -->
+      <div id="conteudoPanel-eventos" class="conteudo-panel" style="display:none;">
+        <h4>Eventos Próximos</h4>
+        <div id="eventosList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <button onclick="addEvento()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Evento</button>
+        <button onclick="salvarConteudo('eventos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Eventos</button>
+      </div>
+
+      <!-- Painel: AVISOS -->
+      <div id="conteudoPanel-avisos" class="conteudo-panel" style="display:none;">
+        <h4>Avisos e Comunicados</h4>
+        <div id="avisosList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <button onclick="addAviso()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Aviso</button>
+        <button onclick="salvarConteudo('avisos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Avisos</button>
+      </div>
+
+      <!-- Painel: DEVOCIONAIS -->
+      <div id="conteudoPanel-devocionais" class="conteudo-panel" style="display:none;">
+        <h4>Devocionais</h4>
+        <div id="devocionaisList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <button onclick="addDevocional()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Devocional</button>
+        <button onclick="salvarConteudo('devocionais')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Devocionais</button>
+      </div>
+
+      <!-- Painel: ESTUDOS -->
+      <div id="conteudoPanel-estudos" class="conteudo-panel" style="display:none;">
+        <h4>Estudos Bíblicos</h4>
+        <div id="estudosList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <button onclick="addEstudo()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Estudo</button>
+        <button onclick="salvarConteudo('estudos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Estudos</button>
+      </div>
+
+      <!-- Painel: ESCALAS -->
+      <div id="conteudoPanel-escalas" class="conteudo-panel" style="display:none;">
+        <h4>Escala de Serviços</h4>
+        <div id="escalasList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        <button onclick="addEscala()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Escala</button>
+        <button onclick="salvarConteudo('escalas')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Escalas</button>
+      </div>
+
+      <div id="conteudoAlert" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- CONFIGURAÇÕES DA IGREJA -->
+    <div class="tab-content" id="tab-config">
+      <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">⚙️ Configurações da Igreja</h3>
+      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
+        Estes dados aparecem no site público e no rodapé.
+      </p>
+
+      <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:24px;">
+        <div class="form-group">
+          <label>Horário de Atendimento</label>
+          <input type="text" id="cfgHorarioAtendimento" placeholder="Ex: Segunda a Sexta: 08h às 12h e 14h às 18h" />
+        </div>
+        <div class="form-group">
+          <label>Endereço da Igreja</label>
+          <input type="text" id="cfgEndereco" placeholder="R. Felipe dos Santos, 461 - Centro, Betim - MG" />
+        </div>
+        <div class="form-group">
+          <label>CEP</label>
+          <input type="text" id="cfgCep" placeholder="32600-126" />
+        </div>
+        <div class="form-group">
+          <label>Telefone da Igreja</label>
+          <input type="text" id="cfgTelefone" placeholder="(31) 0000-0000" />
+        </div>
+        <div class="form-group">
+          <label>E-mail de Contato</label>
+          <input type="text" id="cfgEmail" placeholder="contato@missaoreviver.com.br" />
+        </div>
+        <div class="form-group">
+          <label>Chave PIX</label>
+          <input type="text" id="cfgPix" placeholder="missaoreviver@igreja.com.br" />
+        </div>
+        <button onclick="salvarConfig()" class="btn btn-primary" style="width:auto;padding:14px 40px;">💾 Salvar Configurações</button>
+        <div id="configAlert" style="margin-top:16px;"></div>
+      </div>
+    </div>
 
   <script src="js/api.js"></script>
   <script src="js/auth-frontend.js"></script>
@@ -642,27 +749,51 @@
     }
 
     async function salvarEdicaoMembro(userId) {
-      const dados = {
-        nome_completo: document.getElementById('editMNome')?.value?.trim() || null,
-        telefone: document.getElementById('editMTelefone')?.value?.trim() || null,
-        data_nascimento: document.getElementById('editMDataNasc')?.value || undefined,
-        genero: document.getElementById('editMGenero')?.value || null,
-        cpf: document.getElementById('editMCPF')?.value?.trim() || null,
-        estado_civil: document.getElementById('editMEstadoCivil')?.value || null,
-        endereco_cidade: document.getElementById('editMCidade')?.value?.trim() || null,
-        endereco_estado: document.getElementById('editMEstado')?.value?.trim()?.toUpperCase() || null,
-        ministerio: document.getElementById('editMMinisterio')?.value?.trim() || null,
-        funcao_igreja: document.getElementById('editMFuncao')?.value?.trim() || null,
-        data_conversao: document.getElementById('editMConversao')?.value || undefined,
-        data_batismo: document.getElementById('editMBatismo')?.value || undefined,
-        nome_conjuge: document.getElementById('editMConjuge')?.value?.trim() || null,
-        emergencia_nome: document.getElementById('editMEmergencia')?.value?.trim() || null,
-        emergencia_telefone: document.getElementById('editMEmergenciaTel')?.value?.trim() || null,
-        instagram: document.getElementById('editMInstagram')?.value?.trim() || null,
-        participar_aniversarios: document.getElementById('editMAniv')?.checked ?? true,
-        role: document.getElementById('editMRole')?.value || 'membro',
-        status: document.getElementById('editMStatus')?.value || 'ativo',
+      // Usa || undefined para NÃO sobrescrever campos vazios no backend
+      const dados = {};
+      const collect = (id, key) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const v = el.value?.trim();
+        if (v) dados[key] = v;  // só envia se tem valor
       };
+      const collectDate = (id, key) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const v = el.value;
+        if (v) dados[key] = v;
+      };
+      const collectSelect = (id, key) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const v = el.value;
+        if (v) dados[key] = v;
+      };
+
+      collect('editMNome', 'nome_completo');
+      collect('editMTelefone', 'telefone');
+      collectDate('editMDataNasc', 'data_nascimento');
+      collectSelect('editMGenero', 'genero');
+      collect('editMCPF', 'cpf');
+      collectSelect('editMEstadoCivil', 'estado_civil');
+      collect('editMCidade', 'endereco_cidade');
+      collect('editMEstado', 'endereco_estado');
+      collect('editMMinisterio', 'ministerio');
+      collect('editMFuncao', 'funcao_igreja');
+      collectDate('editMConversao', 'data_conversao');
+      collectDate('editMBatismo', 'data_batismo');
+      collect('editMConjuge', 'nome_conjuge');
+      collect('editMEmergencia', 'emergencia_nome');
+      collect('editMEmergenciaTel', 'emergencia_telefone');
+      collect('editMInstagram', 'instagram');
+
+      // Checkbox e selects que sempre devem ser enviados
+      const anivEl = document.getElementById('editMAniv');
+      if (anivEl) dados.participar_aniversarios = anivEl.checked;
+      const roleEl = document.getElementById('editMRole');
+      if (roleEl) dados.role = roleEl.value;
+      const statusEl = document.getElementById('editMStatus');
+      if (statusEl) dados.status = statusEl.value;
 
       try {
         await API.admin.atualizarUsuario(userId, dados);
@@ -772,7 +903,7 @@
                 : `<div class="birthday-avatar">${iniciais}</div>`}
               <div class="b-info">
                 <div class="b-name">${p.nome_completo}</div>
-                <div class="b-date">Dia ${dia} • ${(p.data_nascimento || '').split('-')[0] ? new Date().getFullYear() - (p.data_nascimento || '').split('-')[0] : '—'} anos</div>
+                <div class="b-date">Dia ${dia} • ${p.idade != null ? p.idade + ' anos' : '—'}</div>
               </div>
               <div style="display:flex;gap:8px;">
                 ${telefone ? `<a href="${waLink}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none;">📱 WhatsApp</a>` : '<span style="color:var(--gray-text);font-size:0.8rem;">Sem telefone</span>'}
@@ -966,6 +1097,315 @@
     function closeModal(id) {
       document.getElementById(id).classList.remove('show');
     }
+
+    // ═══════════════════════════════════════════
+    //  GESTÃO DE CONTEÚDO DO SITE
+    // ═══════════════════════════════════════════
+
+    let conteudoCache = {}; // cache local do conteúdo carregado
+
+    function switchConteudoTab(btn, secao) {
+      document.querySelectorAll('.chip').forEach(c => {
+        if (c.parentElement === btn.parentElement) c.classList.remove('active');
+      });
+      btn.classList.add('active');
+      document.querySelectorAll('.conteudo-panel').forEach(p => p.style.display = 'none');
+      const panel = document.getElementById('conteudoPanel-' + secao);
+      if (panel) panel.style.display = '';
+    }
+
+    async function carregarConteudoAdmin() {
+      try {
+        const data = await API.conteudo.listarTudo();
+        conteudoCache = data.conteudo || {};
+
+        // Renderiza cada seção
+        if (conteudoCache.cultos) renderCultosAdmin(conteudoCache.cultos.itens || []);
+        if (conteudoCache.eventos) renderEventosAdmin(conteudoCache.eventos.itens || []);
+        if (conteudoCache.avisos) renderAvisosAdmin(conteudoCache.avisos.itens || []);
+        if (conteudoCache.devocionais) renderDevocionaisAdmin(conteudoCache.devocionais.itens || []);
+        if (conteudoCache.estudos) renderEstudosAdmin(conteudoCache.estudos.itens || []);
+        if (conteudoCache.escalas) renderEscalasAdmin(conteudoCache.escalas.itens || []);
+
+        // Configurações
+        const cfg = conteudoCache.config_igreja || {};
+        const setCfg = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        setCfg('cfgHorarioAtendimento', cfg.horario_atendimento);
+        setCfg('cfgEndereco', cfg.endereco);
+        setCfg('cfgCep', cfg.cep);
+        setCfg('cfgTelefone', cfg.telefone_igreja);
+        setCfg('cfgEmail', cfg.email_igreja);
+        setCfg('cfgPix', cfg.pix_key);
+      } catch (err) {
+        console.error('Erro ao carregar conteúdo:', err);
+      }
+    }
+
+    // Helper para criar campo de formulário
+    function fieldInput(id, label, value, placeholder) {
+      return `<div class="form-group" style="margin-bottom:8px;"><label style="font-size:0.78rem;">${label}</label><input type="text" id="${id}" value="${(value || '').replace(/"/g, '&quot;')}" placeholder="${placeholder || ''}" style="padding:8px 12px;font-size:0.86rem;" /></div>`;
+    }
+
+    function fieldTextarea(id, label, value, placeholder) {
+      return `<div class="form-group" style="margin-bottom:8px;"><label style="font-size:0.78rem;">${label}</label><textarea id="${id}" placeholder="${placeholder || ''}" style="padding:8px 12px;font-size:0.86rem;min-height:50px;">${value || ''}</textarea></div>`;
+    }
+
+    function removeBtn(idx) {
+      return `<button onclick="this.parentElement.remove()" class="btn btn-danger btn-sm" style="width:auto;margin-top:4px;">🗑️ Remover</button>`;
+    }
+
+    // ── Cultos ──
+    function renderCultosAdmin(itens) {
+      const el = document.getElementById('cultosList');
+      if (!el) return;
+      el.innerHTML = itens.map((c, i) => `
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
+          ${fieldInput('culto_dia_' + i, 'Dia', c.dia, 'Domingo')}
+          ${fieldInput('culto_hora_' + i, 'Horário', c.hora, '19:30')}
+          ${fieldInput('culto_nome_' + i, 'Nome', c.nome, 'Culto de Adoração')}
+          ${fieldTextarea('culto_desc_' + i, 'Descrição', c.desc, 'Descrição do culto')}
+          ${removeBtn(i)}
+        </div>
+      `).join('');
+    }
+
+    function addCulto() {
+      const el = document.getElementById('cultosList');
+      const i = el.children.length;
+      const div = document.createElement('div');
+      div.className = 'auth-card';
+      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
+      div.innerHTML = fieldInput('culto_dia_' + i, 'Dia', '', 'Domingo') +
+        fieldInput('culto_hora_' + i, 'Horário', '', '19:30') +
+        fieldInput('culto_nome_' + i, 'Nome', '', 'Nome do culto') +
+        fieldTextarea('culto_desc_' + i, 'Descrição', '', 'Descrição') +
+        removeBtn(i);
+      el.appendChild(div);
+    }
+
+    // ── Eventos ──
+    function renderEventosAdmin(itens) {
+      const el = document.getElementById('eventosList');
+      if (!el) return;
+      el.innerHTML = itens.map((c, i) => `
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
+          ${fieldInput('evento_dia_' + i, 'Dia', c.dia, '5')}
+          ${fieldInput('evento_mes_' + i, 'Mês', c.mes, 'JUL')}
+          ${fieldInput('evento_nome_' + i, 'Nome', c.nome, 'Nome do evento')}
+          ${fieldTextarea('evento_desc_' + i, 'Descrição', c.desc, 'Descrição')}
+          ${fieldInput('evento_hora_' + i, 'Horário/Local', c.hora, '19:00h · Templo')}
+          ${removeBtn(i)}
+        </div>
+      `).join('');
+    }
+
+    function addEvento() {
+      const el = document.getElementById('eventosList');
+      const i = el.children.length;
+      const div = document.createElement('div');
+      div.className = 'auth-card';
+      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
+      div.innerHTML = fieldInput('evento_dia_' + i, 'Dia', '', '5') +
+        fieldInput('evento_mes_' + i, 'Mês', '', 'JUL') +
+        fieldInput('evento_nome_' + i, 'Nome', '', 'Nome') +
+        fieldTextarea('evento_desc_' + i, 'Descrição', '', 'Descrição') +
+        fieldInput('evento_hora_' + i, 'Horário', '', '19:00h') +
+        removeBtn(i);
+      el.appendChild(div);
+    }
+
+    // ── Avisos ──
+    function renderAvisosAdmin(itens) {
+      const el = document.getElementById('avisosList');
+      if (!el) return;
+      el.innerHTML = itens.map((c, i) => `
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
+          ${fieldInput('aviso_titulo_' + i, 'Título', c.titulo, 'Título do aviso')}
+          ${fieldTextarea('aviso_texto_' + i, 'Texto', c.texto, 'Texto do aviso')}
+          ${fieldInput('aviso_data_' + i, 'Data', c.data, '01/07/2026')}
+          ${fieldInput('aviso_tipo_' + i, 'Tipo', c.tipo, 'geral/evento/urgente/espiritual')}
+          ${removeBtn(i)}
+        </div>
+      `).join('');
+    }
+
+    function addAviso() {
+      const el = document.getElementById('avisosList');
+      const i = el.children.length;
+      const div = document.createElement('div');
+      div.className = 'auth-card';
+      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
+      div.innerHTML = fieldInput('aviso_titulo_' + i, 'Título', '', 'Título') +
+        fieldTextarea('aviso_texto_' + i, 'Texto', '', 'Texto') +
+        fieldInput('aviso_data_' + i, 'Data', '', '01/07/2026') +
+        fieldInput('aviso_tipo_' + i, 'Tipo', '', 'geral') +
+        removeBtn(i);
+      el.appendChild(div);
+    }
+
+    // ── Devocionais ──
+    function renderDevocionaisAdmin(itens) {
+      const el = document.getElementById('devocionaisList');
+      if (!el) return;
+      el.innerHTML = itens.map((c, i) => `
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
+          ${fieldInput('dev_data_' + i, 'Data', c.data, 'Sexta, 5 de Julho')}
+          ${fieldInput('dev_titulo_' + i, 'Título', c.titulo, 'Título')}
+          ${fieldInput('dev_verso_' + i, 'Versículo', c.verso, 'Versículo')}
+          ${fieldInput('dev_ref_' + i, 'Referência', c.ref, 'João 3:16')}
+          ${fieldTextarea('dev_texto_' + i, 'Texto', c.texto, 'Texto do devocional')}
+          ${removeBtn(i)}
+        </div>
+      `).join('');
+    }
+
+    function addDevocional() {
+      const el = document.getElementById('devocionaisList');
+      const i = el.children.length;
+      const div = document.createElement('div');
+      div.className = 'auth-card';
+      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
+      div.innerHTML = fieldInput('dev_data_' + i, 'Data', '', 'Data') +
+        fieldInput('dev_titulo_' + i, 'Título', '', 'Título') +
+        fieldInput('dev_verso_' + i, 'Versículo', '', 'Versículo') +
+        fieldInput('dev_ref_' + i, 'Referência', '', 'Ref') +
+        fieldTextarea('dev_texto_' + i, 'Texto', '', 'Texto') +
+        removeBtn(i);
+      el.appendChild(div);
+    }
+
+    // ── Estudos ──
+    function renderEstudosAdmin(itens) {
+      const el = document.getElementById('estudosList');
+      if (!el) return;
+      el.innerHTML = itens.map((c, i) => `
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
+          ${fieldInput('est_titulo_' + i, 'Título', c.titulo, 'Título')}
+          ${fieldInput('est_autor_' + i, 'Autor', c.autor, 'Pr. Responsável')}
+          ${fieldInput('est_data_' + i, 'Data', c.data, '28/06/2026')}
+          ${fieldInput('est_duracao_' + i, 'Duração', c.duracao, '45 min')}
+          ${fieldInput('est_tipo_' + i, 'Tipo', c.tipo, 'Vídeo + PDF')}
+          ${fieldTextarea('est_resumo_' + i, 'Resumo', c.resumo, 'Resumo')}
+          ${removeBtn(i)}
+        </div>
+      `).join('');
+    }
+
+    function addEstudo() {
+      const el = document.getElementById('estudosList');
+      const i = el.children.length;
+      const div = document.createElement('div');
+      div.className = 'auth-card';
+      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
+      div.innerHTML = fieldInput('est_titulo_' + i, 'Título', '', 'Título') +
+        fieldInput('est_autor_' + i, 'Autor', '', 'Autor') +
+        fieldInput('est_data_' + i, 'Data', '', 'Data') +
+        fieldInput('est_duracao_' + i, 'Duração', '', '45 min') +
+        fieldInput('est_tipo_' + i, 'Tipo', '', 'Vídeo') +
+        fieldTextarea('est_resumo_' + i, 'Resumo', '', 'Resumo') +
+        removeBtn(i);
+      el.appendChild(div);
+    }
+
+    // ── Escalas ──
+    function renderEscalasAdmin(itens) {
+      const el = document.getElementById('escalasList');
+      if (!el) return;
+      el.innerHTML = itens.map((c, i) => `
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
+          ${fieldInput('esc_data_' + i, 'Data', c.data, '07/07')}
+          ${fieldInput('esc_culto_' + i, 'Culto', c.culto, 'Culto de Adoração')}
+          ${fieldInput('esc_funcao_' + i, 'Função', c.funcao, 'Louvor')}
+          ${fieldInput('esc_resp_' + i, 'Responsável', c.responsavel, 'Nome')}
+          ${removeBtn(i)}
+        </div>
+      `).join('');
+    }
+
+    function addEscala() {
+      const el = document.getElementById('escalasList');
+      const i = el.children.length;
+      const div = document.createElement('div');
+      div.className = 'auth-card';
+      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
+      div.innerHTML = fieldInput('esc_data_' + i, 'Data', '', '07/07') +
+        fieldInput('esc_culto_' + i, 'Culto', '', 'Culto') +
+        fieldInput('esc_funcao_' + i, 'Função', '', 'Função') +
+        fieldInput('esc_resp_' + i, 'Responsável', '', 'Nome') +
+        removeBtn(i);
+      el.appendChild(div);
+    }
+
+    // ── Salvar conteúdo ──
+    async function salvarConteudo(secao) {
+      const alertEl = document.getElementById('conteudoAlert');
+      const prefix = { cultos: 'culto', eventos: 'evento', avisos: 'aviso', devocionais: 'dev', estudos: 'est', escalas: 'esc' }[secao];
+      const listId = { cultos: 'cultosList', eventos: 'eventosList', avisos: 'avisosList', devocionais: 'devocionaisList', estudos: 'estudosList', escalas: 'escalasList' }[secao];
+
+      const container = document.getElementById(listId);
+      if (!container) return;
+
+      const itens = [];
+      const fieldsMap = {
+        cultos: ['dia', 'hora', 'nome', 'desc'],
+        eventos: ['dia', 'mes', 'nome', 'desc', 'hora'],
+        avisos: ['titulo', 'texto', 'data', 'tipo'],
+        devocionais: ['data', 'titulo', 'verso', 'ref', 'texto'],
+        estudos: ['titulo', 'autor', 'data', 'duracao', 'tipo', 'resumo'],
+        escalas: ['data', 'culto', 'funcao', 'responsavel'],
+      };
+
+      const fieldKeys = fieldsMap[secao];
+      const keyMap = { responsavel: 'resp', funcao: 'funcao', culto: 'culto' };
+
+      for (let i = 0; i < container.children.length; i++) {
+        const item = {};
+        let hasContent = false;
+        fieldKeys.forEach(key => {
+          const fieldKey = keyMap[key] || key;
+          const el = document.getElementById(prefix + '_' + fieldKey + '_' + i);
+          if (el && el.value.trim()) {
+            item[key] = el.value.trim();
+            hasContent = true;
+          }
+        });
+        if (hasContent) itens.push(item);
+      }
+
+      try {
+        await API.conteudo.atualizar(secao, { itens });
+        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ ' + secao + ' salvo com sucesso!</div>';
+        setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
+      } catch (err) {
+        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+      }
+    }
+
+    // ── Salvar configurações da igreja ──
+    async function salvarConfig() {
+      const cfg = {
+        horario_atendimento: document.getElementById('cfgHorarioAtendimento')?.value?.trim() || '',
+        endereco: document.getElementById('cfgEndereco')?.value?.trim() || '',
+        cep: document.getElementById('cfgCep')?.value?.trim() || '',
+        telefone_igreja: document.getElementById('cfgTelefone')?.value?.trim() || '',
+        email_igreja: document.getElementById('cfgEmail')?.value?.trim() || '',
+        pix_key: document.getElementById('cfgPix')?.value?.trim() || '',
+      };
+
+      const alertEl = document.getElementById('configAlert');
+      try {
+        await API.conteudo.atualizar('config_igreja', cfg);
+        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ Configurações salvas! O site público será atualizado.</div>';
+        setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 4000);
+      } catch (err) {
+        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+      }
+    }
+
+    // ── Override do initAdmin para também carregar conteúdo ──
+    const originalInitAdmin = window.initAdmin || initAdmin;
+    // initAdmin já é chamado no final, então carregamos conteúdo após um delay
+    setTimeout(() => { carregarConteudoAdmin(); }, 1500);
 
     // ── Start ──
     initAdmin();
