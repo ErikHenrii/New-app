@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro — Missão Reviver</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="header-logo">⛪ Missão <span>Reviver</span></a>
+      <div class="header-acoes" id="header-acoes"></div>
+    </div>
+  </header>
+
+  <div class="container container-estreito" style="padding-top: 60px;">
+    <h2 class="secao-titulo">Cadastre-se</h2>
+    <p class="secao-subtitulo">Faça parte da Comunidade Cristã Missão Reviver</p>
+
+    <div id="alerta-container"></div>
+
+    <form id="form-registro">
+      <div class="form-grupo">
+        <label for="nome">Nome completo *</label>
+        <input type="text" id="nome" name="nome" required placeholder="Seu nome completo">
+      </div>
+      <div class="form-grupo">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required placeholder="seu@email.com">
+      </div>
+      <div class="form-grupo">
+        <label for="senha">Senha *</label>
+        <input type="password" id="senha" name="senha" required minlength="6" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="form-grupo">
+        <label for="data_nascimento">Data de nascimento</label>
+        <input type="date" id="data_nascimento" name="data_nascimento">
+      </div>
+      <div class="form-grupo">
+        <label for="telefone">Telefone</label>
+        <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000">
+      </div>
+      <button type="submit" class="btn btn-primario" style="width: 100%;" id="btn-cadastrar">Cadastrar</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px;">
+      Já tem conta? <a href="/login.html">Entrar</a>
+    </p>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script>
+    document.getElementById('form-registro').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-cadastrar');
+      const container = document.getElementById('alerta-container');
+
+      btn.disabled = true;
+      btn.textContent = 'Cadastrando...';
+
+      try {
+        const dados = {
+          nome: document.getElementById('nome').value,
+          email: document.getElementById('email').value,
+          senha: document.getElementById('senha').value,
+          data_nascimento: document.getElementById('data_nascimento').value || null,
+          telefone: document.getElementById('telefone').value || null,
+        };
+
+        const resp = await apiFetch('/auth/registro', {
+          method: 'POST',
+          body: JSON.stringify(dados),
+        });
+
+        setSessao(resp.token, resp.usuario);
+        mostrarAlerta(container, 'Cadastro realizado com sucesso!', 'sucesso');
+
+        setTimeout(() => {
+          window.location.href = '/perfil.html';
+        }, 800);
+      } catch (err) {
+        mostrarAlerta(container, err.message, 'erro');
+        btn.disabled = false;
+        btn.textContent = 'Cadastrar';
+      }
+    });
+  </script>
+</body>
+</html>

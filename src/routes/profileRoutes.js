@@ -1,119 +1,84 @@
 // ═══════════════════════════════════════════════════════════
-//  routes/profileRoutes.js — Perfil do membro logado
+//  profileRoutes.js — BUG #1: Edição de Perfil do Usuário
+//  Garante que PUT /api/perfil atualize os dados no banco
+//  e retorne status 200 com os dados novos.
 // ═══════════════════════════════════════════════════════════
 
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/database');
-const { authMiddleware } = require('../middleware/auth');
-const { hashSenha, verificarSenha } = require('../utils/crypto');
+const { getPool } = require('../db/init');
+const { exigeAuth } = require('../middleware/auth');
 
-// ── GET /api/perfil — Dados completos do membro logado ──
-router.get('/', authMiddleware, async (req, res, next) => {
+// ── GET /api/perfil — retorna dados do usuário logado ──
+router.get('/', exigeAuth, async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT * FROM membros WHERE id = $1`,
-      [req.user.id]
+    const pool = getPool();
+    const result = await pool.query(
+      `SELECT id, nome, email, role, data_nascimento, telefone, endereco, cidade, estado, foto_url
+       FROM usuarios WHERE id = $1`,
+      [req.usuario.id]
     );
-    if (rows.length === 0) return res.status(404).json({ erro: 'Perfil não encontrado' });
 
-    const perfil = rows[0];
-    // Remove a senha do retorno
-    delete perfil.senha_hash;
-
-    res.json({ perfil });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ── PUT /api/perfil — Atualiza os dados do perfil ──
-router.put('/', authMiddleware, async (req, res, next) => {
-  try {
-    const camposPermitidos = [
-      'nome_completo', 'telefone', 'data_nascimento', 'genero', 'cpf', 'estado_civil',
-      'endereco_rua', 'endereco_numero', 'endereco_bairro', 'endereco_cidade', 'endereco_estado', 'endereco_cep',
-      'nome_conjuge', 'data_casamento', 'filhos', 'qtd_filhos',
-      'data_conversao', 'data_batismo', 'ministerio', 'funcao_igreja', 'igreja_anterior', 'dons_espirituais',
-      'emergencia_nome', 'emergencia_telefone', 'emergencia_parentesco',
-      'instagram', 'facebook',
-      'notificar_email', 'notificar_whatsapp', 'participar_aniversarios',
-      'testemunho', 'foto_perfil',
-    ];
-
-    // Constrói SET dinâmico apenas com campos enviados
-    const sets = [];
-    const values = [];
-    let idx = 1;
-
-    for (const campo of camposPermitidos) {
-      if (req.body[campo] !== undefined) {
-        let valor = req.body[campo];
-        if (typeof valor === 'string') valor = valor.trim() || null;
-        sets.push(`${campo} = $${idx}`);
-        values.push(valor);
-        idx++;
-      }
+    if (result.rows.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
     }
 
-    if (sets.length === 0) return res.status(400).json({ erro: 'Nenhum campo para atualizar' });
-
-    // Verifica perfil completo
-    const camposObrigatorios = ['nome_completo', 'telefone', 'data_nascimento', 'endereco_cidade'];
-    const { rows: atual } = await pool.query(
-      `SELECT ${camposObrigatorios.join(', ')} FROM membros WHERE id = $1`,
-      [req.user.id]
-    );
-    const merged = { ...atual[0], ...req.body };
-    const perfilCompleto = camposObrigatorios.every(c => merged[c] && String(merged[c]).trim());
-
-    sets.push(`perfil_completo = $${idx}`);
-    values.push(perfilCompleto);
-    idx++;
-    sets.push(`atualizado_em = NOW()`);
-
-    values.push(req.user.id);
-
-    await pool.query(
-      `UPDATE membros SET ${sets.join(', ')} WHERE id = $${idx}`,
-      values
-    );
-
-    await pool.query(
-      'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
-      [req.user.id, 'PERFIL_ATUALIZADO', 'Membro atualizou seu perfil']
-    );
-
-    res.json({ sucesso: true, mensagem: 'Perfil atualizado com sucesso', perfil_completo: perfilCompleto });
+    return res.status(200).json(result.rows[0]);
   } catch (err) {
-    next(err);
+    console.error('Erro ao buscar perfil:', err);
+    return res.status(500).json({ erro: 'Erro ao buscar perfil.' });
   }
 });
 
-// ── POST /api/perfil/alterar-senha ──
-router.post('/alterar-senha', authMiddleware, async (req, res, next) => {
+// ── PUT /api/perfil — BUG #1 CORRIGIDO: atualiza perfil no banco ──
+router.put('/', exigeAuth, async (req, res) => {
   try {
-    const { senha_atual, nova_senha } = req.body;
-    if (!senha_atual || !nova_senha) return res.status(400).json({ erro: 'Senha atual e nova senha são obrigatórias' });
-    if (nova_senha.length < 6) return res.status(400).json({ erro: 'Nova senha deve ter ao menos 6 caracteres' });
+    const { nome, data_nascimento, telefone, endereco, cidade, estado, foto_url } = req.body;
 
-    const { rows } = await pool.query('SELECT senha_hash FROM membros WHERE id = $1', [req.user.id]);
-    if (rows.length === 0) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    // Validação: nome é obrigatório
+    if (!nome || !nome.trim()) {
+      return res.status(400).json({ erro: 'O campo nome é obrigatório.' });
+    }
 
-    const senhaOk = await verificarSenha(senha_atual, rows[0].senha_hash);
-    if (!senhaOk) return res.status(401).json({ erro: 'Senha atual incorreta' });
-
-    const novoHash = await hashSenha(nova_senha);
-    await pool.query('UPDATE membros SET senha_hash = $1, atualizado_em = NOW() WHERE id = $2', [novoHash, req.user.id]);
-
-    await pool.query(
-      'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
-      [req.user.id, 'SENHA_ALTERADA', 'Membro alterou sua senha']
+    const pool = getPool();
+    const result = await pool.query(
+      `UPDATE usuarios
+       SET nome          = $1,
+           data_nascimento = $2,
+           telefone      = $3,
+           endereco      = $4,
+           cidade        = $5,
+           estado        = $6,
+           foto_url      = $7,
+           updated_at    = NOW()
+       WHERE id = $8
+       RETURNING id, nome, email, role, data_nascimento, telefone, endereco, cidade, estado, foto_url;`,
+      [
+        nome.trim(),
+        data_nascimento || null,
+        telefone ? telefone.trim() : null,
+        endereco ? endereco.trim() : null,
+        cidade ? cidade.trim() : null,
+        estado ? estado.trim() : null,
+        foto_url || null,
+        req.usuario.id,
+      ]
     );
 
-    res.json({ sucesso: true, mensagem: 'Senha alterada com sucesso' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+
+    const usuarioAtualizado = result.rows[0];
+
+    // Retorna status 200 com os dados atualizados
+    return res.status(200).json({
+      mensagem: 'Perfil atualizado com sucesso!',
+      usuario: usuarioAtualizado,
+    });
   } catch (err) {
-    next(err);
+    console.error('Erro ao atualizar perfil:', err);
+    return res.status(500).json({ erro: 'Erro ao atualizar perfil.' });
   }
 });
 

@@ -1,117 +1,96 @@
 // ═══════════════════════════════════════════════════════════
-//  routes/liderancaRoutes.js — CRUD de Lideranças da Igreja
+//  liderancaRoutes.js — Gestão de lideranças da igreja
 // ═══════════════════════════════════════════════════════════
 
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
-const pool = require('../config/database');
-const { authMiddleware } = require('../middleware/auth');
-const adminOnly = require('../middleware/adminOnly');
+const { getPool } = require('../db/init');
+const { exigeAuth, exigeAdmin } = require('../middleware/auth');
 
-// ── GET /api/liderancas — Lista todas ativas (público para membros) ──
-router.get('/', async (req, res, next) => {
+// ── GET /api/liderancas — lista lideranças (público) ──
+router.get('/', async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT id, nome, cargo, descricao, telefone, email, foto, ordem, ativo
-       FROM liderancas WHERE ativo = true ORDER BY ordem ASC, nome ASC`
+    const pool = getPool();
+    const result = await pool.query(
+      `SELECT id, nome, cargo, descricao, foto_url, ordem
+       FROM liderancas
+       WHERE ativo = TRUE
+       ORDER BY ordem ASC, nome ASC;`
     );
-    res.json({ liderancas: rows });
+
+    return res.status(200).json(result.rows);
   } catch (err) {
-    next(err);
+    console.error('Erro ao listar lideranças:', err);
+    return res.status(200).json([]);
   }
 });
 
-// ── GET /api/liderancas/todas — Lista todas incluindo inativas (admin) ──
-router.get('/todas', authMiddleware, adminOnly, async (req, res, next) => {
+// ── POST /api/liderancas — cria nova liderança (admin) ──
+router.post('/', exigeAuth, exigeAdmin, async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT * FROM liderancas ORDER BY ativo DESC, ordem ASC, nome ASC`
-    );
-    res.json({ liderancas: rows });
-  } catch (err) {
-    next(err);
-  }
-});
+    const { nome, cargo, descricao, foto_url, ordem } = req.body;
 
-// ── POST /api/liderancas — Admin cria nova liderança ──
-router.post('/', authMiddleware, adminOnly, async (req, res, next) => {
-  try {
-    const { nome, cargo, descricao, telefone, email, foto, ordem } = req.body;
-    if (!nome || !cargo) return res.status(400).json({ erro: 'Nome e cargo são obrigatórios' });
-
-    const id = uuidv4();
-    await pool.query(`
-      INSERT INTO liderancas (id, nome, cargo, descricao, telefone, email, foto, ordem)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `, [id, nome.trim(), cargo.trim(), descricao || null, telefone || null,
-         (email || '').toLowerCase().trim() || null, foto || null, ordem || 0]);
-
-    await pool.query(
-      'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
-      [req.user.id, 'LIDERANCA_CRIADA', `Cargo: ${cargo} - ${nome}`]
-    );
-
-    res.status(201).json({ sucesso: true, id, mensagem: 'Liderança criada com sucesso' });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ── PUT /api/liderancas/:id — Admin atualiza liderança ──
-router.put('/:id', authMiddleware, adminOnly, async (req, res, next) => {
-  try {
-    const camposPermitidos = ['nome', 'cargo', 'descricao', 'telefone', 'email', 'foto', 'ordem', 'ativo'];
-    const sets = [];
-    const values = [];
-    let idx = 1;
-
-    for (const campo of camposPermitidos) {
-      if (req.body[campo] !== undefined) {
-        let valor = req.body[campo];
-        if (typeof valor === 'string') valor = valor.trim() || null;
-        sets.push(`${campo} = $${idx}`);
-        values.push(valor);
-        idx++;
-      }
+    if (!nome || !cargo) {
+      return res.status(400).json({ erro: 'Nome e cargo são obrigatórios.' });
     }
 
-    if (sets.length === 0) return res.status(400).json({ erro: 'Nenhum campo para atualizar' });
-    sets.push(`atualizado_em = NOW()`);
-    values.push(req.params.id);
-
+    const pool = getPool();
     const result = await pool.query(
-      `UPDATE liderancas SET ${sets.join(', ')} WHERE id = $${idx}`,
-      values
+      `INSERT INTO liderancas (nome, cargo, descricao, foto_url, ordem)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, nome, cargo, descricao, foto_url, ordem;`,
+      [nome.trim(), cargo.trim(), descricao || null, foto_url || null, ordem || 0]
     );
 
-    if (result.rowCount === 0) return res.status(404).json({ erro: 'Liderança não encontrada' });
-
-    await pool.query(
-      'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
-      [req.user.id, 'LIDERANCA_ATUALIZADA', `ID: ${req.params.id}`]
-    );
-
-    res.json({ sucesso: true, mensagem: 'Liderança atualizada com sucesso' });
+    return res.status(201).json(result.rows[0]);
   } catch (err) {
-    next(err);
+    console.error('Erro ao criar liderança:', err);
+    return res.status(500).json({ erro: 'Erro ao criar liderança.' });
   }
 });
 
-// ── DELETE /api/liderancas/:id — Admin remove liderança ──
-router.delete('/:id', authMiddleware, adminOnly, async (req, res, next) => {
+// ── PUT /api/liderancas/:id — atualiza liderança (admin) ──
+router.put('/:id', exigeAuth, exigeAdmin, async (req, res) => {
   try {
-    const result = await pool.query('DELETE FROM liderancas WHERE id = $1', [req.params.id]);
-    if (result.rowCount === 0) return res.status(404).json({ erro: 'Liderança não encontrada' });
+    const { id } = req.params;
+    const { nome, cargo, descricao, foto_url, ordem } = req.body;
 
-    await pool.query(
-      'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
-      [req.user.id, 'LIDERANCA_REMOVIDA', `ID: ${req.params.id}`]
+    const pool = getPool();
+    const result = await pool.query(
+      `UPDATE liderancas
+       SET nome = COALESCE($1, nome),
+           cargo = COALESCE($2, cargo),
+           descricao = COALESCE($3, descricao),
+           foto_url = COALESCE($4, foto_url),
+           ordem = COALESCE($5, ordem),
+           updated_at = NOW()
+       WHERE id = $6
+       RETURNING id, nome, cargo, descricao, foto_url, ordem;`,
+      [nome, cargo, descricao, foto_url, ordem, id]
     );
 
-    res.json({ sucesso: true, mensagem: 'Liderança removida com sucesso' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ erro: 'Liderança não encontrada.' });
+    }
+
+    return res.status(200).json(result.rows[0]);
   } catch (err) {
-    next(err);
+    console.error('Erro ao atualizar liderança:', err);
+    return res.status(500).json({ erro: 'Erro ao atualizar liderança.' });
+  }
+});
+
+// ── DELETE /api/liderancas/:id — remove liderança (admin) ──
+router.delete('/:id', exigeAuth, exigeAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pool = getPool();
+    await pool.query('UPDATE liderancas SET ativo = FALSE WHERE id = $1;', [id]);
+
+    return res.status(200).json({ mensagem: 'Liderança removida.' });
+  } catch (err) {
+    console.error('Erro ao remover liderança:', err);
+    return res.status(500).json({ erro: 'Erro ao remover liderança.' });
   }
 });
 

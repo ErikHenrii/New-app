@@ -1,645 +1,345 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Comunidade Cristã Missão Reviver — Compartilhando Vida em Betim, MG." />
-  <title>Comunidade Cristã Missão Reviver</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missão Reviver — Comunidade Cristã</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════
-       NAVBAR
-  ══════════════════════════════════════ -->
-  <nav>
-    <a href="#inicio" class="nav-logo">
-      <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/239526350_Gemini_Generated_Image_vbfcelvbfcelvbfc.png" alt="Logo Missão Reviver" />
-      <div class="nav-logo-text">
-        <span>Missão Reviver</span>
-        <span>Compartilhando Vida</span>
-      </div>
-    </a>
-
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#inicio">Início</a></li>
-      <li><a href="#sobre">Sobre</a></li>
-      <li><a href="#cultos">Cultos</a></li>
-      <li><a href="#ministerios">Ministérios</a></li>
-      <li><a href="#eventos">Eventos</a></li>
-      <li><a href="login.html" class="nav-member-area">🔒 Área do Membro</a></li>
-      <li><a href="#contato" class="nav-cta">Contato</a></li>
-    </ul>
-
-    <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
-    </div>
-  </nav>
-
-  <!-- ══════════════════════════════════════
-       HERO / INÍCIO
-  ══════════════════════════════════════ -->
-  <section id="inicio">
-    <video class="hero-video-bg" autoplay muted loop playsinline>
-      <source src="https://base44.app/api/apps/6a443242a10f3bc165c0860e/files/mp/public/6a443242a10f3bc165c0860e/4608929f2_a5842921a_crie_um_video_curto_para_rodar.mp4" type="video/mp4" />
-    </video>
-    <div class="hero-video-overlay"></div>
-    <div class="hero-glow"></div>
-    <div class="hero-content">
-      <div class="hero-badge">✦ Bem-vindo à nossa família</div>
-      <img
-        src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/239526350_Gemini_Generated_Image_vbfcelvbfcelvbfc.png"
-        alt="Logo Missão Reviver"
-        class="hero-logo"
-      />
-      <h1>Comunidade Cristã<br /><span>Missão Reviver</span></h1>
-      <p>
-        Uma comunidade fundada na Palavra de Deus, comprometida em transformar
-        vidas e compartilhar o amor de Cristo em Betim e ao mundo.
-      </p>
-      <div class="hero-actions">
-        <a href="#cultos" class="btn-primary">Ver Horários de Culto</a>
-        <a href="#sobre" class="btn-secondary">Conheça a Igreja</a>
-      </div>
-    </div>
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      <span>Rolar</span>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════
-       STATS STRIP
-  ══════════════════════════════════════ -->
-  <div class="stats-strip">
-    <div class="stat-item">
-      <span class="stat-number" data-target="7" data-suffix="">7</span>
-      <span class="stat-label">Anos de história</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-number" data-target="8" data-suffix="">8</span>
-      <span class="stat-label">Ministérios ativos</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-number" data-target="4" data-suffix="">4</span>
-      <span class="stat-label">Cultos semanais</span>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════
-       SOBRE NÓS
-  ══════════════════════════════════════ -->
-  <section id="sobre">
-    <div class="sobre-grid">
-      <div class="sobre-visual">
-        <div class="sobre-card-main">
-          <img
-            src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/239526350_Gemini_Generated_Image_vbfcelvbfcelvbfc.png"
-            alt="Logo Missão Reviver"
-          />
-          <h3>Comunidade Cristã Missão Reviver</h3>
-          <p>Betim — MG</p>
-        </div>
-        <div class="sobre-badge-float">🕊️ Fundada em Cristo</div>
-      </div>
-
-      <div class="sobre-text-content">
-        <div>
-          <span class="section-tag">Quem somos</span>
-          <h2 class="section-title">Uma Igreja que<br /><span>Compartilha Vida</span></h2>
-          <p class="section-subtitle">
-            Somos uma comunidade evangélica comprometida com a Palavra de Deus,
-            a adoração genuína e o discipulado. Acreditamos que cada pessoa tem
-            um propósito e queremos caminhar junto com você nessa jornada.
-          </p>
-        </div>
-        <div class="sobre-pillar">
-          <div class="pillar-icon">📖</div>
-          <div class="pillar-text">
-            <h4>Fundamentados na Bíblia</h4>
-            <p>Toda nossa pregação e prática são baseadas nas Sagradas Escrituras, a Palavra viva de Deus.</p>
-          </div>
-        </div>
-        <div class="sobre-pillar">
-          <div class="pillar-icon">🙏</div>
-          <div class="pillar-text">
-            <h4>Vida de Oração</h4>
-            <p>Acreditamos no poder da oração e cultivamos uma comunidade que busca a Deus em todo tempo.</p>
-          </div>
-        </div>
-        <div class="sobre-pillar">
-          <div class="pillar-icon">🌍</div>
-          <div class="pillar-text">
-            <h4>Missão ao Mundo</h4>
-            <p>Levamos o evangelho além dos muros da igreja, impactando famílias e comunidades ao redor.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════
-       CULTOS
-  ══════════════════════════════════════ -->
-  <section id="cultos">
-    <div style="text-align:center; max-width:600px; margin:0 auto 50px;">
-      <span class="section-tag">Programação</span>
-      <h2 class="section-title">Horários de <span>Culto</span></h2>
-      <p class="section-subtitle">Venha nos visitar! Todos são bem-vindos na casa do Senhor.</p>
-    </div>
-
-    <div class="cultos-grid">
-
-      <!-- Domingo 1: Escola Bíblica -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">📖</div>
-          <div><h3>Escola Bíblica</h3><span>Domingo</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕕 <strong>18h00</strong> — Domingo</div>
-          <p class="culto-desc">Estudo aprofundado da Palavra de Deus para crescer no conhecimento e na fé. Todas as idades.</p>
-        </div>
-      </div>
-
-      <!-- Domingo 2: Culto de Louvor e Adoração -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">🎵</div>
-          <div><h3>Culto de Louvor e Adoração</h3><span>Domingo</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕖 <strong>19h15</strong> — Domingo</div>
-          <p class="culto-desc">Culto de louvor e adoração com pregação da Palavra. Venha adorar ao Senhor com toda a família.</p>
-        </div>
-      </div>
-
-      <!-- Quarta: Culto de Libertação -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">⛓️</div>
-          <div><h3>Culto de Libertação</h3><span>Quarta-feira</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕖 <strong>19h30</strong> — Quarta-feira</div>
-          <p class="culto-desc">Noite poderosa de busca, libertação e renovação espiritual. O Senhor quebra todo jugo.</p>
-        </div>
-      </div>
-
-      <!-- Sexta: Culto de Oração -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">🙌</div>
-          <div><h3>Culto de Oração</h3><span>Sexta-feira</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕖 <strong>19h30</strong> — Sexta-feira</div>
-          <p class="culto-desc">Noite dedicada à oração e intercessão. Juntos buscamos o mover do Espírito Santo.</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════
-       MINISTÉRIOS
-  ══════════════════════════════════════ -->
-  <section id="ministerios">
-    <div class="ministerios-header">
-      <span class="section-tag">Ministérios</span>
-      <h2 class="section-title">Encontre o seu <span>Lugar</span></h2>
-      <p class="section-subtitle">Cada pessoa tem um dom. Aqui você encontra o ministério certo para servir e crescer.</p>
-    </div>
-
-    <div class="ministerios-grid">
-      <div class="ministerio-card" data-ministerio="louvor" tabindex="0" role="button" aria-label="Ver detalhes do Ministério de Louvor">
-        <span class="ministerio-emoji">🎵</span>
-        <h3>Ministério de Louvor</h3>
-        <p>Adoração através da música, levando a presença de Deus para cada culto e evento especial.</p>
-        <span class="ministerio-tag">Toda semana</span>
-      </div>
-      <div class="ministerio-card" data-ministerio="infantil" tabindex="0" role="button" aria-label="Ver detalhes do Ministério Infantil">
-        <span class="ministerio-emoji">👶</span>
-        <h3>Ministério Infantil</h3>
-        <p>Cuidado e ensino bíblico especial para as crianças, com atividades dinâmicas e divertidas.</p>
-        <span class="ministerio-tag">Domingos</span>
-      </div>
-      <div class="ministerio-card" data-ministerio="jovens" tabindex="0" role="button" aria-label="Ver detalhes do Jovens Reviver">
-        <span class="ministerio-emoji">🎓</span>
-        <h3>Jovens Reviver</h3>
-        <p>Espaço para a juventude se conectar, crescer na fé e viver o propósito de Deus com plenitude.</p>
-        <span class="ministerio-tag">Sábados</span>
-      </div>
-      <div class="ministerio-card" data-ministerio="casais" tabindex="0" role="button" aria-label="Ver detalhes do Ministério de Casais">
-        <span class="ministerio-emoji">👨‍👩‍👧‍👦</span>
-        <h3>Ministério de Casais</h3>
-        <p>Fortalecimento dos casamentos e famílias através da Palavra, aconselhamento e comunhão.</p>
-        <span class="ministerio-tag">Mensal</span>
-      </div>
-      <div class="ministerio-card" data-ministerio="social" tabindex="0" role="button" aria-label="Ver detalhes da Ação Social">
-        <span class="ministerio-emoji">🤝</span>
-        <h3>Ação Social</h3>
-        <p>Amor prático ao próximo: distribuição de alimentos, roupas e atendimento às comunidades.</p>
-        <span class="ministerio-tag">Quinzenal</span>
-      </div>
-      <div class="ministerio-card" data-ministerio="missoes" tabindex="0" role="button" aria-label="Ver detalhes de Missões">
-        <span class="ministerio-emoji">🌐</span>
-        <h3>Missões</h3>
-        <p>Levando o evangelho além das fronteiras, apoiando missionários e projetos evangelísticos.</p>
-        <span class="ministerio-tag">Contínuo</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════
-       MODAL — DETALHE DO MINISTÉRIO
-  ══════════════════════════════════════ -->
-  <div class="ministerio-modal-overlay" id="ministerioModal">
-    <div class="ministerio-modal">
-      <button class="ministerio-modal-close" id="ministerioModalClose" aria-label="Fechar">&times;</button>
-      <div class="ministerio-modal-image">
-        <img id="ministerioModalImg" src="" alt="" />
-      </div>
-      <div class="ministerio-modal-content">
-        <span class="ministerio-modal-emoji" id="ministerioModalEmoji"></span>
-        <h3 id="ministerioModalTitle"></h3>
-        <span class="ministerio-modal-tag" id="ministerioModalTag"></span>
-        <p id="ministerioModalMessage"></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════
-       EVENTOS + CARROSSEL DE FLYERS
-  ══════════════════════════════════════ -->
-  <section id="eventos">
-    <div class="eventos-header">
-      <div>
-        <span class="section-tag">Agenda</span>
-        <h2 class="section-title">Próximos <span>Eventos</span></h2>
-      </div>
-    </div>
-
-    <!-- CARROSSEL DE FLYERS -->
-    <div class="flyers-section">
-      <h3 class="flyers-title">📌 Flyers do Mês</h3>
-      <div class="carousel-wrapper">
-        <button class="carousel-btn carousel-btn-prev" id="prevBtn" aria-label="Anterior">&#8249;</button>
-
-        <div class="carousel-track-container">
-          <div class="carousel-track" id="carouselTrack">
-
-            <!-- FLYER 1 — placeholder -->
-            <div class="flyer-slide">
-              <div class="flyer-placeholder">
-                <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/fdaab48fc_generated_image.png" alt="Conferência de Jovens" />
-              </div>
-              <p class="flyer-caption">Conferência de Jovens — 12 Jul</p>
-            </div>
-
-            <!-- FLYER 2 — placeholder -->
-            <div class="flyer-slide">
-              <div class="flyer-placeholder">
-                <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/c3b66406c_generated_image.png" alt="Culto de Cura e Libertação" />
-              </div>
-              <p class="flyer-caption">Culto de Cura e Libertação — 19 Jul</p>
-            </div>
-
-            <!-- FLYER 3 — placeholder -->
-            <div class="flyer-slide">
-              <div class="flyer-placeholder">
-                <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/ccadeef69_generated_image.png" alt="Encontro de Casais" />
-              </div>
-              <p class="flyer-caption">Encontro de Casais — 26 Jul</p>
-            </div>
-
-            <!-- FLYER 4 — Bazar Beneficiente -->
-            <div class="flyer-slide">
-              <div class="flyer-placeholder">
-                <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/0c4684486_WhatsAppImage2026-07-01at162932.jpg" alt="Bazar Beneficiente" />
-              </div>
-              <p class="flyer-caption">Bazar Beneficiente — 06/12</p>
-            </div>
-
-            <!-- FLYER 5 — Indique e Ganhe -->
-            <div class="flyer-slide">
-              <div class="flyer-placeholder">
-                <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/28b54ae60_WhatsAppImage2026-07-01at162653.jpg" alt="Indique e Ganhe - Acampa Somos Um" />
-              </div>
-              <p class="flyer-caption">Indique e Ganhe — Acampa Somos Um</p>
-            </div>
-
-            <!-- FLYER 6 — Imersão Familiar -->
-            <div class="flyer-slide">
-              <div class="flyer-placeholder">
-                <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/6b55c4e22_WhatsAppImage2026-07-01at162538.jpg" alt="Imersão Familiar" />
-              </div>
-              <p class="flyer-caption">Imersão Familiar — 18 e 19/07</p>
-            </div>
-
-          </div><!-- /.carousel-track -->
-        </div><!-- /.carousel-track-container -->
-
-        <button class="carousel-btn carousel-btn-next" id="nextBtn" aria-label="Próximo">&#8250;</button>
-      </div><!-- /.carousel-wrapper -->
-
-      <!-- Dots de navegação -->
-      <div class="carousel-dots" id="carouselDots"></div>
-    </div><!-- /.flyers-section -->
-
-    <!-- LISTA DE EVENTOS -->
-    <div class="eventos-list">
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">12</span>
-          <span class="month">Jul</span>
-        </div>
-        <div class="evento-info">
-          <h3>Conferência de Jovens — Geração Reviver</h3>
-          <p>🕖 19h00 · Igreja sede — R. Felipe dos Santos, 461, Betim</p>
-        </div>
-        <span class="evento-badge">Evento especial</span>
-      </div>
-
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">19</span>
-          <span class="month">Jul</span>
-        </div>
-        <div class="evento-info">
-          <h3>Culto de Cura e Libertação</h3>
-          <p>🕖 19h30 · Igreja sede — Domingo à noite</p>
-        </div>
-        <span class="evento-badge">Culto especial</span>
-      </div>
-
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">26</span>
-          <span class="month">Jul</span>
-        </div>
-        <div class="evento-info">
-          <h3>Encontro de Casais — Família Abençoada</h3>
-          <p>🕔 16h00 · Salão da Igreja — Inscrições abertas</p>
-        </div>
-        <span class="evento-badge">Inscrições abertas</span>
-      </div>
-
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">09</span>
-          <span class="month">Ago</span>
-        </div>
-        <div class="evento-info">
-          <h3>Ação Social — Compartilhando Vida</h3>
-          <p>🕗 07h00 · Comunidade local — Distribuição de alimentos e roupas</p>
-        </div>
-        <span class="evento-badge">Voluntários</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════
-       CONTATO (sem formulário)
-  ══════════════════════════════════════ -->
-  <section id="contato">
-    <div class="contato-center">
-      <span class="section-tag" style="background:rgba(255,255,255,0.1); color:#00b4c8; border-color:rgba(255,255,255,0.2);">
-        Fale conosco
-      </span>
-      <h2 class="section-title" style="color:#fff;">Venha nos <span style="color:#00b4c8;">Visitar</span></h2>
-      <p class="section-subtitle" style="color:rgba(255,255,255,0.65); margin: 0 auto 48px;">
-        Porta aberta para você e sua família. Venha conhecer a nossa comunidade
-        e experimentar o amor de Deus de perto.
-      </p>
-
-      <div class="contato-cards">
-        <a
-          href="https://www.google.com/maps/search/?api=1&query=R.+Felipe+dos+Santos%2C+461+-+Centro%2C+Betim+-+MG%2C+32600-126"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="contato-card contato-card-link"
-        >
-          <div class="contato-card-icon">📍</div>
-          <h4>Endereço</h4>
-          <p>R. Felipe dos Santos, 461<br />Centro — Betim, MG<br />CEP 32600-126</p>
-          <span class="contato-card-cta">Ver no mapa →</span>
-        </a>
-
-        <a
-          href="https://www.instagram.com/comunidade.missaoreviver"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="contato-card contato-card-link"
-        >
-          <div class="contato-card-icon"><svg viewBox="0 0 448 512" class="icon-svg" aria-hidden="true"><path fill="currentColor" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></div>
-          <h4>Instagram</h4>
-          <p>@comunidade.missaoreviver</p>
-          <span class="contato-card-cta">Seguir →</span>
-        </a>
-
-        <div class="contato-card">
-          <div class="contato-card-icon">✉️</div>
-          <h4>E-mail</h4>
-          <p>contato@missaoreviver.com.br</p>
-        </div>
-
-        <a
-          href="https://youtube.com/@comunidadecristamissaoreviver?si=serrYaS2Ac64IwYk"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="contato-card contato-card-link"
-        >
-          <div class="contato-card-icon"><svg viewBox="0 0 576 512" class="icon-svg" aria-hidden="true"><path fill="currentColor" d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"/></svg></div>
-          <h4>YouTube</h4>
-          <p>Comunidade Cristã Missão Reviver</p>
-          <span class="contato-card-cta">Inscreva-se →</span>
-        </a>
-      </div>
-
-      <!-- Mapa embed -->
-      <div class="mapa-wrapper">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.123!2d-44.1988!3d-19.9677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sR.+Felipe+dos+Santos%2C+461+-+Centro%2C+Betim+-+MG%2C+32600-126!5e0!3m2!1spt-BR!2sbr!4v1234567890"
-          width="100%"
-          height="340"
-          style="border:0; border-radius:16px;"
-          allowfullscreen=""
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Localização Missão Reviver"
-        ></iframe>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════
-       FOOTER
-  ══════════════════════════════════════ -->
-  <footer>
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-brand-logo">
-          <img src="https://media.base44.com/images/public/6a443242a10f3bc165c0860e/239526350_Gemini_Generated_Image_vbfcelvbfcelvbfc.png" alt="Logo" />
-          <span>Comunidade Cristã<br />Missão Reviver</span>
-        </div>
-        <p>Compartilhando Vida — Uma comunidade comprometida com o evangelho de Cristo e a transformação de vidas em Betim, MG.</p>
-        <div class="footer-socials">
-          <a class="social-btn" href="https://www.instagram.com/comunidade.missaoreviver" target="_blank" rel="noopener noreferrer" title="Instagram"><svg viewBox="0 0 448 512" class="icon-svg" aria-hidden="true"><path fill="currentColor" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a>
-          <a class="social-btn" href="https://youtube.com/@comunidadecristamissaoreviver?si=serrYaS2Ac64IwYk" target="_blank" rel="noopener noreferrer" title="YouTube"><svg viewBox="0 0 576 512" class="icon-svg" aria-hidden="true"><path fill="currentColor" d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"/></svg></a>
-          <a class="social-btn" href="https://www.google.com/maps/search/?api=1&query=R.+Felipe+dos+Santos%2C+461+-+Centro%2C+Betim+-+MG%2C+32600-126" target="_blank" rel="noopener noreferrer" title="Localização"><svg viewBox="0 0 384 512" class="icon-svg" aria-hidden="true"><path fill="currentColor" d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"/></svg></a>
-        </div>
-      </div>
-
-      <div class="footer-links">
-        <h4>Navegação</h4>
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="header-logo">⛪ Missão <span>Reviver</span></a>
+      <nav class="header-nav">
         <ul>
-          <li><a href="#inicio">Início</a></li>
-          <li><a href="#sobre">Sobre nós</a></li>
-          <li><a href="#cultos">Horários de Culto</a></li>
+          <li><a href="#agenda">Agenda</a></li>
+          <li><a href="#estudos">Estudos</a></li>
           <li><a href="#ministerios">Ministérios</a></li>
-          <li><a href="#eventos">Eventos</a></li>
+          <li><a href="#aniversariantes">Aniversariantes</a></li>
           <li><a href="#contato">Contato</a></li>
         </ul>
-      </div>
+      </nav>
+      <div class="header-acoes" id="header-acoes"></div>
+    </div>
+  </header>
 
-      <div class="footer-links">
-        <h4>Cultos</h4>
-        <ul>
-          <li><a href="#cultos">Domingo — 18h00 (Escola Bíblica)</a></li>
-          <li><a href="#cultos">Domingo — 19h15 (Louvor e Adoração)</a></li>
-          <li><a href="#cultos">Quarta — 19h30 (Libertação)</a></li>
-          <li><a href="#cultos">Sexta — 19h30 (Oração)</a></li>
-        </ul>
-      </div>
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <h1>Bem-vindo à Missão Reviver</h1>
+    <p>Uma comunidade de fé, amor e esperança. Venha reviver seu espírito conosco!</p>
+    <a href="/registro.html" class="btn btn-destaque">Faça parte da comunidade</a>
+  </section>
 
-      <div class="footer-links">
-        <h4>Endereço</h4>
-        <ul>
-          <li><a href="#">R. Felipe dos Santos, 461</a></li>
-          <li><a href="#">Centro — Betim, MG</a></li>
-          <li><a href="#">CEP 32600-126</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-links">
-        <h4>Atendimento</h4>
-        <ul>
-          <li id="horario-atendimento">Segunda a Sexta: 08h às 12h e 14h às 18h</li>
-        </ul>
+  <!-- ═══ AGENDA ═══ -->
+  <section class="secao" id="agenda">
+    <div class="container">
+      <h2 class="secao-titulo" id="agenda-titulo">Agenda de Eventos</h2>
+      <p class="secao-subtitulo" id="agenda-subtitulo">Confira os próximos eventos da nossa comunidade</p>
+      <div id="agenda-conteudo" class="grid-cards">
+        <div class="loading">Carregando agenda</div>
       </div>
     </div>
+  </section>
 
+  <!-- ═══ ESTUDOS ═══ -->
+  <section class="secao" id="estudos" style="background: #fff;">
+    <div class="container">
+      <h2 class="secao-titulo" id="estudos-titulo">Estudos Bíblicos</h2>
+      <p class="secao-subtitulo" id="estudos-texto">Junte-se a nós para aprofundar seu conhecimento da Palavra de Deus.</p>
+      <div id="estudos-lista" class="grid-cards"></div>
+    </div>
+  </section>
+
+  <!-- ═══ MINISTÉRIOS ═══ -->
+  <section class="secao" id="ministerios">
+    <div class="container">
+      <h2 class="secao-titulo" id="ministerios-titulo">Nossos Ministérios</h2>
+      <p class="secao-subtitulo" id="ministerios-texto">Conheça os ministérios disponíveis em nossa comunidade.</p>
+      <div id="ministerios-lista" class="grid-cards"></div>
+    </div>
+  </section>
+
+  <!-- ═══ ANIVERSARIANTES — BUG #3 ═══ -->
+  <section class="secao" id="aniversariantes" style="background: #fff;">
+    <div class="container">
+      <h2 class="secao-titulo">🎉 Aniversariantes do Mês</h2>
+      <p class="secao-subtitulo">Vamos celebrar juntos! Veja quem está fazendo aniversário.</p>
+      <div id="aniversariantes-lista">
+        <div class="loading">Carregando aniversariantes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DEVOCIONAL ═══ -->
+  <section class="secao" id="devocional">
+    <div class="container container-estreito">
+      <h2 class="secao-titulo" id="devocional-titulo">Devocional</h2>
+      <div class="card">
+        <p id="devocional-texto">Uma palavra de fé para o seu dia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ AVISOS ═══ -->
+  <section class="secao" id="avisos" style="background: #fff;">
+    <div class="container">
+      <h2 class="secao-titulo" id="avisos-titulo">Avisos da Semana</h2>
+      <p class="secao-subtitulo" id="avisos-texto">Fique por dentro dos comunicados importantes.</p>
+      <div id="avisos-lista" class="grid-cards"></div>
+    </div>
+  </section>
+
+  <!-- ═══ DÍZIMOS ═══ -->
+  <section class="secao" id="dizimos">
+    <div class="container container-estreito">
+      <h2 class="secao-titulo" id="dizimos-titulo">Dízimos e Ofertas</h2>
+      <div class="card">
+        <p id="dizimos-texto">Sua contribuição sustenta a obra de Deus em nossa comunidade.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ESCALAS ═══ -->
+  <section class="secao" id="escalas" style="background: #fff;">
+    <div class="container">
+      <h2 class="secao-titulo" id="escalas-titulo">Escalas de Serviço</h2>
+      <p class="secao-subtitulo" id="escalas-texto">Confira as escalas dos próximos cultos e eventos.</p>
+      <div id="escalas-lista"></div>
+    </div>
+  </section>
+
+  <!-- ═══ ORAÇÃO ═══ -->
+  <section class="secao" id="oracao">
+    <div class="container container-estreito">
+      <h2 class="secao-titulo" id="oracao-titulo">Pedido de Oração</h2>
+      <div class="card">
+        <p id="oracao-texto">Compartilhe seus pedidos de oração com nossa equipe pastoral.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTATO PASTORAL + HORÁRIO ATENDIMENTO (BUG #5) ═══ -->
+  <section class="secao" id="contato" style="background: #fff;">
+    <div class="container">
+      <h2 class="secao-titulo" id="contato-titulo">Contato Pastoral</h2>
+      <p class="secao-subtitulo" id="contato-texto">Nossa equipe pastoral está disponível para atendê-lo.</p>
+      <div class="grid-cards">
+        <div class="card">
+          <h3>📞 Telefone</h3>
+          <p id="contato-telefone">(00) 0000-0000</p>
+        </div>
+        <div class="card">
+          <h3>✉️ Email</h3>
+          <p id="contato-email">pastoral@missaoreviver.com.br</p>
+        </div>
+        <div class="card">
+          <h3>🕐 Horário de Atendimento</h3>
+          <p id="horario-atendimento-texto">Segunda a Sexta: 08h às 12h e 14h às 18h</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>
+        <h4>Missão Reviver</h4>
+        <p>Comunidade Cristã Missão Reviver — uma família de fé unida pelo amor de Cristo.</p>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <p id="footer-telefone">📞 (00) 0000-0000</p>
+        <p id="footer-email">✉️ pastoral@missaoreviver.com.br</p>
+      </div>
+      <div>
+        <h4>Horário de Atendimento</h4>
+        <p id="footer-horario">Segunda a Sexta: 08h às 12h e 14h às 18h</p>
+      </div>
+    </div>
     <div class="footer-bottom">
-      <p>© 2026 Comunidade Cristã Missão Reviver. Todos os direitos reservados.</p>
-      <p>Feito com <span>♥</span> para a glória de Deus</p>
+      <p>&copy; 2026 Comunidade Cristã Missão Reviver. Todos os direitos reservados.</p>
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="script.js"></script>
+  <script src="/js/main.js"></script>
   <script>
-    // ═══ Carrega conteúdo dinâmico do backend (cultos, horários, etc.) ═══
+    // ═══════════════════════════════════════════════════════════
+    // BUG #4 CORRIGIDO: Página pública busca conteúdo do backend
+    // em vez de exibir placeholders estáticos.
+    // ═══════════════════════════════════════════════════════════
+
     async function carregarConteudoPublico() {
       try {
-        const res = await fetch('/api/conteudo');
-        if (!res.ok) return;
-        const data = await res.json();
-        const conteudo = data.conteudo || {};
-
-        // ── Horário de Atendimento (rodapé) ──
-        const cfg = conteudo.config_igreja || {};
-        if (cfg.horario_atendimento) {
-          // Atualiza o rodapé se houver elemento
-          const horarioEl = document.getElementById('horario-atendimento');
-          if (horarioEl) horarioEl.textContent = cfg.horario_atendimento;
-          
-          // Atualiza a seção de contato
-          const contatoHorario = document.getElementById('contato-horario');
-          if (contatoHorario) contatoHorario.textContent = cfg.horario_atendimento;
-        }
-
-        // ── Cultos (seção principal) ──
-        if (conteudo.cultos && conteudo.cultos.itens) {
-          const cultosGrid = document.querySelector('.cultos-grid');
-          if (cultosGrid) {
-            const icones = { 'Domingo': '📖', 'Quarta-feira': '⛓️', 'Sexta-feira': '🙌' };
-            const iconMap = { 'Escola Bíblica': '📖', 'Louvor': '🎵', 'Libertação': '⛓️', 'Oração': '🙌' };
-            
-            cultosGrid.innerHTML = conteudo.cultos.itens.map(c => {
-              const icon = iconMap[c.nome?.split(' ')[0]] || 'church';
-              return `
-              <div class="culto-card">
-                <div class="culto-header">
-                  <div class="culto-icon">${icon}</div>
-                  <h3>${c.nome}</h3>
-                </div>
-                <div class="culto-body">
-                  <div class="culto-time">🕐 <strong>${c.hora}</strong> — ${c.dia}</div>
-                  <p class="culto-desc">${c.desc || ''}</p>
-                </div>
-              </div>`;
-            }).join('');
-          }
-
-          // Atualizar lista de cultos no rodapé
-          const footerCultos = document.querySelector('.footer-links h4');
-          if (footerCultos && footerCultos.textContent === 'Cultos') {
-            const cultosList = footerCultos.nextElementSibling;
-            if (cultosList) {
-              cultosList.innerHTML = conteudo.cultos.itens.map(c => 
-                `<li><a href="#cultos">${c.dia} — ${c.hora} (${c.nome})</a></li>`
-              ).join('');
-            }
-          }
-        }
-
-        // ── Eventos (seção de eventos) ──
-        if (conteudo.eventos && conteudo.eventos.itens) {
-          const eventosGrid = document.querySelector('.eventos-grid');
-          if (eventosGrid) {
-            eventosGrid.innerHTML = conteudo.eventos.itens.map(e => `
-              <div class="evento-card">
-                <div class="evento-date">${e.dia}<span>${e.mes}</span></div>
-                <div class="evento-info">
-                  <h4>${e.nome}</h4>
-                  <p>${e.desc}</p>
-                  <span class="evento-hora">${e.hora || ''}</span>
-                </div>
-              </div>
-            `).join('');
-          }
-        }
-
-        // ── Avisos (se houver seção de avisos) ──
-        if (conteudo.avisos && conteudo.avisos.itens) {
-          const avisosSection = document.getElementById('avisos-content');
-          if (avisosSection) {
-            avisosSection.innerHTML = conteudo.avisos.itens.map(a => `
-              <div class="aviso-card" style="border-left:4px solid ${a.tipo === 'urgente' ? '#dc3545' : a.tipo === 'evento' ? '#28a745' : '#007bff'};">
-                <h4>${a.titulo}</h4>
-                <p>${a.texto}</p>
-                <small>${a.data || ''}</small>
-              </div>
-            `).join('');
-          }
-        }
-
-        console.log('✅ Conteúdo dinâmico carregado do backend');
-      } catch (e) {
-        console.log('Conteúdo dinâmico indisponível, usando dados estáticos');
+        // Busca todas as seções de conteúdo do backend
+        const conteudo = await apiFetch('/conteudo');
+        renderizarConteudo(conteudo);
+      } catch (err) {
+        console.log('Conteúdo não disponível, usando valores padrão.');
       }
     }
 
-    // Executa ao carregar a página
-    document.addEventListener('DOMContentLoaded', carregarConteudoPublico);
+    function renderizarConteudo(c) {
+      // Agenda
+      if (c.agenda) {
+        const tituloEl = document.getElementById('agenda-titulo');
+        const conteudoEl = document.getElementById('agenda-conteudo');
+        if (tituloEl && c.agenda.titulo) tituloEl.textContent = c.agenda.titulo;
+
+        if (conteudoEl && c.agenda.eventos && c.agenda.eventos.length > 0) {
+          conteudoEl.innerHTML = c.agenda.eventos.map(ev => `
+            <div class="card">
+              <h3>${esc(ev.titulo)}</h3>
+              <p>📅 ${esc(ev.data ? formatarDataBR(ev.data) : '')}</p>
+              <p>🕐 ${esc(ev.horario || '')}</p>
+              <p>📍 ${esc(ev.local || '')}</p>
+            </div>
+          `).join('');
+        } else if (conteudoEl) {
+          conteudoEl.innerHTML = '<div class="vazio">Nenhum evento agendado no momento.</div>';
+        }
+      }
+
+      // Estudos
+      if (c.estudos) {
+        const tituloEl = document.getElementById('estudos-titulo');
+        const textoEl = document.getElementById('estudos-texto');
+        const listaEl = document.getElementById('estudos-lista');
+        if (tituloEl && c.estudos.titulo) tituloEl.textContent = c.estudos.titulo;
+        if (textoEl && c.estudos.texto) textoEl.textContent = c.estudos.texto;
+        if (listaEl && c.estudos.itens) {
+          listaEl.innerHTML = c.estudos.itens.length > 0
+            ? c.estudos.itens.map(i => `<div class="card"><h3>${esc(i.titulo)}</h3><p>${esc(i.descricao || '')}</p></div>`).join('')
+            : '';
+        }
+      }
+
+      // Ministérios
+      if (c.ministerios) {
+        const tituloEl = document.getElementById('ministerios-titulo');
+        const textoEl = document.getElementById('ministerios-texto');
+        const listaEl = document.getElementById('ministerios-lista');
+        if (tituloEl && c.ministerios.titulo) tituloEl.textContent = c.ministerios.titulo;
+        if (textoEl && c.ministerios.texto) textoEl.textContent = c.ministerios.texto;
+        if (listaEl && c.ministerios.itens) {
+          listaEl.innerHTML = c.ministerios.itens.length > 0
+            ? c.ministerios.itens.map(i => `<div class="card"><h3>${esc(i.titulo || i.nome)}</h3><p>${esc(i.descricao || '')}</p></div>`).join('')
+            : '';
+        }
+      }
+
+      // Devocional
+      if (c.devocional) {
+        const tituloEl = document.getElementById('devocional-titulo');
+        const textoEl = document.getElementById('devocional-texto');
+        if (tituloEl && c.devocional.titulo) tituloEl.textContent = c.devocional.titulo;
+        if (textoEl && c.devocional.texto) textoEl.textContent = c.devocional.texto;
+      }
+
+      // Avisos
+      if (c.avisos) {
+        const tituloEl = document.getElementById('avisos-titulo');
+        const textoEl = document.getElementById('avisos-texto');
+        const listaEl = document.getElementById('avisos-lista');
+        if (tituloEl && c.avisos.titulo) tituloEl.textContent = c.avisos.titulo;
+        if (textoEl && c.avisos.texto) textoEl.textContent = c.avisos.texto;
+        if (listaEl && c.avisos.itens) {
+          listaEl.innerHTML = c.avisos.itens.length > 0
+            ? c.avisos.itens.map(i => `<div class="card"><h3>${esc(i.titulo)}</h3><p>${esc(i.texto || i.descricao || '')}</p></div>`).join('')
+            : '';
+        }
+      }
+
+      // Dízimos
+      if (c.dizimos) {
+        const tituloEl = document.getElementById('dizimos-titulo');
+        const textoEl = document.getElementById('dizimos-texto');
+        if (tituloEl && c.dizimos.titulo) tituloEl.textContent = c.dizimos.titulo;
+        if (textoEl && c.dizimos.texto) textoEl.textContent = c.dizimos.texto;
+      }
+
+      // Escalas
+      if (c.escalas) {
+        const tituloEl = document.getElementById('escalas-titulo');
+        const textoEl = document.getElementById('escalas-texto');
+        const listaEl = document.getElementById('escalas-lista');
+        if (tituloEl && c.escalas.titulo) tituloEl.textContent = c.escalas.titulo;
+        if (textoEl && c.escalas.texto) textoEl.textContent = c.escalas.texto;
+        if (listaEl && c.escalas.itens) {
+          listaEl.innerHTML = c.escalas.itens.length > 0
+            ? `<table class="tabela"><thead><tr><th>Data</th><th>Função</th><th>Responsável</th></tr></thead><tbody>${c.escalas.itens.map(i => `<tr><td>${esc(i.data ? formatarDataBR(i.data) : '')}</td><td>${esc(i.funcao || '')}</td><td>${esc(i.responsavel || '')}</td></tr>`).join('')}</tbody></table>`
+            : '<div class="vazio">Nenhuma escala publicada.</div>';
+        }
+      }
+
+      // Oração
+      if (c.oracao) {
+        const tituloEl = document.getElementById('oracao-titulo');
+        const textoEl = document.getElementById('oracao-texto');
+        if (tituloEl && c.oracao.titulo) tituloEl.textContent = c.oracao.titulo;
+        if (textoEl && c.oracao.texto) textoEl.textContent = c.oracao.texto;
+      }
+
+      // Contato Pastoral
+      if (c.contato_pastoral) {
+        const tituloEl = document.getElementById('contato-titulo');
+        const textoEl = document.getElementById('contato-texto');
+        const telEl = document.getElementById('contato-telefone');
+        const emailEl = document.getElementById('contato-email');
+        if (tituloEl && c.contato_pastoral.titulo) tituloEl.textContent = c.contato_pastoral.titulo;
+        if (textoEl && c.contato_pastoral.texto) textoEl.textContent = c.contato_pastoral.texto;
+        if (telEl && c.contato_pastoral.telefone) { telEl.textContent = c.contato_pastoral.telefone; document.getElementById('footer-telefone').textContent = '📞 ' + c.contato_pastoral.telefone; }
+        if (emailEl && c.contato_pastoral.email) { emailEl.textContent = c.contato_pastoral.email; document.getElementById('footer-email').textContent = '✉️ ' + c.contato_pastoral.email; }
+      }
+
+      // BUG #5: Horário de Atendimento — exibido dinamicamente no rodapé
+      if (c.horario_atendimento) {
+        const textoEl = document.getElementById('horario-atendimento-texto');
+        const footerEl = document.getElementById('footer-horario');
+        if (textoEl && c.horario_atendimento.texto) textoEl.textContent = c.horario_atendimento.texto;
+        if (footerEl && c.horario_atendimento.texto) footerEl.textContent = c.horario_atendimento.texto;
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // BUG #3 CORRIGIDO: Aniversariantes com idade calculada
+    // ═══════════════════════════════════════════════════════════
+
+    async function carregarAniversariantes() {
+      const container = document.getElementById('aniversariantes-lista');
+      if (!container) return;
+
+      try {
+        const resp = await apiFetch('/aniversariantes');
+        const anivs = resp.aniversariantes || [];
+
+        if (anivs.length === 0) {
+          container.innerHTML = '<div class="vazio">Nenhum aniversariante este mês. 🎂</div>';
+          return;
+        }
+
+        container.innerHTML = anivs.map(p => `
+          <div class="aniv-card">
+            <div class="aniv-avatar">${esc(p.nome.charAt(0).toUpperCase())}</div>
+            <div class="aniv-info">
+              <div class="aniv-nome">${esc(p.nome)}</div>
+              <div class="aniv-data">${esc(p.data_formatada || '')}</div>
+            </div>
+            <div class="aniv-idade">${esc(p.idade_texto || (p.idade != null ? p.idade + ' anos' : ''))}</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<div class="vazio">Não foi possível carregar os aniversariantes.</div>';
+      }
+    }
+
+    // ── Inicialização ──
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarConteudoPublico();
+      carregarAniversariantes();
+    });
   </script>
 </body>
 </html>

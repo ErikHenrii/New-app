@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Perfil — Missão Reviver</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="header-logo">⛪ Missão <span>Reviver</span></a>
+      <div class="header-acoes" id="header-acoes"></div>
+    </div>
+  </header>
+
+  <div class="container container-estreito" style="padding-top: 40px;">
+    <h2 class="secao-titulo">Meu Perfil</h2>
+    <p class="secao-subtitulo">Atualize suas informações pessoais</p>
+
+    <div id="alerta-container"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         BUG #1 CORRIGIDO: Formulário envia PUT /api/perfil com body
+         e atualiza a sessão localStorage com os dados retornados.
+         ═══════════════════════════════════════════════════════════ -->
+    <form id="form-perfil">
+      <div class="form-grupo">
+        <label for="nome">Nome completo *</label>
+        <input type="text" id="nome" name="nome" required>
+      </div>
+      <div class="form-grupo">
+        <label for="email">Email (não editável)</label>
+        <input type="email" id="email" name="email" readonly style="background: #f0f0f0;">
+      </div>
+      <div class="form-grupo">
+        <label for="data_nascimento">Data de nascimento</label>
+        <input type="date" id="data_nascimento" name="data_nascimento">
+      </div>
+      <div class="form-grupo">
+        <label for="telefone">Telefone</label>
+        <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000">
+      </div>
+      <div class="form-grupo">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" name="endereco" placeholder="Rua, número, bairro">
+      </div>
+      <div class="form-grupo">
+        <label for="cidade">Cidade</label>
+        <input type="text" id="cidade" name="cidade">
+      </div>
+      <div class="form-grupo">
+        <label for="estado">Estado</label>
+        <input type="text" id="estado" name="estado" maxlength="2" placeholder="SP">
+      </div>
+      <div class="form-grupo">
+        <label for="foto_url">URL da foto</label>
+        <input type="text" id="foto_url" name="foto_url" placeholder="https://...">
+      </div>
+
+      <button type="submit" class="btn btn-primario" style="width: 100%;" id="btn-salvar">Salvar Alterações</button>
+    </form>
+
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--cor-borda);">
+
+    <h3 style="color: var(--cor-primaria); margin-bottom: 15px;">Privacidade (LGPD)</h3>
+    <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--cor-texto-claro);">
+      Você pode solicitar seus dados ou excluir sua conta a qualquer momento.
+    </p>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button onclick="baixarMeusDados()" class="btn btn-secundario btn-pequeno">Meus dados</button>
+      <button onclick="excluirConta()" class="btn btn-perigo btn-pequeno">Excluir conta</button>
+    </div>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script>
+    // ── Guarda: exige login ──
+    if (!isLoggedIn()) {
+      window.location.href = '/login.html';
+    }
+
+    // ── Carrega dados atuais do perfil ──
+    async function carregarPerfil() {
+      try {
+        // Busca dados frescos do backend (não só do localStorage)
+        const resp = await apiFetch('/perfil');
+        const u = resp.usuario || resp;
+
+        document.getElementById('nome').value = u.nome || '';
+        document.getElementById('email').value = u.email || '';
+        document.getElementById('data_nascimento').value = u.data_nascimento ? u.data_nascimento.split('T')[0] : '';
+        document.getElementById('telefone').value = u.telefone || '';
+        document.getElementById('endereco').value = u.endereco || '';
+        document.getElementById('cidade').value = u.cidade || '';
+        document.getElementById('estado').value = u.estado || '';
+        document.getElementById('foto_url').value = u.foto_url || '';
+      } catch (err) {
+        // Fallback: usa dados do localStorage
+        const u = getUsuario();
+        if (u) {
+          document.getElementById('nome').value = u.nome || '';
+          document.getElementById('email').value = u.email || '';
+        }
+        mostrarAlerta(document.getElementById('alerta-container'), 'Não foi possível carregar do servidor. Dados locais carregados.', 'info');
+      }
+    }
+
+    // ── BUG #1 CORRIGIDO: Submit envia PUT /api/perfil com body JSON ──
+    document.getElementById('form-perfil').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = document.getElementById('btn-salvar');
+      const container = document.getElementById('alerta-container');
+
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      // Dados enviados no corpo da requisição
+      const dados = {
+        nome: document.getElementById('nome').value,
+        data_nascimento: document.getElementById('data_nascimento').value || null,
+        telefone: document.getElementById('telefone').value || null,
+        endereco: document.getElementById('endereco').value || null,
+        cidade: document.getElementById('cidade').value || null,
+        estado: document.getElementById('estado').value || null,
+        foto_url: document.getElementById('foto_url').value || null,
+      };
+
+      try {
+        // Requisção PUT para /api/perfil com os dados no body
+        const resp = await apiFetch('/perfil', {
+          method: 'PUT',
+          body: JSON.stringify(dados),
+        });
+
+        // BUG #1: Atualiza a sessão com os novos dados retornados pelo servidor
+        if (resp.usuario) {
+          const sessaoAtual = getUsuario();
+          const usuarioAtualizado = { ...sessaoAtual, ...resp.usuario };
+          localStorage.setItem('usuario', JSON.stringify(usuarioAtualizado));
+        }
+
+        // Atualiza o header com o novo nome
+        atualizarHeaderAuth();
+
+        mostrarAlerta(container, 'Perfil atualizado com sucesso!', 'sucesso');
+        btn.disabled = false;
+        btn.textContent = 'Salvar Alterações';
+      } catch (err) {
+        mostrarAlerta(container, err.message || 'Erro ao salvar perfil.', 'erro');
+        btn.disabled = false;
+        btn.textContent = 'Salvar Alterações';
+      }
+    });
+
+    // ── LGPD: baixar meus dados ──
+    async function baixarMeusDados() {
+      try {
+        const dados = await apiFetch('/lgpd/meus-dados');
+        const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'meus-dados-lgpd.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        mostrarAlerta(document.getElementById('alerta-container'), err.message, 'erro');
+      }
+    }
+
+    // ── LGPD: excluir conta ──
+    async function excluirConta() {
+      if (!confirm('Tem certeza? Esta ação é irreversível. Todos os seus dados serão permanentemente excluídos.')) {
+        return;
+      }
+      try {
+        await apiFetch('/lgpd/excluir-conta', { method: 'DELETE' });
+        limparSessao();
+        alert('Conta excluída com sucesso.');
+        window.location.href = '/';
+      } catch (err) {
+        mostrarAlerta(document.getElementById('alerta-container'), err.message, 'erro');
+      }
+    }
+
+    carregarPerfil();
+  </script>
+</body>
+</html>

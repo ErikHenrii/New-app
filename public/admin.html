@@ -1,1414 +1,568 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Admin — Missão Reviver</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/auth.css" />
-  <style>
-    /* === ADMIN — Squircle + Neumorfismo + Glassmorphism === */
-    .modal-overlay {
-      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(10,42,110,0.3);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index:1000; align-items:center; justify-content:center;
-      padding:20px; overflow-y:auto;
-    }
-    .modal-overlay.show { display:flex; }
-    .modal {
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-      max-width: 480px; width: 90%;
-      box-shadow: var(--neu-out), 0 20px 60px rgba(10,42,110,0.2);
-      border: 1px solid var(--glass-border);
-    }
-    .modal-lg {
-      max-width: 720px; max-height: 90vh; overflow-y: auto;
-    }
-    .modal h2 { font-family: var(--font-display); color: var(--blue-dark); margin-bottom: 16px; }
-    .modal-close {
-      float: right; cursor: pointer; font-size: 1.4rem; color: var(--gray-text);
-      border: none; background: none; padding: 4px 8px;
-      transition: color 0.2s, transform 0.2s;
-    }
-    .modal-close:hover { color: var(--blue-dark); transform: rotate(90deg); }
-
-    .member-info-section { margin-bottom: 20px; }
-    .member-info-section h3 {
-      font-size: 0.88rem; color: var(--blue-dark); margin-bottom: 10px;
-      padding-bottom: 6px; border-bottom: 1px solid var(--gray-light);
-    }
-    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .info-item {
-      display: flex; flex-direction: column; gap: 2px;
-      background: var(--bg-light);
-      border-radius: var(--radius-xs);
-      padding: 10px 14px;
-      box-shadow: var(--neu-in-sm);
-    }
-    .info-label {
-      font-size: 0.72rem; color: var(--gray-text); text-transform: uppercase;
-      letter-spacing: 0.5px; font-weight: 600;
-    }
-    .info-value { font-size: 0.88rem; color: var(--text-dark); font-weight: 500; }
-
-    .filter-chips { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-    .chip {
-      padding: 7px 16px; border-radius: var(--squircle);
-      font-size: 0.78rem; font-weight: 600; cursor: pointer;
-      border: 1px solid var(--gray-light); background: var(--bg-light);
-      color: var(--gray-text); transition: all 0.25s; box-shadow: var(--neu-out-sm);
-    }
-    .chip.active {
-      background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
-      color: var(--white); border-color: transparent;
-      box-shadow: 0 4px 15px rgba(10,42,110,0.25);
-    }
-    .chip:hover { transform: translateY(-1px); box-shadow: var(--neu-out); }
-    .chip.active:hover { box-shadow: 0 6px 20px rgba(10,42,110,0.35); }
-
-    .modal-lg::-webkit-scrollbar { width: 6px; }
-    .modal-lg::-webkit-scrollbar-track { background: var(--bg); border-radius: 3px; }
-    .modal-lg::-webkit-scrollbar-thumb { background: var(--blue-mid); border-radius: 3px; }
-
-    .birthday-list { display:flex; flex-direction:column; gap:10px; }
-    .birthday-item {
-      background: var(--bg-light); border-radius: var(--radius-sm);
-      padding: 14px 20px; display: flex; align-items: center; gap: 14px;
-      box-shadow: var(--neu-out-sm); border: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .birthday-item:hover { transform: translateY(-1px); box-shadow: var(--neu-out); }
-    .birthday-avatar {
-      width: 44px; height: 44px; border-radius: 36% 36%;
-      background: linear-gradient(135deg, var(--teal), var(--blue-light));
-      display: flex; align-items: center; justify-content: center;
-      color: var(--white); font-weight: 700; font-size: 1.1rem;
-      flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,180,200,0.25);
-    }
-    .birthday-item .b-info { flex: 1; }
-    .birthday-item .b-name { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
-    .birthday-item .b-date { font-size: 0.78rem; color: var(--gray-text); }
-    .birthday-item .b-icon { font-size: 1.4rem; }
-
-    /* Lideranças cards */
-    .lider-card {
-      background: var(--bg-light); border-radius: var(--radius-md);
-      padding: 20px; display: flex; gap: 16px; align-items: center;
-      box-shadow: var(--neu-out-sm); transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .lider-card:hover { transform: translateY(-2px); box-shadow: var(--neu-out); }
-    .lider-foto {
-      width: 60px; height: 60px; border-radius: 36% 36%;
-      background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
-      display: flex; align-items: center; justify-content: center;
-      color: var(--white); font-weight: 700; font-size: 1.3rem; flex-shrink: 0;
-      overflow: hidden;
-    }
-    .lider-foto img { width: 100%; height: 100%; object-fit: cover; }
-    .lider-info { flex: 1; }
-    .lider-nome { font-weight: 700; font-size: 1rem; color: var(--text-dark); }
-    .lider-cargo { font-size: 0.86rem; color: var(--blue-mid); font-weight: 600; }
-    .lider-desc { font-size: 0.8rem; color: var(--gray-text); margin-top: 4px; }
-    .lider-contato { font-size: 0.78rem; color: var(--gray-text); margin-top: 2px; }
-
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--blue-dark); margin-bottom: 4px; }
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%; padding: 10px 14px;
-      border: 2px solid var(--gray-light); border-radius: var(--radius-xs);
-      font-size: 0.9rem; outline: none; transition: border-color 0.2s;
-      background: var(--bg-light); font-family: inherit;
-    }
-    .form-group input:focus, .form-group textarea:focus { border-color: var(--blue-mid); }
-    .form-group textarea { resize: vertical; min-height: 60px; }
-
-    @media (max-width: 700px) {
-      .table-wrapper { overflow-x: scroll; }
-      table { min-width: 700px; }
-      .info-grid { grid-template-columns: 1fr; }
-      .modal-lg { padding: 24px 20px; }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-<body data-page="admin">
-
-  <nav class="auth-navbar">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
-        <path d="M12 2v20M5 9h14" stroke-linecap="round"/>
-      </svg>
+<body>
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="header-logo">⛪ Missão <span>Reviver</span></a>
+      <div class="header-acoes" id="header-acoes"></div>
     </div>
-    <span>Missão Reviver</span>
-  </nav>
+  </header>
 
-  <div class="dashboard">
-    <div class="dashboard-header">
-      <h1>Painel Administrativo</h1>
-      <div class="user-info">
-        <span id="userName">—</span>
-        <span class="badge badge-admin" id="userRole">admin</span>
-        <a href="../index.html" class="btn btn-secondary btn-sm" style="text-decoration:none;width:auto;">← Site</a>
-        <button onclick="logout()" class="btn btn-secondary btn-sm">Sair</button>
-      </div>
-    </div>
+  <div class="container">
+    <h2 class="secao-titulo">Painel do Administrador</h2>
+    <p class="secao-subtitulo">Gerencie conteúdos, membros e configurações do site</p>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="label">Total de Usuários</div>
-        <div class="value" id="statTotal">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Membros Ativos</div>
-        <div class="value" id="statMembros">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Administradores</div>
-        <div class="value" id="statAdmins">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Acessos Hoje</div>
-        <div class="value" id="statAcessos">—</div>
-      </div>
-    </div>
+    <div id="alerta-container"></div>
 
-    <!-- Tabs -->
+    <!-- ═══════════════════════════════════════════════════════════
+         BUG #2 CORRIGIDO: Dashboard com indicadores reais do banco
+         ═══════════════════════════════════════════════════════════ -->
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('usuarios', this)">👥 Usuários</button>
-      <button class="tab" onclick="switchTab('aniversariantes', this)">🎂 Aniversariantes</button>
-      <button class="tab" onclick="switchTab('liderancas', this)">✝️ Lideranças</button>
-      <button class="tab" onclick="switchTab('audit', this)">📋 Auditoria</button>
-      <button class="tab" onclick="switchTab('conteudo', this)">📝 Conteúdo</button>
-      <button class="tab" onclick="switchTab('config', this)">⚙️ Configurações</button>
+      <button class="tab-btn ativo" onclick="trocarTab('dashboard')">📊 Dashboard</button>
+      <button class="tab-btn" onclick="trocarTab('conteudo')">📝 Conteúdo</button>
+      <button class="tab-btn" onclick="trocarTab('horario')">🕐 Atendimento</button>
+      <button class="tab-btn" onclick="trocarTab('membros')">👥 Membros</button>
     </div>
 
-    <!-- USUÁRIOS -->
-    <div class="tab-content active" id="tab-usuarios">
-      <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;">
-        <input type="text" id="searchInput" placeholder="🔍 Buscar por nome ou email..."
-               style="padding:10px 16px;border:2px solid var(--gray-light);border-radius:12px;font-size:0.9rem;flex:1;outline:none;min-width:200px;"
-               oninput="loadAdminUsers(this.value)" />
-        <button onclick="exportarCSV()" class="btn btn-secondary" style="width:auto;padding:10px 20px;">⬇ Exportar CSV</button>
-        <button onclick="document.getElementById('newUserModal').classList.add('show')"
-                class="btn btn-primary" style="width:auto;padding:10px 20px;">+ Novo Usuário</button>
+    <!-- ── Tab: Dashboard ── -->
+    <div class="tab-painel ativo" id="tab-dashboard">
+      <div class="grid-cards" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total de Usuários</div>
+          <div class="stat-numero" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Membros Ativos</div>
+          <div class="stat-numero" id="stat-membros">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Administradores</div>
+          <div class="stat-numero" id="stat-admins">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Acessos Hoje</div>
+          <div class="stat-numero" id="stat-acessos">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Novos no Mês</div>
+          <div class="stat-numero" id="stat-novos">—</div>
+        </div>
       </div>
+    </div>
 
-      <div class="filter-chips">
-        <div class="chip active" onclick="filterByChip(this,'all')">Todos</div>
-        <div class="chip" onclick="filterByChip(this,'membro')">Membros</div>
-        <div class="chip" onclick="filterByChip(this,'admin')">Admins</div>
-        <div class="chip" onclick="filterByChip(this,'ativo')">Ativos</div>
-        <div class="chip" onclick="filterByChip(this,'suspenso')">Suspensos</div>
-        <div class="chip" onclick="filterByChip(this,'incompleto')">Perfil Incompleto</div>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>E-mail</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Cidade</th>
-              <th>Ministério</th>
-              <th>Último Acesso</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="usersTableBody">
-            <tr><td colspan="8" style="text-align:center;color:var(--gray-text);">Carregando...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p style="margin-top:20px;font-size:0.78rem;color:var(--gray-text);">
-        ℹ️ Clique em qualquer linha ou no botão <strong>👁️ Ver</strong> para ver a ficha completa do membro.
-        A exclusão anonimiza os dados conforme a LGPD (Art. 18, VI).
+    <!-- ── Tab: Conteúdo (BUG #4) ── -->
+    <div class="tab-painel" id="tab-conteudo">
+      <p style="margin-bottom: 20px; color: var(--cor-texto-claro);">
+        Edite o conteúdo das seções do site. As alterações são salvas no banco e exibidas nas páginas públicas.
       </p>
-    </div>
 
-    <!-- ANIVERSARIANTES -->
-    <div class="tab-content" id="tab-aniversariantes">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-        <h3 id="adminAnivTitulo" style="font-family:var(--font-display);color:var(--blue-dark);">Aniversariantes do Mês</h3>
-        <button onclick="exportarCSV()" class="btn btn-secondary btn-sm">⬇ Exportar Lista Completa</button>
+      <!-- Sub-tabs para cada seção -->
+      <div class="tabs" style="margin-bottom: 20px;">
+        <button class="tab-btn ativo" onclick="trocarSecao('agenda')">Agenda</button>
+        <button class="tab-btn" onclick="trocarSecao('estudos')">Estudos</button>
+        <button class="tab-btn" onclick="trocarSecao('oracao')">Oração</button>
+        <button class="tab-btn" onclick="trocarSecao('ministerios')">Ministérios</button>
+        <button class="tab-btn" onclick="trocarSecao('avisos')">Avisos</button>
+        <button class="tab-btn" onclick="trocarSecao('dizimos')">Dízimos</button>
+        <button class="tab-btn" onclick="trocarSecao('devocional')">Devocional</button>
+        <button class="tab-btn" onclick="trocarSecao('escalas')">Escalas</button>
+        <button class="tab-btn" onclick="trocarSecao('contato_pastoral')">Contato Pastoral</button>
       </div>
-      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
-        📱 Clique em <strong>WhatsApp</strong> para enviar uma mensagem de felicitação automática ao aniversariante.
-      </p>
-      <div class="birthday-list" id="adminAnivList">
-        <p style="text-align:center;color:var(--gray-text);padding:20px;">Carregando...</p>
-      </div>
-    </div>
 
-    <!-- LIDERANÇAS -->
-    <div class="tab-content" id="tab-liderancas">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-        <h3 style="font-family:var(--font-display);color:var(--blue-dark);">Lideranças da Igreja</h3>
-        <button onclick="abrirModalLideranca()" class="btn btn-primary" style="width:auto;padding:10px 20px;">+ Nova Liderança</button>
-      </div>
-      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
-        ✝️ Gerencie pastores, anciãos, diáconos e outras lideranças da igreja.
-      </p>
-      <div id="liderancasList" style="display:flex;flex-direction:column;gap:12px;">
-        <p style="text-align:center;color:var(--gray-text);padding:20px;">Carregando...</p>
+      <!-- Formulário dinâmico de seção -->
+      <div id="form-secao-container">
+        <div class="loading">Carregando</div>
       </div>
     </div>
 
-    <!-- AUDITORIA -->
-    <div class="tab-content" id="tab-audit">
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Ação</th>
-              <th>Detalhes</th>
-              <th>Data/Hora</th>
-            </tr>
-          </thead>
-          <tbody id="auditTableBody">
-            <tr><td colspan="3" style="text-align:center;color:var(--gray-text);">Clique na aba para carregar...</td></tr>
-          </tbody>
-        </table>
+    <!-- ── Tab: Horário de Atendimento (BUG #5) ── -->
+    <div class="tab-painel" id="tab-horario">
+      <div class="card" style="max-width: 600px;">
+        <h3 style="color: var(--cor-primaria); margin-bottom: 15px;">Horário de Atendimento</h3>
+        <p style="margin-bottom: 20px; color: var(--cor-texto-claro); font-size: 0.9rem;">
+          Este texto será exibido no rodapé do site e na seção de contato.
+        </p>
+
+        <div class="form-grupo">
+          <label for="horario-titulo">Título da seção</label>
+          <input type="text" id="horario-titulo" value="Horário de Atendimento">
+        </div>
+        <div class="form-grupo">
+          <label for="horario-texto">Texto do horário</label>
+          <textarea id="horario-texto" rows="5" placeholder="Ex: Segunda a Sexta: 08h às 12h e 14h às 18h&#10;Sábado: 08h às 12h&#10;Domingo: Fechado"></textarea>
+        </div>
+
+        <button onclick="salvarHorario()" class="btn btn-primario" id="btn-salvar-horario">Salvar Horário</button>
+      </div>
+    </div>
+
+    <!-- ── Tab: Membros ── -->
+    <div class="tab-painel" id="tab-membros">
+      <div id="membros-lista">
+        <div class="loading">Carregando membros</div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: Ver/Editar Membro -->
-  <div class="modal-overlay" id="memberModal">
-    <div class="modal modal-lg" style="max-width:800px;">
-      <button class="modal-close" onclick="closeModal('memberModal')">×</button>
-      <div id="memberModalBody"></div>
-    </div>
-  </div>
-
-  <!-- MODAL: Novo Usuário -->
-  <div class="modal-overlay" id="newUserModal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal('newUserModal')">×</button>
-      <h2>Novo Usuário</h2>
-      <div class="form-group">
-        <label>Nome Completo *</label>
-        <input type="text" id="newUserName" placeholder="Nome do membro" />
-      </div>
-      <div class="form-group">
-        <label>E-mail *</label>
-        <input type="email" id="newUserEmail" placeholder="email@exemplo.com" />
-      </div>
-      <div class="form-group">
-        <label>Telefone</label>
-        <input type="text" id="newUserPhone" placeholder="(31) 99999-9999" />
-      </div>
-      <div class="form-group">
-        <label>Senha *</label>
-        <input type="password" id="newUserPass" placeholder="Mínimo 6 caracteres" />
-      </div>
-      <div class="form-group">
-        <label>Função</label>
-        <select id="newUserRole">
-          <option value="membro">Membro</option>
-          <option value="admin">Administrador</option>
-        </select>
-      </div>
-      <button onclick="criarUsuarioAdmin()" class="btn btn-primary" style="width:100%;margin-top:8px;">Criar Usuário</button>
-      <div id="newUserAlert" style="margin-top:12px;"></div>
-    </div>
-  </div>
-
-  <!-- MODAL: Liderança (criar/editar) -->
-  <div class="modal-overlay" id="liderModal">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal('liderModal')">×</button>
-      <h2 id="liderModalTitle">Nova Liderança</h2>
-      <input type="hidden" id="liderId" />
-      <div class="form-group">
-        <label>Nome *</label>
-        <input type="text" id="liderNome" placeholder="Ex: Pr. João Silva" />
-      </div>
-      <div class="form-group">
-        <label>Cargo / Função *</label>
-        <input type="text" id="liderCargo" placeholder="Ex: Pastor Presidente, Ancião, Diácono..." />
-      </div>
-      <div class="form-group">
-        <label>Descrição</label>
-        <textarea id="liderDescricao" placeholder="Breve descrição da função..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>Telefone</label>
-        <input type="text" id="liderTelefone" placeholder="(31) 99999-9999" />
-      </div>
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="liderEmail" placeholder="email@missaoreviver.com.br" />
-      </div>
-      <div class="form-group">
-        <label>Ordem de exibição</label>
-        <input type="number" id="liderOrdem" value="0" min="0" style="width:80px;" />
-      </div>
-      <div class="form-group">
-        <label>Foto (URL ou Base64)</label>
-        <input type="text" id="liderFoto" placeholder="Cole aqui a URL ou base64 da foto" />
-      </div>
-      <button onclick="salvarLideranca()" class="btn btn-primary" style="width:100%;margin-top:8px;">Salvar</button>
-      <div id="liderAlert" style="margin-top:12px;"></div>
-    </div>
-  </div>
-
-    <!-- CONTEÚDO DO SITE -->
-    <div class="tab-content" id="tab-conteudo">
-      <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">📝 Conteúdo do Site</h3>
-      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
-        Edite o conteúdo exibido para os membros. As alterações são salvas no banco de dados e refletem imediatamente.
-      </p>
-
-      <!-- Sub-tabs de conteúdo -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-        <button class="chip active" onclick="switchConteudoTab(this,'cultos')">church Cultos</button>
-        <button class="chip" onclick="switchConteudoTab(this,'eventos')">📅 Eventos</button>
-        <button class="chip" onclick="switchConteudoTab(this,'avisos')">📢 Avisos</button>
-        <button class="chip" onclick="switchConteudoTab(this,'devocionais')">✨ Devocionais</button>
-        <button class="chip" onclick="switchConteudoTab(this,'estudos')">📖 Estudos</button>
-        <button class="chip" onclick="switchConteudoTab(this,'escalas')">📋 Escalas</button>
-      </div>
-
-      <!-- Painel de edição: CULTOS -->
-      <div id="conteudoPanel-cultos" class="conteudo-panel">
-        <h4>Horários de Culto</h4>
-        <div id="cultosList" style="display:flex;flex-direction:column;gap:12px;"></div>
-        <button onclick="addCulto()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Culto</button>
-        <button onclick="salvarConteudo('cultos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Cultos</button>
-      </div>
-
-      <!-- Painel: EVENTOS -->
-      <div id="conteudoPanel-eventos" class="conteudo-panel" style="display:none;">
-        <h4>Eventos Próximos</h4>
-        <div id="eventosList" style="display:flex;flex-direction:column;gap:12px;"></div>
-        <button onclick="addEvento()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Evento</button>
-        <button onclick="salvarConteudo('eventos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Eventos</button>
-      </div>
-
-      <!-- Painel: AVISOS -->
-      <div id="conteudoPanel-avisos" class="conteudo-panel" style="display:none;">
-        <h4>Avisos e Comunicados</h4>
-        <div id="avisosList" style="display:flex;flex-direction:column;gap:12px;"></div>
-        <button onclick="addAviso()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Aviso</button>
-        <button onclick="salvarConteudo('avisos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Avisos</button>
-      </div>
-
-      <!-- Painel: DEVOCIONAIS -->
-      <div id="conteudoPanel-devocionais" class="conteudo-panel" style="display:none;">
-        <h4>Devocionais</h4>
-        <div id="devocionaisList" style="display:flex;flex-direction:column;gap:12px;"></div>
-        <button onclick="addDevocional()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Devocional</button>
-        <button onclick="salvarConteudo('devocionais')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Devocionais</button>
-      </div>
-
-      <!-- Painel: ESTUDOS -->
-      <div id="conteudoPanel-estudos" class="conteudo-panel" style="display:none;">
-        <h4>Estudos Bíblicos</h4>
-        <div id="estudosList" style="display:flex;flex-direction:column;gap:12px;"></div>
-        <button onclick="addEstudo()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Estudo</button>
-        <button onclick="salvarConteudo('estudos')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Estudos</button>
-      </div>
-
-      <!-- Painel: ESCALAS -->
-      <div id="conteudoPanel-escalas" class="conteudo-panel" style="display:none;">
-        <h4>Escala de Serviços</h4>
-        <div id="escalasList" style="display:flex;flex-direction:column;gap:12px;"></div>
-        <button onclick="addEscala()" class="btn btn-secondary" style="width:auto;margin-top:12px;">+ Adicionar Escala</button>
-        <button onclick="salvarConteudo('escalas')" class="btn btn-primary" style="width:auto;margin-top:12px;">💾 Salvar Escalas</button>
-      </div>
-
-      <div id="conteudoAlert" style="margin-top:16px;"></div>
-    </div>
-
-    <!-- CONFIGURAÇÕES DA IGREJA -->
-    <div class="tab-content" id="tab-config">
-      <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">⚙️ Configurações da Igreja</h3>
-      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
-        Estes dados aparecem no site público e no rodapé.
-      </p>
-
-      <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:24px;">
-        <div class="form-group">
-          <label>Horário de Atendimento</label>
-          <input type="text" id="cfgHorarioAtendimento" placeholder="Ex: Segunda a Sexta: 08h às 12h e 14h às 18h" />
-        </div>
-        <div class="form-group">
-          <label>Endereço da Igreja</label>
-          <input type="text" id="cfgEndereco" placeholder="R. Felipe dos Santos, 461 - Centro, Betim - MG" />
-        </div>
-        <div class="form-group">
-          <label>CEP</label>
-          <input type="text" id="cfgCep" placeholder="32600-126" />
-        </div>
-        <div class="form-group">
-          <label>Telefone da Igreja</label>
-          <input type="text" id="cfgTelefone" placeholder="(31) 0000-0000" />
-        </div>
-        <div class="form-group">
-          <label>E-mail de Contato</label>
-          <input type="text" id="cfgEmail" placeholder="contato@missaoreviver.com.br" />
-        </div>
-        <div class="form-group">
-          <label>Chave PIX</label>
-          <input type="text" id="cfgPix" placeholder="missaoreviver@igreja.com.br" />
-        </div>
-        <button onclick="salvarConfig()" class="btn btn-primary" style="width:auto;padding:14px 40px;">💾 Salvar Configurações</button>
-        <div id="configAlert" style="margin-top:16px;"></div>
-      </div>
-    </div>
-
-  <script src="js/api.js"></script>
-  <script src="js/auth-frontend.js"></script>
+  <script src="/js/main.js"></script>
   <script>
+    // ── Guarda: exige login + admin ──
+    if (!isLoggedIn() || !isAdmin()) {
+      window.location.href = '/login.html';
+    }
+
+    let secaoAtual = 'agenda';
+    let conteudoCache = {};
+
     // ═══════════════════════════════════════════════════════════
-    //  ADMIN FRONTEND — Lógica do painel administrativo
+    // Tabs principais
     // ═══════════════════════════════════════════════════════════
-
-    let currentFilter = 'all';
-    let adminUsersCache = [];
-
-    // ── Inicialização ──
-    async function initAdmin() {
-      try {
-        const sessao = await API.auth.sessao();
-        if (!sessao.autenticado || sessao.membro.role !== 'admin') {
-          window.location.href = 'login.html';
-          return;
-        }
-        document.getElementById('userName').textContent = sessao.membro.nome_completo;
-        document.getElementById('userRole').textContent = sessao.membro.role;
-
-        await Promise.all([
-          loadStats(),
-          loadAdminUsers(''),
-          loadAdminAniversariantes(),
-        ]);
-      } catch (err) {
-        window.location.href = 'login.html';
-      }
-    }
-
-    async function loadStats() {
-      try {
-        const stats = await API.admin.stats();
-        document.getElementById('statTotal').textContent = stats.totalUsuarios;
-        document.getElementById('statMembros').textContent = stats.totalMembros;
-        document.getElementById('statAdmins').textContent = stats.totalAdmins;
-        document.getElementById('statAcessos').textContent = stats.acessosHoje;
-      } catch (err) { console.error('Stats:', err); }
-    }
-
-    // ── Usuários ──
-    async function loadAdminUsers(busca = '') {
-      try {
-        const data = await API.admin.listarUsuarios();
-        let users = data.usuarios || [];
-        adminUsersCache = users;
-
-        if (currentFilter === 'membro') users = users.filter(u => u.role === 'membro');
-        else if (currentFilter === 'admin') users = users.filter(u => u.role === 'admin');
-        else if (currentFilter === 'ativo') users = users.filter(u => u.status === 'ativo');
-        else if (currentFilter === 'suspenso') users = users.filter(u => u.status !== 'ativo');
-        else if (currentFilter === 'incompleto') users = users.filter(u => !u.perfil_completo);
-
-        if (busca) {
-          users = users.filter(u =>
-            (u.nome_completo || '').toLowerCase().includes(busca.toLowerCase()) ||
-            (u.email || '').toLowerCase().includes(busca.toLowerCase()));
-        }
-
-        const tbody = document.getElementById('usersTableBody');
-        if (users.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray-text);">Nenhum usuário encontrado.</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = users.map(u => {
-          const iniciais = (u.nome_completo || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
-          const ultimoAcesso = u.ultimo_acesso
-            ? new Date(u.ultimo_acesso).toLocaleDateString('pt-BR')
-            : 'Nunca';
-          return `
-            <tr style="cursor:pointer;" onclick="verMembro('${u.id}')">
-              <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  ${u.foto_perfil
-                    ? `<img src="${u.foto_perfil}" style="width:32px;height:32px;border-radius:36%;object-fit:cover;">`
-                    : `<div class="birthday-avatar" style="width:32px;height:32px;font-size:0.8rem;">${iniciais}</div>`}
-                  <strong>${u.nome_completo}</strong>
-                </div>
-              </td>
-              <td>${u.email}</td>
-              <td><span class="badge badge-${u.role}">${u.role}</span></td>
-              <td><span class="badge ${u.status === 'ativo' ? 'badge-active' : 'badge-inactive'}">${u.status}</span></td>
-              <td>${u.endereco_cidade || '—'}</td>
-              <td>${u.ministerio || '—'}</td>
-              <td>${ultimoAcesso}</td>
-              <td onclick="event.stopPropagation();">
-                <button onclick="verMembro('${u.id}')" class="btn btn-primary btn-sm">👁️ Ver</button>
-              </td>
-            </tr>`;
-        }).join('');
-      } catch (err) {
-        document.getElementById('usersTableBody').innerHTML =
-          `<tr><td colspan="8" style="text-align:center;color:red;">Erro: ${err.message}</td></tr>`;
-      }
-    }
-
-    function filterByChip(el, filter) {
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      currentFilter = filter;
-      loadAdminUsers(document.getElementById('searchInput')?.value || '');
-    }
-
-    // ── Ver/Editar Membro ──
-    async function verMembro(userId) {
-      try {
-        const data = await API.admin.verUsuario(userId);
-        const m = data.membro;
-        const logs = data.auditoria || [];
-
-        const fmtDate = (val) => {
-          if (!val) return '<span style="color:var(--gray-text);">Não informado</span>';
-          if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
-            const parts = val.split('T')[0].split('-');
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-          }
-          try { return new Date(val).toLocaleDateString('pt-BR'); } catch { return '—'; }
-        };
-        const iniciais = (m.nome_completo || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
-
-        document.getElementById('memberModalBody').innerHTML = `
-          <div style="display:flex;gap:20px;align-items:center;margin-bottom:24px;">
-            ${m.foto_perfil
-              ? `<img src="${m.foto_perfil}" style="width:80px;height:80px;border-radius:36%;object-fit:cover;">`
-              : `<div class="birthday-avatar" style="width:80px;height:80px;font-size:1.8rem;">${iniciais}</div>`}
-            <div>
-              <h2 style="margin:0 0 4px;">${m.nome_completo}</h2>
-              <p style="margin:0;color:var(--gray-text);">${m.email}</p>
-              <div style="margin-top:8px;display:flex;gap:8px;">
-                <span class="badge badge-${m.role}">${m.role}</span>
-                <span class="badge ${m.status === 'ativo' ? 'badge-active' : 'badge-inactive'}">${m.status}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Abas do modal -->
-          <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--gray-light);padding-bottom:0;">
-            <button onclick="document.getElementById('mViewInfo').style.display='block';document.getElementById('mEditInfo').style.display='none';"
-                    style="padding:8px 16px;border:none;background:none;font-weight:600;color:var(--blue-dark);cursor:pointer;border-bottom:2px solid var(--blue-dark);margin-bottom:-2px;">📋 Visualizar</button>
-            <button onclick="document.getElementById('mViewInfo').style.display='none';document.getElementById('mEditInfo').style.display='block';"
-                    style="padding:8px 16px;border:none;background:none;font-weight:600;color:var(--gray-text);cursor:pointer;">✏️ Editar</button>
-          </div>
-
-          <!-- ABA: Visualizar -->
-          <div id="mViewInfo">
-            <div class="member-info-section">
-              <h3>Dados Pessoais</h3>
-              <div class="info-grid">
-                <div class="info-item"><span class="info-label">Telefone</span><span class="info-value">${m.telefone || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Nascimento</span><span class="info-value">${fmtDate(m.data_nascimento)}</span></div>
-                <div class="info-item"><span class="info-label">Gênero</span><span class="info-value">${m.genero || '—'}</span></div>
-                <div class="info-item"><span class="info-label">CPF</span><span class="info-value">${m.cpf || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Estado Civil</span><span class="info-value">${m.estado_civil || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Cidade/UF</span><span class="info-value">${m.endereco_cidade ? m.endereco_cidade + '/' + (m.endereco_estado || '') : '—'}</span></div>
-              </div>
-            </div>
-            <div class="member-info-section">
-              <h3>Vida Espiritual</h3>
-              <div class="info-grid">
-                <div class="info-item"><span class="info-label">Ministério</span><span class="info-value">${m.ministerio || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Função</span><span class="info-value">${m.funcao_igreja || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Conversão</span><span class="info-value">${fmtDate(m.data_conversao)}</span></div>
-                <div class="info-item"><span class="info-label">Batismo</span><span class="info-value">${fmtDate(m.data_batismo)}</span></div>
-                <div class="info-item"><span class="info-label">Igreja Anterior</span><span class="info-value">${m.igreja_anterior || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Dons Espirituais</span><span class="info-value">${m.dons_espirituais || '—'}</span></div>
-              </div>
-            </div>
-            <div class="member-info-section">
-              <h3>Família</h3>
-              <div class="info-grid">
-                <div class="info-item"><span class="info-label">Cônjuge</span><span class="info-value">${m.nome_conjuge || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Data Casamento</span><span class="info-value">${fmtDate(m.data_casamento)}</span></div>
-                <div class="info-item"><span class="info-label">Filhos</span><span class="info-value">${m.filhos ? m.qtd_filhos + ' filho(s)' : 'Não'}</span></div>
-              </div>
-            </div>
-            <div class="member-info-section">
-              <h3>Contato de Emergência</h3>
-              <div class="info-grid">
-                <div class="info-item"><span class="info-label">Nome</span><span class="info-value">${m.emergencia_nome || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Telefone</span><span class="info-value">${m.emergencia_telefone || '—'}</span></div>
-                <div class="info-item"><span class="info-label">Parentesco</span><span class="info-value">${m.emergencia_parentesco || '—'}</span></div>
-              </div>
-            </div>
-            ${m.testemunho ? `<div class="member-info-section"><h3>Testemunho</h3><p style="font-style:italic;color:var(--gray-text);">${m.testemunho}</p></div>` : ''}
-            <div class="member-info-section">
-              <h3>Metadados</h3>
-              <div class="info-grid">
-                <div class="info-item"><span class="info-label">Cadastrado em</span><span class="info-value">${fmtDate(m.criado_em)}</span></div>
-                <div class="info-item"><span class="info-label">Último acesso</span><span class="info-value">${m.ultimo_acesso ? new Date(m.ultimo_acesso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Nunca'}</span></div>
-                <div class="info-item"><span class="info-label">Perfil completo</span><span class="info-value">${m.perfil_completo ? 'Sim' : 'Não'}</span></div>
-                <div class="info-item"><span class="info-label">Divulgar aniversário</span><span class="info-value">${m.participar_aniversarios ? 'Sim' : 'Não'}</span></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ABA: Editar -->
-          <div id="mEditInfo" style="display:none;">
-            <div class="form-group"><label>Nome Completo</label><input type="text" id="editMNome" value="${m.nome_completo || ''}" /></div>
-            <div class="form-group"><label>Telefone</label><input type="text" id="editMTelefone" value="${m.telefone || ''}" /></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Data Nascimento</label><input type="date" id="editMDataNasc" value="${m.data_nascimento ? new Date(m.data_nascimento).toISOString().split('T')[0] : ''}" /></div>
-              <div class="form-group"><label>Gênero</label>
-                <select id="editMGenero">
-                  <option value="">—</option>
-                  <option value="masculino" ${m.genero==='masculino'?'selected':''}>Masculino</option>
-                  <option value="feminino" ${m.genero==='feminino'?'selected':''}>Feminino</option>
-                </select>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Estado Civil</label>
-                <select id="editMEstadoCivil">
-                  <option value="">—</option>
-                  <option value="solteiro" ${m.estado_civil==='solteiro'?'selected':''}>Solteiro(a)</option>
-                  <option value="casado" ${m.estado_civil==='casado'?'selected':''}>Casado(a)</option>
-                  <option value="divorciado" ${m.estado_civil==='divorciado'?'selected':''}>Divorciado(a)</option>
-                  <option value="viuvo" ${m.estado_civil==='viuvo'?'selected':''}>Viúvo(a)</option>
-                </select>
-              </div>
-              <div class="form-group"><label>CPF</label><input type="text" id="editMCPF" value="${m.cpf || ''}" /></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Cidade</label><input type="text" id="editMCidade" value="${m.endereco_cidade || ''}" /></div>
-              <div class="form-group"><label>Estado (UF)</label><input type="text" id="editMEstado" value="${m.endereco_estado || ''}" maxlength="2" /></div>
-            </div>
-            <div class="form-group"><label>Ministério</label><input type="text" id="editMMinisterio" value="${m.ministerio || ''}" /></div>
-            <div class="form-group"><label>Função na Igreja</label><input type="text" id="editMFuncao" value="${m.funcao_igreja || ''}" /></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Data Conversão</label><input type="date" id="editMConversao" value="${m.data_conversao ? new Date(m.data_conversao).toISOString().split('T')[0] : ''}" /></div>
-              <div class="form-group"><label>Data Batismo</label><input type="date" id="editMBatismo" value="${m.data_batismo ? new Date(m.data_batismo).toISOString().split('T')[0] : ''}" /></div>
-            </div>
-            <div class="form-group"><label>Cônjuge</label><input type="text" id="editMConjuge" value="${m.nome_conjuge || ''}" /></div>
-            <div class="form-group"><label>Contato Emergência</label><input type="text" id="editMEmergencia" value="${m.emergencia_nome || ''}" placeholder="Nome" /></div>
-            <div class="form-group"><label>Tel. Emergência</label><input type="text" id="editMEmergenciaTel" value="${m.emergencia_telefone || ''}" /></div>
-            <div class="form-group"><label>Instagram</label><input type="text" id="editMInstagram" value="${m.instagram || ''}" /></div>
-            <div class="form-group">
-              <label><input type="checkbox" id="editMAniv" ${m.participar_aniversarios ? 'checked' : ''} /> Divulgar aniversário</label>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div class="form-group"><label>Role</label>
-                <select id="editMRole">
-                  <option value="membro" ${m.role==='membro'?'selected':''}>Membro</option>
-                  <option value="admin" ${m.role==='admin'?'selected':''}>Administrador</option>
-                </select>
-              </div>
-              <div class="form-group"><label>Status</label>
-                <select id="editMStatus">
-                  <option value="ativo" ${m.status==='ativo'?'selected':''}>Ativo</option>
-                  <option value="suspenso" ${m.status==='suspenso'?'selected':''}>Suspenso</option>
-                  <option value="inativo" ${m.status==='inativo'?'selected':''}>Inativo</option>
-                </select>
-              </div>
-            </div>
-            <button onclick="salvarEdicaoMembro('${m.id}')" class="btn btn-primary" style="width:100%;margin-top:8px;">💾 Salvar Alterações</button>
-            <div id="editMembroAlert" style="margin-top:12px;"></div>
-          </div>
-
-          <!-- Ações administrativas -->
-          <div style="margin-top:24px;padding-top:20px;border-top:2px solid var(--gray-light);display:flex;gap:12px;flex-wrap:wrap;">
-            <button class="btn btn-secondary" onclick="toggleRole('${m.id}','${m.role}')">Trocar Role</button>
-            <button class="btn btn-secondary" onclick="toggleStatus('${m.id}','${m.status}')">Trocar Status</button>
-            <button class="btn btn-danger" onclick="deleteUser('${m.id}','${m.nome_completo}')">Excluir (LGPD)</button>
-          </div>
-
-          ${logs.length > 0 ? `
-            <div style="margin-top:24px;">
-              <h4 style="margin-bottom:8px;">Histórico de Auditoria</h4>
-              <div style="max-height:200px;overflow-y:auto;">
-                ${logs.slice(0, 20).map(l => `<div style="padding:6px 0;border-bottom:1px solid var(--gray-light);font-size:0.8rem;"><strong>${l.acao}</strong> — ${l.detalhes || ''} <span style="color:var(--gray-text);">${new Date(l.timestamp).toLocaleString('pt-BR')}</span></div>`).join('')}
-              </div>
-            </div>` : ''}
-        `;
-
-        document.getElementById('memberModal').classList.add('show');
-      } catch (err) {
-        alert('Erro ao carregar membro: ' + err.message);
-      }
-    }
-
-    async function salvarEdicaoMembro(userId) {
-      // Usa || undefined para NÃO sobrescrever campos vazios no backend
-      const dados = {};
-      const collect = (id, key) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const v = el.value?.trim();
-        if (v) dados[key] = v;  // só envia se tem valor
-      };
-      const collectDate = (id, key) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const v = el.value;
-        if (v) dados[key] = v;
-      };
-      const collectSelect = (id, key) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const v = el.value;
-        if (v) dados[key] = v;
-      };
-
-      collect('editMNome', 'nome_completo');
-      collect('editMTelefone', 'telefone');
-      collectDate('editMDataNasc', 'data_nascimento');
-      collectSelect('editMGenero', 'genero');
-      collect('editMCPF', 'cpf');
-      collectSelect('editMEstadoCivil', 'estado_civil');
-      collect('editMCidade', 'endereco_cidade');
-      collect('editMEstado', 'endereco_estado');
-      collect('editMMinisterio', 'ministerio');
-      collect('editMFuncao', 'funcao_igreja');
-      collectDate('editMConversao', 'data_conversao');
-      collectDate('editMBatismo', 'data_batismo');
-      collect('editMConjuge', 'nome_conjuge');
-      collect('editMEmergencia', 'emergencia_nome');
-      collect('editMEmergenciaTel', 'emergencia_telefone');
-      collect('editMInstagram', 'instagram');
-
-      // Checkbox e selects que sempre devem ser enviados
-      const anivEl = document.getElementById('editMAniv');
-      if (anivEl) dados.participar_aniversarios = anivEl.checked;
-      const roleEl = document.getElementById('editMRole');
-      if (roleEl) dados.role = roleEl.value;
-      const statusEl = document.getElementById('editMStatus');
-      if (statusEl) dados.status = statusEl.value;
-
-      try {
-        await API.admin.atualizarUsuario(userId, dados);
-        const alertEl = document.getElementById('editMembroAlert');
-        if (alertEl) {
-          alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;font-size:0.86rem;">✅ Membro atualizado com sucesso!</div>';
-        }
-        setTimeout(() => {
-          closeModal('memberModal');
-          loadAdminUsers(document.getElementById('searchInput')?.value || '');
-        }, 1200);
-      } catch (err) {
-        const alertEl = document.getElementById('editMembroAlert');
-        if (alertEl) {
-          alertEl.innerHTML = `<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;font-size:0.86rem;">❌ ${err.message}</div>`;
-        }
-      }
-    }
-
-    async function criarUsuarioAdmin() {
-      const nome = document.getElementById('newUserName').value.trim();
-      const email = document.getElementById('newUserEmail').value.trim();
-      const telefone = document.getElementById('newUserPhone').value.trim();
-      const senha = document.getElementById('newUserPass').value;
-      const role = document.getElementById('newUserRole').value;
-
-      if (!nome || !email || !senha) {
-        document.getElementById('newUserAlert').innerHTML =
-          '<div style="color:red;font-size:0.86rem;">Preencha nome, e-mail e senha.</div>';
-        return;
-      }
-
-      try {
-        await API.admin.criarUsuario({ nome_completo: nome, email, senha, telefone, role });
-        document.getElementById('newUserAlert').innerHTML =
-          '<div style="color:green;font-size:0.86rem;">✅ Usuário criado com sucesso!</div>';
-        setTimeout(() => {
-          closeModal('newUserModal');
-          loadAdminUsers('');
-        }, 1200);
-      } catch (err) {
-        document.getElementById('newUserAlert').innerHTML =
-          `<div style="color:red;font-size:0.86rem;">❌ ${err.message}</div>`;
-      }
-    }
-
-    async function toggleRole(userId, currentRole) {
-      const newRole = currentRole === 'admin' ? 'membro' : 'admin';
-      if (!confirm(`Trocar role para ${newRole}?`)) return;
-      try {
-        await API.admin.atualizarUsuario(userId, { role: newRole });
-        alert('Role alterado com sucesso!');
-        verMembro(userId);
-        loadAdminUsers('');
-      } catch (err) { alert(err.message); }
-    }
-
-    async function toggleStatus(userId, currentStatus) {
-      const newStatus = currentStatus === 'ativo' ? 'suspenso' : 'ativo';
-      if (!confirm(`Trocar status para ${newStatus}?`)) return;
-      try {
-        await API.admin.atualizarUsuario(userId, { status: newStatus });
-        alert('Status alterado com sucesso!');
-        verMembro(userId);
-        loadAdminUsers('');
-      } catch (err) { alert(err.message); }
-    }
-
-    async function deleteUser(userId, nome) {
-      if (!confirm(`Confirmar exclusão de ${nome}?\n\nOs dados serão anonimizados conforme a LGPD.`)) return;
-      try {
-        await API.admin.excluirUsuario(userId);
-        alert('Usuário excluído (dados anonimizados).');
-        closeModal('memberModal');
-        loadAdminUsers('');
-      } catch (err) { alert(err.message); }
-    }
-
-    // ── Aniversariantes ──
-    async function loadAdminAniversariantes() {
-      try {
-        const now = new Date();
-        const mes = now.getMonth() + 1;
-        const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-        document.getElementById('adminAnivTitulo').textContent = `Aniversariantes — ${meses[mes - 1]}`;
-
-        const data = await API.aniversariantesAdmin(mes);
-        const lista = data.aniversariantes || [];
-
-        const container = document.getElementById('adminAnivList');
-        if (lista.length === 0) {
-          container.innerHTML = '<p style="text-align:center;color:var(--gray-text);padding:20px;">Nenhum aniversariante este mês.</p>';
-          return;
-        }
-
-        container.innerHTML = lista.map(p => {
-          const iniciais = (p.nome_completo || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
-          const dia = p.data_nascimento ? p.data_nascimento.split('-')[2] : '—';
-          const telefone = (p.telefone || '').replace(/\D/g, '');
-          const msg = `Olá ${p.nome_completo}! 🎉\\n\\nA Missão Reviver deseja um feliz aniversário! Que Deus abençoe sua vida com saúde, alegria e paz. 🙏\\n\\n"Porque eu bem sei os pensamentos que penso de vós, diz o SENHOR; pensamentos de paz, e não de mal, para vos dar o fim que esperais." - Jeremias 29:11\\n\\nCom amor, Missão Reviver 💙`;
-          const waLink = telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(msg)}` : '#';
-
-          return `
-            <div class="birthday-item">
-              ${p.foto_perfil
-                ? `<img src="${p.foto_perfil}" style="width:44px;height:44px;border-radius:36%;object-fit:cover;">`
-                : `<div class="birthday-avatar">${iniciais}</div>`}
-              <div class="b-info">
-                <div class="b-name">${p.nome_completo}</div>
-                <div class="b-date">Dia ${dia} • ${p.idade != null ? p.idade + ' anos' : '—'}</div>
-              </div>
-              <div style="display:flex;gap:8px;">
-                ${telefone ? `<a href="${waLink}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none;">📱 WhatsApp</a>` : '<span style="color:var(--gray-text);font-size:0.8rem;">Sem telefone</span>'}
-              </div>
-            </div>`;
-        }).join('');
-      } catch (err) {
-        document.getElementById('adminAnivList').innerHTML =
-          `<p style="color:red;text-align:center;">Erro: ${err.message}</p>`;
-      }
-    }
-
-    // ── Lideranças ──
-    async function loadLiderancas() {
-      try {
-        const data = await API.liderancas.listarTodas();
-        const lista = data.liderancas || [];
-        const container = document.getElementById('liderancasList');
-
-        if (lista.length === 0) {
-          container.innerHTML = '<p style="text-align:center;color:var(--gray-text);padding:20px;">Nenhuma liderança cadastrada. Clique em "+ Nova Liderança".</p>';
-          return;
-        }
-
-        container.innerHTML = lista.map(l => {
-          const iniciais = (l.nome || '?').split(' ').map(w => w[0]).slice(0, 2).join('');
-          return `
-            <div class="lider-card">
-              ${l.foto
-                ? `<div class="lider-foto"><img src="${l.foto}" alt="${l.nome}"></div>`
-                : `<div class="lider-foto">${iniciais}</div>`}
-              <div class="lider-info">
-                <div class="lider-nome">${l.nome}</div>
-                <div class="lider-cargo">${l.cargo}</div>
-                ${l.descricao ? `<div class="lider-desc">${l.descricao}</div>` : ''}
-                ${l.telefone ? `<div class="lider-contato">📞 ${l.telefone}</div>` : ''}
-                ${l.email ? `<div class="lider-contato">✉️ ${l.email}</div>` : ''}
-                ${!l.ativo ? '<div style="color:var(--gray-text);font-size:0.78rem;font-style:italic;">(Inativo)</div>' : ''}
-              </div>
-              <div style="display:flex;gap:8px;flex-shrink:0;">
-                <button onclick="abrirModalLideranca('${l.id}')" class="btn btn-secondary btn-sm">✏️ Editar</button>
-                <button onclick="removerLideranca('${l.id}','${l.nome}')" class="btn btn-danger btn-sm">🗑️</button>
-              </div>
-            </div>`;
-        }).join('');
-      } catch (err) {
-        document.getElementById('liderancasList').innerHTML =
-          `<p style="color:red;text-align:center;">Erro: ${err.message}</p>`;
-      }
-    }
-
-    async function abrirModalLideranca(id) {
-      // Limpa formulário
-      document.getElementById('liderModal').classList.add('show');
-      document.getElementById('liderAlert').innerHTML = '';
-      document.getElementById('liderId').value = '';
-      document.getElementById('liderNome').value = '';
-      document.getElementById('liderCargo').value = '';
-      document.getElementById('liderDescricao').value = '';
-      document.getElementById('liderTelefone').value = '';
-      document.getElementById('liderEmail').value = '';
-      document.getElementById('liderOrdem').value = '0';
-      document.getElementById('liderFoto').value = '';
-      document.getElementById('liderModalTitle').textContent = 'Nova Liderança';
-
-      if (id) {
-        // Modo edição — busca os dados
-        try {
-          const data = await API.liderancas.listarTodas();
-          const lider = (data.liderancas || []).find(l => l.id === id);
-          if (lider) {
-            document.getElementById('liderId').value = lider.id;
-            document.getElementById('liderNome').value = lider.nome || '';
-            document.getElementById('liderCargo').value = lider.cargo || '';
-            document.getElementById('liderDescricao').value = lider.descricao || '';
-            document.getElementById('liderTelefone').value = lider.telefone || '';
-            document.getElementById('liderEmail').value = lider.email || '';
-            document.getElementById('liderOrdem').value = lider.ordem || 0;
-            document.getElementById('liderFoto').value = lider.foto || '';
-            document.getElementById('liderModalTitle').textContent = 'Editar Liderança';
-          }
-        } catch (err) { alert(err.message); }
-      }
-    }
-
-    async function salvarLideranca() {
-      const id = document.getElementById('liderId').value;
-      const dados = {
-        nome: document.getElementById('liderNome').value.trim(),
-        cargo: document.getElementById('liderCargo').value.trim(),
-        descricao: document.getElementById('liderDescricao').value.trim() || null,
-        telefone: document.getElementById('liderTelefone').value.trim() || null,
-        email: document.getElementById('liderEmail').value.trim() || null,
-        ordem: parseInt(document.getElementById('liderOrdem').value) || 0,
-        foto: document.getElementById('liderFoto').value.trim() || null,
-      };
-
-      if (!dados.nome || !dados.cargo) {
-        document.getElementById('liderAlert').innerHTML =
-          '<div style="color:red;font-size:0.86rem;">Nome e cargo são obrigatórios.</div>';
-        return;
-      }
-
-      try {
-        if (id) {
-          await API.liderancas.atualizar(id, dados);
-        } else {
-          await API.liderancas.criar(dados);
-        }
-        document.getElementById('liderAlert').innerHTML =
-          '<div style="color:green;font-size:0.86rem;">✅ Salvo com sucesso!</div>';
-        setTimeout(() => {
-          closeModal('liderModal');
-          loadLiderancas();
-        }, 1200);
-      } catch (err) {
-        document.getElementById('liderAlert').innerHTML =
-          `<div style="color:red;font-size:0.86rem;">❌ ${err.message}</div>`;
-      }
-    }
-
-    async function removerLideranca(id, nome) {
-      if (!confirm(`Remover ${nome} das lideranças?`)) return;
-      try {
-        await API.liderancas.excluir(id);
-        loadLiderancas();
-      } catch (err) { alert(err.message); }
-    }
-
-    // ── Auditoria ──
-    async function loadAudit() {
-      try {
-        const data = await API.admin.auditoria();
-        const logs = data.logs || [];
-        const tbody = document.getElementById('auditTableBody');
-        if (logs.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--gray-text);">Nenhum registro.</td></tr>';
-          return;
-        }
-        tbody.innerHTML = logs.map(l => `
-          <tr>
-            <td><strong>${l.acao}</strong></td>
-            <td>${l.detalhes || '—'}</td>
-            <td>${new Date(l.timestamp).toLocaleString('pt-BR')}</td>
-          </tr>`).join('');
-      } catch (err) {
-        document.getElementById('auditTableBody').innerHTML =
-          `<tr><td colspan="3" style="color:red;">Erro: ${err.message}</td></tr>`;
-      }
-    }
-
-    // ── Exportar CSV ──
-    async function exportarCSV() {
-      try {
-        const data = await API.admin.listarUsuarios();
-        const users = data.usuarios || [];
-        const headers = ['Nome', 'Email', 'Telefone', 'Role', 'Status', 'Nascimento', 'Cidade', 'Estado', 'Ministerio', 'Funcao', 'Instagram'];
-        const rows = users.map(u => [
-          `"${u.nome_completo || ''}"`,
-          `"${u.email || ''}"`,
-          `"${u.telefone || ''}"`,
-          `"${u.role || ''}"`,
-          `"${u.status || ''}"`,
-          `"${(u.data_nascimento || '').split('T')[0]}"`,
-          `"${u.endereco_cidade || ''}"`,
-          `"${u.endereco_estado || ''}"`,
-          `"${u.ministerio || ''}"`,
-          `"${u.funcao_igreja || ''}"`,
-          `"${u.instagram || ''}"`,
-        ].join(','));
-        const csv = [headers.join(','), ...rows].join('\n');
-        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `membros-missao-reviver-${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-      } catch (err) { alert('Erro ao exportar: ' + err.message); }
-    }
-
-    // ── Tabs ──
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + tabId).classList.add('active');
-
-      if (tabId === 'audit') loadAudit();
-      if (tabId === 'liderancas') loadLiderancas();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('show');
-    }
-
-    // ═══════════════════════════════════════════
-    //  GESTÃO DE CONTEÚDO DO SITE
-    // ═══════════════════════════════════════════
-
-    let conteudoCache = {}; // cache local do conteúdo carregado
-
-    function switchConteudoTab(btn, secao) {
-      document.querySelectorAll('.chip').forEach(c => {
-        if (c.parentElement === btn.parentElement) c.classList.remove('active');
+    function trocarTab(nome) {
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        // Só controla as tabs principais (primeiros 4 botões)
+        if (i < 4) btn.classList.remove('ativo');
       });
-      btn.classList.add('active');
-      document.querySelectorAll('.conteudo-panel').forEach(p => p.style.display = 'none');
-      const panel = document.getElementById('conteudoPanel-' + secao);
-      if (panel) panel.style.display = '';
+      document.querySelectorAll('.tab-painel').forEach(p => p.classList.remove('ativo'));
+
+      event.target.classList.add('ativo');
+      document.getElementById('tab-' + nome).classList.add('ativo');
+
+      if (nome === 'dashboard') carregarStats();
+      if (nome === 'membros') carregarMembros();
+      if (nome === 'horario') carregarHorario();
+      if (nome === 'conteudo') carregarSecao(secaoAtual);
     }
 
-    async function carregarConteudoAdmin() {
+    // ═══════════════════════════════════════════════════════════
+    // BUG #2: Dashboard — busca stats reais do backend
+    // ═══════════════════════════════════════════════════════════
+    async function carregarStats() {
       try {
-        const data = await API.conteudo.listarTudo();
-        conteudoCache = data.conteudo || {};
+        const stats = await apiFetch('/admin/stats');
 
-        // Renderiza cada seção
-        if (conteudoCache.cultos) renderCultosAdmin(conteudoCache.cultos.itens || []);
-        if (conteudoCache.eventos) renderEventosAdmin(conteudoCache.eventos.itens || []);
-        if (conteudoCache.avisos) renderAvisosAdmin(conteudoCache.avisos.itens || []);
-        if (conteudoCache.devocionais) renderDevocionaisAdmin(conteudoCache.devocionais.itens || []);
-        if (conteudoCache.estudos) renderEstudosAdmin(conteudoCache.estudos.itens || []);
-        if (conteudoCache.escalas) renderEscalasAdmin(conteudoCache.escalas.itens || []);
-
-        // Configurações
-        const cfg = conteudoCache.config_igreja || {};
-        const setCfg = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
-        setCfg('cfgHorarioAtendimento', cfg.horario_atendimento);
-        setCfg('cfgEndereco', cfg.endereco);
-        setCfg('cfgCep', cfg.cep);
-        setCfg('cfgTelefone', cfg.telefone_igreja);
-        setCfg('cfgEmail', cfg.email_igreja);
-        setCfg('cfgPix', cfg.pix_key);
+        // Renderiza dinamicamente os valores reais
+        document.getElementById('stat-total').textContent = stats.total_usuarios;
+        document.getElementById('stat-membros').textContent = stats.membros_ativos;
+        document.getElementById('stat-admins').textContent = stats.administradores;
+        document.getElementById('stat-acessos').textContent = stats.acessos_hoje;
+        document.getElementById('stat-novos').textContent = stats.novos_mes;
       } catch (err) {
-        console.error('Erro ao carregar conteúdo:', err);
+        document.getElementById('stats-grid').innerHTML =
+          '<div class="vazio" style="grid-column: 1/-1;">Erro ao carregar estatísticas: ' + esc(err.message) + '</div>';
       }
     }
 
-    // Helper para criar campo de formulário
-    function fieldInput(id, label, value, placeholder) {
-      return `<div class="form-group" style="margin-bottom:8px;"><label style="font-size:0.78rem;">${label}</label><input type="text" id="${id}" value="${(value || '').replace(/"/g, '&quot;')}" placeholder="${placeholder || ''}" style="padding:8px 12px;font-size:0.86rem;" /></div>`;
+    // ═══════════════════════════════════════════════════════════
+    // BUG #4: Edição de conteúdo — carrega e salva cada seção
+    // ═══════════════════════════════════════════════════════════
+    function trocarSecao(nome) {
+      secaoAtual = nome;
+      // Atualiza sub-tabs ativas
+      const subTabs = document.querySelectorAll('#tab-conteudo .tabs .tab-btn');
+      subTabs.forEach(btn => btn.classList.remove('ativo'));
+      event.target.classList.add('ativo');
+      carregarSecao(nome);
     }
 
-    function fieldTextarea(id, label, value, placeholder) {
-      return `<div class="form-group" style="margin-bottom:8px;"><label style="font-size:0.78rem;">${label}</label><textarea id="${id}" placeholder="${placeholder || ''}" style="padding:8px 12px;font-size:0.86rem;min-height:50px;">${value || ''}</textarea></div>`;
+    async function carregarSecao(nome) {
+      const container = document.getElementById('form-secao-container');
+      container.innerHTML = '<div class="loading">Carregando</div>';
+
+      try {
+        const resp = await apiFetch('/conteudo/' + nome);
+        const dados = resp.dados || {};
+        conteudoCache[nome] = dados;
+        renderizarFormSecao(nome, dados);
+      } catch (err) {
+        container.innerHTML = '<div class="vazio">Erro ao carregar: ' + esc(err.message) + '</div>';
+      }
     }
 
-    function removeBtn(idx) {
-      return `<button onclick="this.parentElement.remove()" class="btn btn-danger btn-sm" style="width:auto;margin-top:4px;">🗑️ Remover</button>`;
-    }
+    function renderizarFormSecao(nome, dados) {
+      const container = document.getElementById('form-secao-container');
 
-    // ── Cultos ──
-    function renderCultosAdmin(itens) {
-      const el = document.getElementById('cultosList');
-      if (!el) return;
-      el.innerHTML = itens.map((c, i) => `
-        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
-          ${fieldInput('culto_dia_' + i, 'Dia', c.dia, 'Domingo')}
-          ${fieldInput('culto_hora_' + i, 'Horário', c.hora, '19:30')}
-          ${fieldInput('culto_nome_' + i, 'Nome', c.nome, 'Culto de Adoração')}
-          ${fieldTextarea('culto_desc_' + i, 'Descrição', c.desc, 'Descrição do culto')}
-          ${removeBtn(i)}
-        </div>
-      `).join('');
-    }
-
-    function addCulto() {
-      const el = document.getElementById('cultosList');
-      const i = el.children.length;
-      const div = document.createElement('div');
-      div.className = 'auth-card';
-      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
-      div.innerHTML = fieldInput('culto_dia_' + i, 'Dia', '', 'Domingo') +
-        fieldInput('culto_hora_' + i, 'Horário', '', '19:30') +
-        fieldInput('culto_nome_' + i, 'Nome', '', 'Nome do culto') +
-        fieldTextarea('culto_desc_' + i, 'Descrição', '', 'Descrição') +
-        removeBtn(i);
-      el.appendChild(div);
-    }
-
-    // ── Eventos ──
-    function renderEventosAdmin(itens) {
-      const el = document.getElementById('eventosList');
-      if (!el) return;
-      el.innerHTML = itens.map((c, i) => `
-        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
-          ${fieldInput('evento_dia_' + i, 'Dia', c.dia, '5')}
-          ${fieldInput('evento_mes_' + i, 'Mês', c.mes, 'JUL')}
-          ${fieldInput('evento_nome_' + i, 'Nome', c.nome, 'Nome do evento')}
-          ${fieldTextarea('evento_desc_' + i, 'Descrição', c.desc, 'Descrição')}
-          ${fieldInput('evento_hora_' + i, 'Horário/Local', c.hora, '19:00h · Templo')}
-          ${removeBtn(i)}
-        </div>
-      `).join('');
-    }
-
-    function addEvento() {
-      const el = document.getElementById('eventosList');
-      const i = el.children.length;
-      const div = document.createElement('div');
-      div.className = 'auth-card';
-      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
-      div.innerHTML = fieldInput('evento_dia_' + i, 'Dia', '', '5') +
-        fieldInput('evento_mes_' + i, 'Mês', '', 'JUL') +
-        fieldInput('evento_nome_' + i, 'Nome', '', 'Nome') +
-        fieldTextarea('evento_desc_' + i, 'Descrição', '', 'Descrição') +
-        fieldInput('evento_hora_' + i, 'Horário', '', '19:00h') +
-        removeBtn(i);
-      el.appendChild(div);
-    }
-
-    // ── Avisos ──
-    function renderAvisosAdmin(itens) {
-      const el = document.getElementById('avisosList');
-      if (!el) return;
-      el.innerHTML = itens.map((c, i) => `
-        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
-          ${fieldInput('aviso_titulo_' + i, 'Título', c.titulo, 'Título do aviso')}
-          ${fieldTextarea('aviso_texto_' + i, 'Texto', c.texto, 'Texto do aviso')}
-          ${fieldInput('aviso_data_' + i, 'Data', c.data, '01/07/2026')}
-          ${fieldInput('aviso_tipo_' + i, 'Tipo', c.tipo, 'geral/evento/urgente/espiritual')}
-          ${removeBtn(i)}
-        </div>
-      `).join('');
-    }
-
-    function addAviso() {
-      const el = document.getElementById('avisosList');
-      const i = el.children.length;
-      const div = document.createElement('div');
-      div.className = 'auth-card';
-      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
-      div.innerHTML = fieldInput('aviso_titulo_' + i, 'Título', '', 'Título') +
-        fieldTextarea('aviso_texto_' + i, 'Texto', '', 'Texto') +
-        fieldInput('aviso_data_' + i, 'Data', '', '01/07/2026') +
-        fieldInput('aviso_tipo_' + i, 'Tipo', '', 'geral') +
-        removeBtn(i);
-      el.appendChild(div);
-    }
-
-    // ── Devocionais ──
-    function renderDevocionaisAdmin(itens) {
-      const el = document.getElementById('devocionaisList');
-      if (!el) return;
-      el.innerHTML = itens.map((c, i) => `
-        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
-          ${fieldInput('dev_data_' + i, 'Data', c.data, 'Sexta, 5 de Julho')}
-          ${fieldInput('dev_titulo_' + i, 'Título', c.titulo, 'Título')}
-          ${fieldInput('dev_verso_' + i, 'Versículo', c.verso, 'Versículo')}
-          ${fieldInput('dev_ref_' + i, 'Referência', c.ref, 'João 3:16')}
-          ${fieldTextarea('dev_texto_' + i, 'Texto', c.texto, 'Texto do devocional')}
-          ${removeBtn(i)}
-        </div>
-      `).join('');
-    }
-
-    function addDevocional() {
-      const el = document.getElementById('devocionaisList');
-      const i = el.children.length;
-      const div = document.createElement('div');
-      div.className = 'auth-card';
-      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
-      div.innerHTML = fieldInput('dev_data_' + i, 'Data', '', 'Data') +
-        fieldInput('dev_titulo_' + i, 'Título', '', 'Título') +
-        fieldInput('dev_verso_' + i, 'Versículo', '', 'Versículo') +
-        fieldInput('dev_ref_' + i, 'Referência', '', 'Ref') +
-        fieldTextarea('dev_texto_' + i, 'Texto', '', 'Texto') +
-        removeBtn(i);
-      el.appendChild(div);
-    }
-
-    // ── Estudos ──
-    function renderEstudosAdmin(itens) {
-      const el = document.getElementById('estudosList');
-      if (!el) return;
-      el.innerHTML = itens.map((c, i) => `
-        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
-          ${fieldInput('est_titulo_' + i, 'Título', c.titulo, 'Título')}
-          ${fieldInput('est_autor_' + i, 'Autor', c.autor, 'Pr. Responsável')}
-          ${fieldInput('est_data_' + i, 'Data', c.data, '28/06/2026')}
-          ${fieldInput('est_duracao_' + i, 'Duração', c.duracao, '45 min')}
-          ${fieldInput('est_tipo_' + i, 'Tipo', c.tipo, 'Vídeo + PDF')}
-          ${fieldTextarea('est_resumo_' + i, 'Resumo', c.resumo, 'Resumo')}
-          ${removeBtn(i)}
-        </div>
-      `).join('');
-    }
-
-    function addEstudo() {
-      const el = document.getElementById('estudosList');
-      const i = el.children.length;
-      const div = document.createElement('div');
-      div.className = 'auth-card';
-      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
-      div.innerHTML = fieldInput('est_titulo_' + i, 'Título', '', 'Título') +
-        fieldInput('est_autor_' + i, 'Autor', '', 'Autor') +
-        fieldInput('est_data_' + i, 'Data', '', 'Data') +
-        fieldInput('est_duracao_' + i, 'Duração', '', '45 min') +
-        fieldInput('est_tipo_' + i, 'Tipo', '', 'Vídeo') +
-        fieldTextarea('est_resumo_' + i, 'Resumo', '', 'Resumo') +
-        removeBtn(i);
-      el.appendChild(div);
-    }
-
-    // ── Escalas ──
-    function renderEscalasAdmin(itens) {
-      const el = document.getElementById('escalasList');
-      if (!el) return;
-      el.innerHTML = itens.map((c, i) => `
-        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
-          ${fieldInput('esc_data_' + i, 'Data', c.data, '07/07')}
-          ${fieldInput('esc_culto_' + i, 'Culto', c.culto, 'Culto de Adoração')}
-          ${fieldInput('esc_funcao_' + i, 'Função', c.funcao, 'Louvor')}
-          ${fieldInput('esc_resp_' + i, 'Responsável', c.responsavel, 'Nome')}
-          ${removeBtn(i)}
-        </div>
-      `).join('');
-    }
-
-    function addEscala() {
-      const el = document.getElementById('escalasList');
-      const i = el.children.length;
-      const div = document.createElement('div');
-      div.className = 'auth-card';
-      div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
-      div.innerHTML = fieldInput('esc_data_' + i, 'Data', '', '07/07') +
-        fieldInput('esc_culto_' + i, 'Culto', '', 'Culto') +
-        fieldInput('esc_funcao_' + i, 'Função', '', 'Função') +
-        fieldInput('esc_resp_' + i, 'Responsável', '', 'Nome') +
-        removeBtn(i);
-      el.appendChild(div);
-    }
-
-    // ── Salvar conteúdo ──
-    async function salvarConteudo(secao) {
-      const alertEl = document.getElementById('conteudoAlert');
-      const prefix = { cultos: 'culto', eventos: 'evento', avisos: 'aviso', devocionais: 'dev', estudos: 'est', escalas: 'esc' }[secao];
-      const listId = { cultos: 'cultosList', eventos: 'eventosList', avisos: 'avisosList', devocionais: 'devocionaisList', estudos: 'estudosList', escalas: 'escalasList' }[secao];
-
-      const container = document.getElementById(listId);
-      if (!container) return;
-
-      const itens = [];
-      const fieldsMap = {
-        cultos: ['dia', 'hora', 'nome', 'desc'],
-        eventos: ['dia', 'mes', 'nome', 'desc', 'hora'],
-        avisos: ['titulo', 'texto', 'data', 'tipo'],
-        devocionais: ['data', 'titulo', 'verso', 'ref', 'texto'],
-        estudos: ['titulo', 'autor', 'data', 'duracao', 'tipo', 'resumo'],
-        escalas: ['data', 'culto', 'funcao', 'responsavel'],
+      // Configuração de cada seção: campos e tipo
+      const config = {
+        agenda: { tipo: 'eventos', titulo: true, texto: false, itensLabel: 'Eventos' },
+        estudos: { tipo: 'itens', titulo: true, texto: true, itensLabel: 'Estudos' },
+        oracao: { tipo: 'simples', titulo: true, texto: true },
+        ministerios: { tipo: 'itens', titulo: true, texto: true, itensLabel: 'Ministérios' },
+        avisos: { tipo: 'itens', titulo: true, texto: true, itensLabel: 'Avisos' },
+        dizimos: { tipo: 'simples', titulo: true, texto: true },
+        devocional: { tipo: 'simples', titulo: true, texto: true },
+        escalas: { tipo: 'escalas', titulo: true, texto: true, itensLabel: 'Escalas' },
+        contato_pastoral: { tipo: 'contato', titulo: true, texto: true },
       };
 
-      const fieldKeys = fieldsMap[secao];
-      const keyMap = { responsavel: 'resp', funcao: 'funcao', culto: 'culto' };
+      const cfg = config[nome] || { tipo: 'simples', titulo: true, texto: true };
+      let html = '<div class="card">';
 
-      for (let i = 0; i < container.children.length; i++) {
-        const item = {};
-        let hasContent = false;
-        fieldKeys.forEach(key => {
-          const fieldKey = keyMap[key] || key;
-          const el = document.getElementById(prefix + '_' + fieldKey + '_' + i);
-          if (el && el.value.trim()) {
-            item[key] = el.value.trim();
-            hasContent = true;
-          }
+      if (cfg.titulo) {
+        html += `
+          <div class="form-grupo">
+            <label>Título</label>
+            <input type="text" id="secao-titulo" value="${esc(dados.titulo || '')}">
+          </div>
+        `;
+      }
+
+      if (cfg.texto) {
+        html += `
+          <div class="form-grupo">
+            <label>Texto</label>
+            <textarea id="secao-texto" rows="4">${esc(dados.texto || '')}</textarea>
+          </div>
+        `;
+      }
+
+      // Seção: Contato Pastoral (campos especiais)
+      if (cfg.tipo === 'contato') {
+        html += `
+          <div class="form-grupo">
+            <label>Telefone</label>
+            <input type="text" id="secao-telefone" value="${esc(dados.telefone || '')}">
+          </div>
+          <div class="form-grupo">
+            <label>Email</label>
+            <input type="text" id="secao-email" value="${esc(dados.email || '')}">
+          </div>
+        `;
+      }
+
+      // Seção: Eventos (Agenda)
+      if (cfg.tipo === 'eventos') {
+        const eventos = dados.eventos || [];
+        html += `
+          <h4 style="margin: 20px 0 10px;">${esc(cfg.itensLabel)}</h4>
+          <div id="lista-itens">
+            ${eventos.map((ev, i) => `
+              <div class="card" style="margin-bottom: 10px; border: 1px solid var(--cor-borda); box-shadow: none;" data-index="${i}">
+                <div class="form-grupo">
+                  <label>Título do evento</label>
+                  <input type="text" class="item-titulo" value="${esc(ev.titulo || '')}">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px;">
+                  <div class="form-grupo">
+                    <label>Data</label>
+                    <input type="date" class="item-data" value="${esc(ev.data || '')}">
+                  </div>
+                  <div class="form-grupo">
+                    <label>Horário</label>
+                    <input type="text" class="item-horario" value="${esc(ev.horario || '')}">
+                  </div>
+                  <div class="form-grupo">
+                    <label>Local</label>
+                    <input type="text" class="item-local" value="${esc(ev.local || '')}">
+                  </div>
+                </div>
+                <button onclick="removerItem(this)" class="btn btn-perigo btn-pequeno">Remover</button>
+              </div>
+            `).join('')}
+          </div>
+          <button onclick="adicionarEvento()" class="btn btn-secundario btn-pequeno" style="margin-bottom: 20px;">+ Adicionar evento</button>
+        `;
+      }
+
+      // Seção: Itens genéricos (estudos, ministérios, avisos)
+      if (cfg.tipo === 'itens') {
+        const itens = dados.itens || [];
+        html += `
+          <h4 style="margin: 20px 0 10px;">${esc(cfg.itensLabel)}</h4>
+          <div id="lista-itens">
+            ${itens.map((item, i) => `
+              <div class="card" style="margin-bottom: 10px; border: 1px solid var(--cor-borda); box-shadow: none;" data-index="${i}">
+                <div class="form-grupo">
+                  <label>Título</label>
+                  <input type="text" class="item-titulo" value="${esc(item.titulo || item.nome || '')}">
+                </div>
+                <div class="form-grupo">
+                  <label>Descrição</label>
+                  <textarea class="item-descricao" rows="2">${esc(item.descricao || item.texto || '')}</textarea>
+                </div>
+                <button onclick="removerItem(this)" class="btn btn-perigo btn-pequeno">Remover</button>
+              </div>
+            `).join('')}
+          </div>
+          <button onclick="adicionarItem()" class="btn btn-secundario btn-pequeno" style="margin-bottom: 20px;">+ Adicionar item</button>
+        `;
+      }
+
+      // Seção: Escalas
+      if (cfg.tipo === 'escalas') {
+        const itens = dados.itens || [];
+        html += `
+          <h4 style="margin: 20px 0 10px;">${esc(cfg.itensLabel)}</h4>
+          <div id="lista-itens">
+            ${itens.map((item, i) => `
+              <div class="card" style="margin-bottom: 10px; border: 1px solid var(--cor-borda); box-shadow: none;" data-index="${i}">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px;">
+                  <div class="form-grupo">
+                    <label>Data</label>
+                    <input type="date" class="item-data" value="${esc(item.data || '')}">
+                  </div>
+                  <div class="form-grupo">
+                    <label>Função</label>
+                    <input type="text" class="item-funcao" value="${esc(item.funcao || '')}">
+                  </div>
+                  <div class="form-grupo">
+                    <label>Responsável</label>
+                    <input type="text" class="item-responsavel" value="${esc(item.responsavel || '')}">
+                  </div>
+                </div>
+                <button onclick="removerItem(this)" class="btn btn-perigo btn-pequeno">Remover</button>
+              </div>
+            `).join('')}
+          </div>
+          <button onclick="adicionarEscala()" class="btn btn-secundario btn-pequeno" style="margin-bottom: 20px;">+ Adicionar escala</button>
+        `;
+      }
+
+      html += `
+        <button onclick="salvarSecao()" class="btn btn-primario" id="btn-salvar-secao">Salvar Alterações</button>
+      `;
+      html += '</div>';
+
+      container.innerHTML = html;
+    }
+
+    // ── Adicionar/remover itens dinamicamente ──
+    function adicionarEvento() {
+      const lista = document.getElementById('lista-itens');
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.style.cssText = 'margin-bottom: 10px; border: 1px solid var(--cor-borda); box-shadow: none;';
+      div.innerHTML = `
+        <div class="form-grupo">
+          <label>Título do evento</label>
+          <input type="text" class="item-titulo" value="">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px;">
+          <div class="form-grupo"><label>Data</label><input type="date" class="item-data"></div>
+          <div class="form-grupo"><label>Horário</label><input type="text" class="item-horario" placeholder="19:00"></div>
+          <div class="form-grupo"><label>Local</label><input type="text" class="item-local"></div>
+        </div>
+        <button onclick="removerItem(this)" class="btn btn-perigo btn-pequeno">Remover</button>
+      `;
+      lista.appendChild(div);
+    }
+
+    function adicionarItem() {
+      const lista = document.getElementById('lista-itens');
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.style.cssText = 'margin-bottom: 10px; border: 1px solid var(--cor-borda); box-shadow: none;';
+      div.innerHTML = `
+        <div class="form-grupo"><label>Título</label><input type="text" class="item-titulo"></div>
+        <div class="form-grupo"><label>Descrição</label><textarea class="item-descricao" rows="2"></textarea></div>
+        <button onclick="removerItem(this)" class="btn btn-perigo btn-pequeno">Remover</button>
+      `;
+      lista.appendChild(div);
+    }
+
+    function adicionarEscala() {
+      const lista = document.getElementById('lista-itens');
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.style.cssText = 'margin-bottom: 10px; border: 1px solid var(--cor-borda); box-shadow: none;';
+      div.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px;">
+          <div class="form-grupo"><label>Data</label><input type="date" class="item-data"></div>
+          <div class="form-grupo"><label>Função</label><input type="text" class="item-funcao"></div>
+          <div class="form-grupo"><label>Responsável</label><input type="text" class="item-responsavel"></div>
+        </div>
+        <button onclick="removerItem(this)" class="btn btn-perigo btn-pequeno">Remover</button>
+      `;
+      lista.appendChild(div);
+    }
+
+    function removerItem(btn) {
+      btn.closest('.card').remove();
+    }
+
+    // ── BUG #4 CORRIGIDO: Salva seção no backend via PUT ──
+    async function salvarSecao() {
+      const btn = document.getElementById('btn-salvar-secao');
+      const container = document.getElementById('alerta-container');
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      // Coleta dados do formulário
+      const dados = {};
+
+      const tituloEl = document.getElementById('secao-titulo');
+      const textoEl = document.getElementById('secao-texto');
+      if (tituloEl) dados.titulo = tituloEl.value;
+      if (textoEl) dados.texto = textoEl.value;
+
+      // Campos de contato pastoral
+      const telEl = document.getElementById('secao-telefone');
+      const emailEl = document.getElementById('secao-email');
+      if (telEl) dados.telefone = telEl.value;
+      if (emailEl) dados.email = emailEl.value;
+
+      // Itens (eventos, itens genéricos, escalas)
+      const listaItens = document.getElementById('lista-itens');
+      if (listaItens) {
+        const cards = listaItens.querySelectorAll('.card');
+
+        // Detecta tipo pelos campos presentes
+        if (secaoAtual === 'agenda') {
+          dados.eventos = Array.from(cards).map(c => ({
+            titulo: c.querySelector('.item-titulo')?.value || '',
+            data: c.querySelector('.item-data')?.value || '',
+            horario: c.querySelector('.item-horario')?.value || '',
+            local: c.querySelector('.item-local')?.value || '',
+          }));
+        } else if (secaoAtual === 'escalas') {
+          dados.itens = Array.from(cards).map(c => ({
+            data: c.querySelector('.item-data')?.value || '',
+            funcao: c.querySelector('.item-funcao')?.value || '',
+            responsavel: c.querySelector('.item-responsavel')?.value || '',
+          }));
+        } else {
+          dados.itens = Array.from(cards).map(c => ({
+            titulo: c.querySelector('.item-titulo')?.value || '',
+            descricao: c.querySelector('.item-descricao')?.value || '',
+          }));
+        }
+      }
+
+      try {
+        // PUT /api/conteudo/:secao com dados no body
+        await apiFetch('/conteudo/' + secaoAtual, {
+          method: 'PUT',
+          body: JSON.stringify({ dados }),
         });
-        if (hasContent) itens.push(item);
+
+        mostrarAlerta(container, 'Conteúdo salvo com sucesso! As páginas públicas já mostram a atualização.', 'sucesso');
+      } catch (err) {
+        mostrarAlerta(container, err.message, 'erro');
       }
 
+      btn.disabled = false;
+      btn.textContent = 'Salvar Alterações';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // BUG #5: Horário de Atendimento — GET e PUT
+    // ═══════════════════════════════════════════════════════════
+    async function carregarHorario() {
       try {
-        await API.conteudo.atualizar(secao, { itens });
-        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ ' + secao + ' salvo com sucesso!</div>';
-        setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 3000);
+        const resp = await apiFetch('/conteudo/horario_atendimento');
+        const dados = resp.dados || {};
+        document.getElementById('horario-titulo').value = dados.titulo || 'Horário de Atendimento';
+        document.getElementById('horario-texto').value = dados.texto || '';
       } catch (err) {
-        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+        // Usa valores padrão
       }
     }
 
-    // ── Salvar configurações da igreja ──
-    async function salvarConfig() {
-      const cfg = {
-        horario_atendimento: document.getElementById('cfgHorarioAtendimento')?.value?.trim() || '',
-        endereco: document.getElementById('cfgEndereco')?.value?.trim() || '',
-        cep: document.getElementById('cfgCep')?.value?.trim() || '',
-        telefone_igreja: document.getElementById('cfgTelefone')?.value?.trim() || '',
-        email_igreja: document.getElementById('cfgEmail')?.value?.trim() || '',
-        pix_key: document.getElementById('cfgPix')?.value?.trim() || '',
+    async function salvarHorario() {
+      const btn = document.getElementById('btn-salvar-horario');
+      const container = document.getElementById('alerta-container');
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      const dados = {
+        titulo: document.getElementById('horario-titulo').value,
+        texto: document.getElementById('horario-texto').value,
       };
 
-      const alertEl = document.getElementById('configAlert');
       try {
-        await API.conteudo.atualizar('config_igreja', cfg);
-        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ Configurações salvas! O site público será atualizado.</div>';
-        setTimeout(() => { if (alertEl) alertEl.innerHTML = ''; }, 4000);
+        await apiFetch('/conteudo/horario_atendimento', {
+          method: 'PUT',
+          body: JSON.stringify({ dados }),
+        });
+
+        mostrarAlerta(container, 'Horário de atendimento salvo! Já aparece no rodapé do site.', 'sucesso');
       } catch (err) {
-        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+        mostrarAlerta(container, err.message, 'erro');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Salvar Horário';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // Membros
+    // ═══════════════════════════════════════════════════════════
+    async function carregarMembros() {
+      const container = document.getElementById('membros-lista');
+      try {
+        const membros = await apiFetch('/admin/usuarios');
+
+        if (!membros || membros.length === 0) {
+          container.innerHTML = '<div class="vazio">Nenhum membro cadastrado.</div>';
+          return;
+        }
+
+        container.innerHTML = `
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Nome</th><th>Email</th><th>Role</th><th>Status</th><th>Cadastro</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${membros.map(m => `
+                <tr>
+                  <td>${esc(m.nome)}</td>
+                  <td>${esc(m.email)}</td>
+                  <td>
+                    <select onchange="alterarRole(${m.id}, this.value)" style="padding: 4px; border-radius: 4px;">
+                      <option value="membro" ${m.role === 'membro' ? 'selected' : ''}>Membro</option>
+                      <option value="admin" ${m.role === 'admin' ? 'selected' : ''}>Admin</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button onclick="toggleAtivo(${m.id}, ${!m.ativo})" class="btn btn-pequeno ${m.ativo ? 'btn-secundario' : 'btn-perigo'}">
+                      ${m.ativo ? 'Ativo' : 'Inativo'}
+                    </button>
+                  </td>
+                  <td>${m.created_at ? formatarDataBR(m.created_at) : '—'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (err) {
+        container.innerHTML = '<div class="vazio">Erro: ' + esc(err.message) + '</div>';
       }
     }
 
-    // ── Override do initAdmin para também carregar conteúdo ──
-    const originalInitAdmin = window.initAdmin || initAdmin;
-    // initAdmin já é chamado no final, então carregamos conteúdo após um delay
-    setTimeout(() => { carregarConteudoAdmin(); }, 1500);
+    async function alterarRole(id, role) {
+      try {
+        await apiFetch('/admin/usuarios/' + id + '/role', {
+          method: 'PUT',
+          body: JSON.stringify({ role }),
+        });
+        mostrarAlerta(document.getElementById('alerta-container'), 'Role atualizado!', 'sucesso');
+      } catch (err) {
+        mostrarAlerta(document.getElementById('alerta-container'), err.message, 'erro');
+        carregarMembros();
+      }
+    }
 
-    // ── Start ──
-    initAdmin();
+    async function toggleAtivo(id, ativo) {
+      try {
+        await apiFetch('/admin/usuarios/' + id + '/ativo', {
+          method: 'PUT',
+          body: JSON.stringify({ ativo }),
+        });
+        carregarMembros();
+      } catch (err) {
+        mostrarAlerta(document.getElementById('alerta-container'), err.message, 'erro');
+      }
+    }
+
+    // ── Init: carrega dashboard ao abrir ──
+    carregarStats();
   </script>
 </body>
 </html>
