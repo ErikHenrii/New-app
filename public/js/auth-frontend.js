@@ -85,7 +85,6 @@ async function handleLogin(e) {
     setTimeout(() => redirectToDashboard(data.membro.role), 800);
   } catch (err) {
     document.body.dataset.loggingIn = '0';
-  } catch (err) {
     showAlert('loginAlert', err.message);
   }
 }
@@ -122,7 +121,6 @@ async function handleRegister(e) {
     setTimeout(() => redirectToDashboard(data.membro.role), 1200);
   } catch (err) {
     document.body.dataset.registering = '0';
-  } catch (err) {
     showAlert('registerAlert', err.message);
   }
 }
