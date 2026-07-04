@@ -170,10 +170,9 @@ async function initDashboard() {
       atualizarFotoPreview(perfil.foto_perfil, membro.nome_completo);
     }
 
-    // Inicializa dashboard de conteúdo
-    if (typeof initDashboardComplete === 'function') {
-      initDashboardComplete();
-    }
+    // NÃO chamar initDashboardComplete aqui — o dashboard-data.js
+    // já sobrescreve window.initDashboard para chamar ambos.
+    // Chamar aqui causa RECURSÃO INFINITA.
   } catch (err) {
     console.error('Erro ao carregar dashboard:', err);
     if (err.message.includes('Sessão expirada') || err.message.includes('inválida') || err.message.includes('Token')) {

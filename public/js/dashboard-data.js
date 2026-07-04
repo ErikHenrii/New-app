@@ -744,8 +744,11 @@ function renderScales() {
 // ═════════════════════════════════════════════
 
 const originalInitDashboard = window.initDashboard;
+let _dashboardInicializado = false;
 
 async function initDashboardComplete() {
+  if (_dashboardInicializado) return;
+  _dashboardInicializado = true;
   await originalInitDashboard();
 
   const sessaoData = await API.auth.sessao();
