@@ -663,7 +663,7 @@ async function carregarConteudoAPI() {
 function renderUpcomingEvents() {
   const el = document.getElementById('upcomingEvents');
   if (!el) return;
-  const eventos = (conteudoAPI?.eventos?.itens) || IGREJA_DADOS.eventos;
+  const eventos = ((conteudoAPI?.eventos?.itens) || IGREJA_DADOS.eventos).filter(e => !e.visibilidade || e.visibilidade === 'ambos' || e.visibilidade === 'membros');
   el.innerHTML = eventos.slice(0, 3).map(e => `
     <div class="event-mini">
       <div class="event-mini-date">${e.dia}<span>${e.mes}</span></div>
@@ -678,7 +678,7 @@ function renderUpcomingEvents() {
 function renderWeeklyServices() {
   const el = document.getElementById('weeklyServices');
   if (!el) return;
-  const cultosAPI = conteudoAPI?.cultos?.itens;
+  const cultosAPI = conteudoAPI?.cultos?.itens?.filter(c => !c.visibilidade || c.visibilidade === 'ambos' || c.visibilidade === 'membros');
   if (cultosAPI && cultosAPI.length > 0) {
     // Agrupa por dia
     const porDia = {};
@@ -719,7 +719,7 @@ function renderWeeklyServices() {
 function renderSpecialEvents() {
   const el = document.getElementById('specialEvents');
   if (!el) return;
-  const eventos = (conteudoAPI?.eventos?.itens) || IGREJA_DADOS.eventos;
+  const eventos = ((conteudoAPI?.eventos?.itens) || IGREJA_DADOS.eventos).filter(e => !e.visibilidade || e.visibilidade === 'ambos' || e.visibilidade === 'membros');
   el.innerHTML = eventos.map(e => `
     <div class="content-card event-card-special">
       <div class="event-date-badge">${e.dia}<span>${e.mes}</span></div>

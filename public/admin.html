@@ -1207,6 +1207,12 @@
       return `<div class="form-group" style="margin-bottom:8px;"><label style="font-size:0.78rem;">${label}</label><textarea id="${id}" placeholder="${placeholder || ''}" style="padding:8px 12px;font-size:0.86rem;min-height:50px;">${value || ''}</textarea></div>`;
     }
 
+
+    function fieldSelect(id, label, value, options) {
+      const opts = options.map(o => `<option value="${o.v}" ${o.v === value ? 'selected' : ''}>${o.t}</option>`).join('');
+      return `<div class="form-group" style="margin-bottom:8px;"><label style="font-size:0.78rem;">${label}</label><select id="${id}" style="padding:8px 12px;font-size:0.86rem;width:100%;border:1px solid var(--gray-light);border-radius:8px;background:var(--white);">${opts}</select></div>`;
+    }
+
     function removeBtn(idx) {
       return `<button onclick="this.parentElement.remove()" class="btn btn-danger btn-sm" style="width:auto;margin-top:4px;">🗑️ Remover</button>`;
     }
@@ -1215,12 +1221,18 @@
     function renderCultosAdmin(itens) {
       const el = document.getElementById('cultosList');
       if (!el) return;
+      const visOptions = [
+        { v: 'ambos', t: '🌐 Site + Área do Membro' },
+        { v: 'site', t: '🌍 Somente Site Público' },
+        { v: 'membros', t: '👤 Somente Área do Membro' }
+      ];
       el.innerHTML = itens.map((c, i) => `
         <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
           ${fieldInput('culto_dia_' + i, 'Dia', c.dia, 'Domingo')}
           ${fieldInput('culto_hora_' + i, 'Horário', c.hora, '19:30')}
           ${fieldInput('culto_nome_' + i, 'Nome', c.nome, 'Culto de Adoração')}
           ${fieldTextarea('culto_desc_' + i, 'Descrição', c.desc, 'Descrição do culto')}
+          ${fieldSelect('culto_visibilidade_' + i, 'Onde exibir', c.visibilidade || 'ambos', visOptions)}
           ${removeBtn(i)}
         </div>
       `).join('');
@@ -1229,6 +1241,11 @@
     function addCulto() {
       const el = document.getElementById('cultosList');
       const i = el.children.length;
+      const visOptions = [
+        { v: 'ambos', t: '🌐 Site + Área do Membro' },
+        { v: 'site', t: '🌍 Somente Site Público' },
+        { v: 'membros', t: '👤 Somente Área do Membro' }
+      ];
       const div = document.createElement('div');
       div.className = 'auth-card';
       div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
@@ -1236,6 +1253,7 @@
         fieldInput('culto_hora_' + i, 'Horário', '', '19:30') +
         fieldInput('culto_nome_' + i, 'Nome', '', 'Nome do culto') +
         fieldTextarea('culto_desc_' + i, 'Descrição', '', 'Descrição') +
+        fieldSelect('culto_visibilidade_' + i, 'Onde exibir', 'ambos', visOptions) +
         removeBtn(i);
       el.appendChild(div);
     }
@@ -1244,6 +1262,11 @@
     function renderEventosAdmin(itens) {
       const el = document.getElementById('eventosList');
       if (!el) return;
+      const visOptions = [
+        { v: 'ambos', t: '🌐 Site + Área do Membro' },
+        { v: 'site', t: '🌍 Somente Site Público' },
+        { v: 'membros', t: '👤 Somente Área do Membro' }
+      ];
       el.innerHTML = itens.map((c, i) => `
         <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;">
           ${fieldInput('evento_dia_' + i, 'Dia', c.dia, '5')}
@@ -1251,6 +1274,7 @@
           ${fieldInput('evento_nome_' + i, 'Nome', c.nome, 'Nome do evento')}
           ${fieldTextarea('evento_desc_' + i, 'Descrição', c.desc, 'Descrição')}
           ${fieldInput('evento_hora_' + i, 'Horário/Local', c.hora, '19:00h · Templo')}
+          ${fieldSelect('evento_visibilidade_' + i, 'Onde exibir', c.visibilidade || 'ambos', visOptions)}
           ${removeBtn(i)}
         </div>
       `).join('');
@@ -1259,6 +1283,11 @@
     function addEvento() {
       const el = document.getElementById('eventosList');
       const i = el.children.length;
+      const visOptions = [
+        { v: 'ambos', t: '🌐 Site + Área do Membro' },
+        { v: 'site', t: '🌍 Somente Site Público' },
+        { v: 'membros', t: '👤 Somente Área do Membro' }
+      ];
       const div = document.createElement('div');
       div.className = 'auth-card';
       div.style.cssText = 'max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:16px;';
@@ -1267,6 +1296,7 @@
         fieldInput('evento_nome_' + i, 'Nome', '', 'Nome') +
         fieldTextarea('evento_desc_' + i, 'Descrição', '', 'Descrição') +
         fieldInput('evento_hora_' + i, 'Horário', '', '19:00h') +
+        fieldSelect('evento_visibilidade_' + i, 'Onde exibir', 'ambos', visOptions) +
         removeBtn(i);
       el.appendChild(div);
     }
@@ -1404,8 +1434,8 @@
 
       const itens = [];
       const fieldsMap = {
-        cultos: ['dia', 'hora', 'nome', 'desc'],
-        eventos: ['dia', 'mes', 'nome', 'desc', 'hora'],
+        cultos: ['dia', 'hora', 'nome', 'desc', 'visibilidade'],
+        eventos: ['dia', 'mes', 'nome', 'desc', 'hora', 'visibilidade'],
         avisos: ['titulo', 'texto', 'data', 'tipo'],
         devocionais: ['data', 'titulo', 'verso', 'ref', 'texto'],
         estudos: ['titulo', 'autor', 'data', 'duracao', 'tipo', 'resumo'],

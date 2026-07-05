@@ -469,8 +469,8 @@
       if (res.ok) {
         const data = await res.json();
         const c = data.conteudo || {};
-        if (c.cultos && c.cultos.itens && c.cultos.itens.length > 0) cultos = c.cultos.itens;
-        if (c.eventos && c.eventos.itens && c.eventos.itens.length > 0) eventos = c.eventos.itens;
+        if (c.cultos && c.cultos.itens && c.cultos.itens.length > 0) cultos = c.cultos.itens.filter(x => !x.visibilidade || x.visibilidade === 'ambos' || x.visibilidade === 'site');
+        if (c.eventos && c.eventos.itens && c.eventos.itens.length > 0) eventos = c.eventos.itens.filter(x => !x.visibilidade || x.visibilidade === 'ambos' || x.visibilidade === 'site');
       }
     } catch (e) {
       console.log('Usando dados padrão (API indisponível)');
