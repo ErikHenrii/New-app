@@ -34,7 +34,7 @@
       <li><a href="#cultos">Cultos</a></li>
       <li><a href="#ministerios">Ministérios</a></li>
       <li><a href="#eventos">Eventos</a></li>
-      <li><a href="login.html" class="nav-member-area">🔒 Área do Membro</a></li>
+      <li><a href="missao-reviver-webauth/login.html" class="nav-member-area">🔒 Área do Membro</a></li>
       <li><a href="#contato" class="nav-cta">Contato</a></li>
     </ul>
 
@@ -264,8 +264,11 @@
   <div class="ministerio-modal-overlay" id="ministerioModal">
     <div class="ministerio-modal">
       <button class="ministerio-modal-close" id="ministerioModalClose" aria-label="Fechar">&times;</button>
-      <div class="ministerio-modal-image">
-        <img id="ministerioModalImg" src="" alt="" />
+      <div class="ministerio-modal-carousel" id="ministerioModalCarousel">
+        <div class="ministerio-modal-carousel-track" id="ministerioModalCarouselTrack"></div>
+        <button class="ministerio-modal-carousel-btn prev" id="ministerioModalCarouselPrev" aria-label="Anterior">&#8249;</button>
+        <button class="ministerio-modal-carousel-btn next" id="ministerioModalCarouselCarouselNext" aria-label="Próximo">&#8250;</button>
+        <div class="ministerio-modal-carousel-dots" id="ministerioModalCarouselDots"></div>
       </div>
       <div class="ministerio-modal-content">
         <span class="ministerio-modal-emoji" id="ministerioModalEmoji"></span>
@@ -528,13 +531,6 @@
           <li><a href="#">CEP 32600-126</a></li>
         </ul>
       </div>
-
-      <div class="footer-links">
-        <h4>Atendimento</h4>
-        <ul>
-          <li id="horario-atendimento">Segunda a Sexta: 08h às 12h e 14h às 18h</li>
-        </ul>
-      </div>
     </div>
 
     <div class="footer-bottom">
@@ -545,106 +541,5 @@
 
   <!-- Scripts -->
   <script src="script.js"></script>
-  <script>
-    // ═══ Carrega conteúdo dinâmico do backend (cultos, horários, etc.) ═══
-    async function carregarConteudoPublico() {
-      try {
-        const res = await fetch('/api/conteudo');
-        if (!res.ok) {
-          console.log('Conteúdo dinâmico indisponível (' + res.status + '), usando dados estáticos');
-          return;
-        }
-        const data = await res.json();
-        const conteudo = data.conteudo || {};
-        // Se não há conteúdo no banco, mantém o HTML estático
-        if (!conteudo || Object.keys(conteudo).length === 0) return;
-
-        // ── Horário de Atendimento (rodapé) ──
-        const cfg = conteudo.config_igreja || {};
-        if (cfg.horario_atendimento) {
-          // Atualiza o rodapé se houver elemento
-          const horarioEl = document.getElementById('horario-atendimento');
-          if (horarioEl) horarioEl.textContent = cfg.horario_atendimento;
-          
-          // Atualiza a seção de contato
-          const contatoHorario = document.getElementById('contato-horario');
-          if (contatoHorario) contatoHorario.textContent = cfg.horario_atendimento;
-        }
-
-        // ── Cultos (seção principal) ──
-        if (conteudo.cultos && conteudo.cultos.itens) {
-          const cultosGrid = document.querySelector('.cultos-grid');
-          if (cultosGrid) {
-            const icones = { 'Domingo': '📖', 'Quarta-feira': '⛓️', 'Sexta-feira': '🙌' };
-            const iconMap = { 'Escola Bíblica': '📖', 'Louvor': '🎵', 'Libertação': '⛓️', 'Oração': '🙌' };
-            
-            cultosGrid.innerHTML = conteudo.cultos.itens.map(c => {
-              const icon = iconMap[c.nome?.split(' ')[0]] || 'church';
-              return `
-              <div class="culto-card">
-                <div class="culto-header">
-                  <div class="culto-icon">${icon}</div>
-                  <h3>${c.nome}</h3>
-                </div>
-                <div class="culto-body">
-                  <div class="culto-time">🕐 <strong>${c.hora}</strong> — ${c.dia}</div>
-                  <p class="culto-desc">${c.desc || ''}</p>
-                </div>
-              </div>`;
-            }).join('');
-          }
-
-          // Atualizar lista de cultos no rodapé
-          const footerCultos = document.querySelector('.footer-links h4');
-          if (footerCultos && footerCultos.textContent === 'Cultos') {
-            const cultosList = footerCultos.nextElementSibling;
-            if (cultosList) {
-              cultosList.innerHTML = conteudo.cultos.itens.map(c => 
-                `<li><a href="#cultos">${c.dia} — ${c.hora} (${c.nome})</a></li>`
-              ).join('');
-            }
-          }
-        }
-
-        // ── Eventos (seção de eventos) ──
-        if (conteudo.eventos && conteudo.eventos.itens) {
-          const eventosGrid = document.querySelector('.eventos-grid');
-          if (eventosGrid) {
-            eventosGrid.innerHTML = conteudo.eventos.itens.map(e => `
-              <div class="evento-card">
-                <div class="evento-date">${e.dia}<span>${e.mes}</span></div>
-                <div class="evento-info">
-                  <h4>${e.nome}</h4>
-                  <p>${e.desc}</p>
-                  <span class="evento-hora">${e.hora || ''}</span>
-                </div>
-              </div>
-            `).join('');
-          }
-        }
-
-        // ── Avisos (se houver seção de avisos) ──
-        if (conteudo.avisos && conteudo.avisos.itens) {
-          const avisosSection = document.getElementById('avisos-content');
-          if (avisosSection) {
-            avisosSection.innerHTML = conteudo.avisos.itens.map(a => `
-              <div class="aviso-card" style="border-left:4px solid ${a.tipo === 'urgente' ? '#dc3545' : a.tipo === 'evento' ? '#28a745' : '#007bff'};">
-                <h4>${a.titulo}</h4>
-                <p>${a.texto}</p>
-                <small>${a.data || ''}</small>
-              </div>
-            `).join('');
-          }
-        }
-
-        console.log('✅ Conteúdo dinâmico carregado do backend');
-      } catch (e) {
-        console.log('Conteúdo dinâmico indisponível, usando dados estáticos');
-      }
-    }
-
-    // Executa ao carregar a página
-    document.addEventListener('DOMContentLoaded', carregarConteudoPublico);
-  </script>
 </body>
 </html>
