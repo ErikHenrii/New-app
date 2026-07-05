@@ -154,7 +154,7 @@
       <div class="user-info">
         <span id="userName">—</span>
         <span class="badge badge-admin" id="userRole">admin</span>
-        <a href="../index.html" class="btn btn-secondary btn-sm" style="text-decoration:none;width:auto;">← Site</a>
+        <a href="index.html" class="btn btn-secondary btn-sm" style="text-decoration:none;width:auto;">← Site</a>
         <button onclick="logout()" class="btn btn-secondary btn-sm">Sair</button>
       </div>
     </div>
@@ -438,9 +438,23 @@
       </p>
 
       <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:24px;">
-        <div class="form-group">
-          <label>Horário de Atendimento</label>
-          <input type="text" id="cfgHorarioAtendimento" placeholder="Ex: Segunda a Sexta: 08h às 12h e 14h às 18h" />
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:20px;margin-bottom:16px;">
+          <h4 style="color:var(--blue-dark);margin-bottom:12px;">📞 Contato Pastoral</h4>
+          <p style="font-size:0.8rem;color:var(--gray-text);margin-bottom:12px;">
+            Estas informações aparecem na aba "Contato Pastoral" do portal do membro.
+          </p>
+          <div class="form-group">
+            <label>Horário de Atendimento (linha única)</label>
+            <input type="text" id="cfgHorarioAtendimento" placeholder="Ex: Segunda a Sexta: 08h às 12h e 14h às 18h" />
+          </div>
+          <div class="form-group">
+            <label>Horários Detalhados (um por linha)</label>
+            <textarea id="cfgHorariosDetalhados" rows="4" placeholder="Segunda a Sexta: 14h às 18h (no templo ou agendado)&#10;Sábado: somente com agendamento prévio&#10;Domingo: antes e depois dos cultos&#10;Emergências pastorais: (31) 99999-0000 (24h)" style="font-family:inherit;"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Telefone de Emergência Pastoral</label>
+            <input type="text" id="cfgEmergenciaPastoral" placeholder="(31) 99999-0000" />
+          </div>
         </div>
         <div class="form-group">
           <label>Endereço da Igreja</label>
@@ -462,12 +476,35 @@
           <label>Chave PIX</label>
           <input type="text" id="cfgPix" placeholder="missaoreviver@igreja.com.br" />
         </div>
-        <button onclick="salvarConfig()" class="btn btn-primary" style="width:auto;padding:14px 40px;">💾 Salvar Configurações</button>
+        
+        <!-- ── Alterar Senha do Admin ── -->
+        <div style="border-top:1px solid var(--gray-light);margin-top:28px;padding-top:24px;">
+          <h4 style="color:var(--blue-dark);margin-bottom:12px;">🔒 Alterar Senha do Administrador</h4>
+          <p style="font-size:0.8rem;color:var(--gray-text);margin-bottom:16px;">
+            Após alterar, você será desconectado e precisará fazer login novamente.
+          </p>
+          <div id="adminSenhaAlert" style="margin-bottom:16px;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
+            <div class="form-group">
+              <label>Senha atual</label>
+              <input type="password" id="adminSenhaAtual" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Nova senha (mín. 6)</label>
+              <input type="password" id="adminNovaSenha" placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Confirmar</label>
+              <input type="password" id="adminConfirmarSenha" placeholder="••••••••" />
+            </div>
+            <button onclick="adminAlterarSenha()" class="btn btn-primary" style="width:auto;padding:11px 24px;height:42px;">Trocar</button>
+          </div>
+        </div>
+
+<button onclick="salvarConfig()" class="btn btn-primary" style="width:auto;padding:14px 40px;">💾 Salvar Configurações</button>
         <div id="configAlert" style="margin-top:16px;"></div>
       </div>
-    </div>
-
-  <script src="js/api.js"></script>
+    </div>  <script src="js/api.js"></script>
   <script src="js/auth-frontend.js"></script>
   <script>
     // ═══════════════════════════════════════════════════════════
@@ -1149,6 +1186,8 @@
         const cfg = conteudoCache.config_igreja || {};
         const setCfg = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
         setCfg('cfgHorarioAtendimento', cfg.horario_atendimento);
+        setCfg('cfgHorariosDetalhados', cfg.horarios_detalhados);
+        setCfg('cfgEmergenciaPastoral', cfg.emergencia_pastoral);
         setCfg('cfgEndereco', cfg.endereco);
         setCfg('cfgCep', cfg.cep);
         setCfg('cfgTelefone', cfg.telefone_igreja);
@@ -1403,6 +1442,8 @@
     async function salvarConfig() {
       const cfg = {
         horario_atendimento: document.getElementById('cfgHorarioAtendimento')?.value?.trim() || '',
+        horarios_detalhados: document.getElementById('cfgHorariosDetalhados')?.value?.trim() || '',
+        emergencia_pastoral: document.getElementById('cfgEmergenciaPastoral')?.value?.trim() || '',
         endereco: document.getElementById('cfgEndereco')?.value?.trim() || '',
         cep: document.getElementById('cfgCep')?.value?.trim() || '',
         telefone_igreja: document.getElementById('cfgTelefone')?.value?.trim() || '',
@@ -1422,6 +1463,39 @@
 
     // ── Start ──
     initAdmin();
+    // ── Alterar Senha (Admin) ──
+    async function adminAlterarSenha() {
+      const atual = document.getElementById('adminSenhaAtual').value;
+      const nova = document.getElementById('adminNovaSenha').value;
+      const confirmar = document.getElementById('adminConfirmarSenha').value;
+      const alertEl = document.getElementById('adminSenhaAlert');
+
+      if (!atual || !nova) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ Preencha todos os campos.</div>';
+        return;
+      }
+      if (nova !== confirmar) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ As senhas não conferem.</div>';
+        return;
+      }
+      if (nova.length < 6) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ A nova senha deve ter ao menos 6 caracteres.</div>';
+        return;
+      }
+
+      try {
+        alertEl.innerHTML = '<div style="padding:10px;background:#d1ecf1;border-radius:8px;color:#0c5460;">⏳ Alterando...</div>';
+        await API.perfil.alterarSenha(atual, nova);
+        alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ Senha alterada! Redirecionando para login...</div>';
+        setTimeout(() => {
+          API.setToken(null);
+          window.location.href = 'login.html';
+        }, 2000);
+      } catch (err) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+      }
+    }
+
   </script>
 </body>
 </html>

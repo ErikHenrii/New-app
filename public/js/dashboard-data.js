@@ -474,18 +474,81 @@ function gerarLinkWhatsAppMembro(telefone, nome) {
 
 
 
-function renderPastoral() {
+async function renderPastoral() {
   const el = document.getElementById('pastoralGrid');
   if (!el) return;
-  el.innerHTML = IGREJA_DADOS.pastoral.map(p => `
-    <div class="pastoral-card">
-      <div class="p-avatar">${p.iniciais}</div>
-      <div class="p-name">${p.nome}</div>
-      <div class="p-role">${p.cargo}</div>
-      <a href="mailto:${p.contato}" class="p-contact">✉️ ${p.contato}</a>
-      <a href="tel:${p.telefone.replace(/\D/g,'')}" class="p-contact">📞 ${p.telefone}</a>
-    </div>
-  `).join('');
+
+  // Mostra skeleton enquanto carrega
+  el.innerHTML = '<p style="text-align:center;color:var(--gray-text);padding:20px;">Carregando contatos...</p>';
+
+  try {
+    // Busca lideranças da API (rota pública, não precisa de admin)
+    const data = await API.liderancas.listar();
+    const lista = data.liderancas || [];
+
+    if (lista.length === 0) {
+      // Fallback: usa dados estáticos do IGREJA_DADOS se a API não retornar nada
+      el.innerHTML = IGREJA_DADOS.pastoral.map(p => `
+        <div class="pastoral-card">
+          <div class="p-avatar">${p.iniciais}</div>
+          <div class="p-name">${p.nome}</div>
+          <div class="p-role">${p.cargo}</div>
+          ${p.contato ? `<a href="mailto:${p.contato}" class="p-contact">✉️ ${p.contato}</a>` : ''}
+          ${p.telefone ? `<a href="tel:${p.telefone.replace(/\D/g,'')}" class="p-contact">📞 ${p.telefone}</a>` : ''}
+        </div>
+      `).join('');
+      return;
+    }
+
+    // Renderiza lideranças vindas da API
+    el.innerHTML = lista.map(p => {
+      const iniciais = (p.nome || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      const fotoHtml = p.foto
+        ? `<img src="${p.foto}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+        : iniciais;
+
+      return `
+        <div class="pastoral-card">
+          <div class="p-avatar">${fotoHtml}</div>
+          <div class="p-name">${p.nome}</div>
+          <div class="p-role">${p.cargo}</div>
+          ${p.descricao ? `<div style="font-size:0.76rem;color:var(--gray-text);margin-bottom:8px;line-height:1.4;">${p.descricao}</div>` : ''}
+          ${p.email ? `<a href="mailto:${p.email}" class="p-contact">✉️ ${p.email}</a>` : ''}
+          ${p.telefone ? `<a href="tel:${p.telefone.replace(/\D/g,'')}" class="p-contact">📞 ${p.telefone}</a>` : ''}
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('Erro ao carregar lideranças:', err);
+    // Fallback: dados estáticos
+    el.innerHTML = IGREJA_DADOS.pastoral.map(p => `
+      <div class="pastoral-card">
+        <div class="p-avatar">${p.iniciais}</div>
+        <div class="p-name">${p.nome}</div>
+        <div class="p-role">${p.cargo}</div>
+        ${p.contato ? `<a href="mailto:${p.contato}" class="p-contact">✉️ ${p.contato}</a>` : ''}
+        ${p.telefone ? `<a href="tel:${p.telefone.replace(/\D/g,'')}" class="p-contact">📞 ${p.telefone}</a>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Carrega horários de atendimento pastoral da API (com fallback)
+  try {
+    const conteudoResp = await fetch('/api/conteudo');
+    if (conteudoResp.ok) {
+      const cdata = await conteudoResp.json();
+      const cfg = cdata.conteudo?.config_igreja;
+      if (cfg && cfg.horarios_detalhados) {
+        const horariosEl = document.getElementById('pastoralHorarios');
+        if (horariosEl) {
+          const linhas = cfg.horarios_detalhados.split('\n').filter(l => l.trim());
+          horariosEl.innerHTML = linhas.map(l => `<li>${l.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</li>`).join('');
+        }
+      }
+    }
+  } catch (e) {
+    // Mantém os horários padrão do HTML
+  }
 }
 
 // ═════════════════════════════════════════════
@@ -769,7 +832,7 @@ async function initDashboardComplete() {
   await renderBirthdays();
   renderDevotional();
   renderScales();
-  renderPastoral();
+  await renderPastoral();
   renderPrayers();
 }
 
