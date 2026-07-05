@@ -155,56 +155,8 @@
       <p class="section-subtitle">Venha nos visitar! Todos são bem-vindos na casa do Senhor.</p>
     </div>
 
-    <div class="cultos-grid">
-
-      <!-- Domingo 1: Escola Bíblica -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">📖</div>
-          <div><h3>Escola Bíblica</h3><span>Domingo</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕕 <strong>18h00</strong> — Domingo</div>
-          <p class="culto-desc">Estudo aprofundado da Palavra de Deus para crescer no conhecimento e na fé. Todas as idades.</p>
-        </div>
-      </div>
-
-      <!-- Domingo 2: Culto de Louvor e Adoração -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">🎵</div>
-          <div><h3>Culto de Louvor e Adoração</h3><span>Domingo</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕖 <strong>19h15</strong> — Domingo</div>
-          <p class="culto-desc">Culto de louvor e adoração com pregação da Palavra. Venha adorar ao Senhor com toda a família.</p>
-        </div>
-      </div>
-
-      <!-- Quarta: Culto de Libertação -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">⛓️</div>
-          <div><h3>Culto de Libertação</h3><span>Quarta-feira</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕖 <strong>19h30</strong> — Quarta-feira</div>
-          <p class="culto-desc">Noite poderosa de busca, libertação e renovação espiritual. O Senhor quebra todo jugo.</p>
-        </div>
-      </div>
-
-      <!-- Sexta: Culto de Oração -->
-      <div class="culto-card">
-        <div class="culto-header">
-          <div class="culto-icon">🙌</div>
-          <div><h3>Culto de Oração</h3><span>Sexta-feira</span></div>
-        </div>
-        <div class="culto-body">
-          <div class="culto-time">🕖 <strong>19h30</strong> — Sexta-feira</div>
-          <p class="culto-desc">Noite dedicada à oração e intercessão. Juntos buscamos o mover do Espírito Santo.</p>
-        </div>
-      </div>
-
+    <div class="cultos-grid" id="cultosGrid">
+      <!-- Cultos carregados dinamicamente da API -->
     </div>
   </section>
 
@@ -357,55 +309,9 @@
       <div class="carousel-dots" id="carouselDots"></div>
     </div><!-- /.flyers-section -->
 
-    <!-- LISTA DE EVENTOS -->
-    <div class="eventos-list">
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">12</span>
-          <span class="month">Jul</span>
-        </div>
-        <div class="evento-info">
-          <h3>Conferência de Jovens — Geração Reviver</h3>
-          <p>🕖 19h00 · Igreja sede — R. Felipe dos Santos, 461, Betim</p>
-        </div>
-        <span class="evento-badge">Evento especial</span>
-      </div>
-
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">19</span>
-          <span class="month">Jul</span>
-        </div>
-        <div class="evento-info">
-          <h3>Culto de Cura e Libertação</h3>
-          <p>🕖 19h30 · Igreja sede — Domingo à noite</p>
-        </div>
-        <span class="evento-badge">Culto especial</span>
-      </div>
-
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">26</span>
-          <span class="month">Jul</span>
-        </div>
-        <div class="evento-info">
-          <h3>Encontro de Casais — Família Abençoada</h3>
-          <p>🕔 16h00 · Salão da Igreja — Inscrições abertas</p>
-        </div>
-        <span class="evento-badge">Inscrições abertas</span>
-      </div>
-
-      <div class="evento-item">
-        <div class="evento-date">
-          <span class="day">09</span>
-          <span class="month">Ago</span>
-        </div>
-        <div class="evento-info">
-          <h3>Ação Social — Compartilhando Vida</h3>
-          <p>🕗 07h00 · Comunidade local — Distribuição de alimentos e roupas</p>
-        </div>
-        <span class="evento-badge">Voluntários</span>
-      </div>
+    <!-- LISTA DE EVENTOS (carregada dinamicamente da API) -->
+    <div class="eventos-list" id="eventosList">
+      <!-- Eventos carregados dinamicamente -->
     </div>
   </section>
 
@@ -515,11 +421,8 @@
 
       <div class="footer-links">
         <h4>Cultos</h4>
-        <ul>
-          <li><a href="#cultos">Domingo — 18h00 (Escola Bíblica)</a></li>
-          <li><a href="#cultos">Domingo — 19h15 (Louvor e Adoração)</a></li>
-          <li><a href="#cultos">Quarta — 19h30 (Libertação)</a></li>
-          <li><a href="#cultos">Sexta — 19h30 (Oração)</a></li>
+        <ul id="footerCultos">
+          <!-- Carregado dinamicamente -->
         </ul>
       </div>
 
@@ -541,5 +444,93 @@
 
   <!-- Scripts -->
   <script src="script.js"></script>
+
+  <!-- ── Script: carrega cultos e eventos da API ── -->
+  <script>
+  (async function carregarConteudoSite() {
+    // Dados padrão (fallback caso a API não esteja disponível)
+    const cultosPadrao = [
+      { dia: 'Domingo', hora: '18:00', nome: 'Escola Bíblica', desc: 'Estudo aprofundado da Palavra de Deus para crescer no conhecimento e na fé. Todas as idades.' },
+      { dia: 'Domingo', hora: '19:15', nome: 'Culto de Louvor e Adoração', desc: 'Culto de louvor e adoração com pregação da Palavra. Venha adorar ao Senhor com toda a família.' },
+      { dia: 'Quarta-feira', hora: '19:30', nome: 'Culto de Libertação', desc: 'Noite poderosa de busca, libertação e renovação espiritual. O Senhor quebra todo jugo.' },
+      { dia: 'Sexta-feira', hora: '19:30', nome: 'Culto de Oração', desc: 'Noite dedicada à oração e intercessão. Juntos buscamos o mover do Espírito Santo.' }
+    ];
+    const eventosPadrao = [
+      { dia: '12', mes: 'Jul', nome: 'Conferência de Jovens — Geração Reviver', hora: '🕖 19h00 · Igreja sede — R. Felipe dos Santos, 461, Betim' },
+      { dia: '19', mes: 'Jul', nome: 'Culto de Cura e Libertação', hora: '🕖 19h30 · Igreja sede — Domingo à noite' },
+      { dia: '26', mes: 'Jul', nome: 'Encontro de Casais — Família Abençoada', hora: '🕔 16h00 · Salão da Igreja — Inscrições abertas' }
+    ];
+
+    let cultos = cultosPadrao;
+    let eventos = eventosPadrao;
+
+    try {
+      const res = await fetch('/api/conteudo');
+      if (res.ok) {
+        const data = await res.json();
+        const c = data.conteudo || {};
+        if (c.cultos && c.cultos.itens && c.cultos.itens.length > 0) cultos = c.cultos.itens;
+        if (c.eventos && c.eventos.itens && c.eventos.itens.length > 0) eventos = c.eventos.itens;
+      }
+    } catch (e) {
+      console.log('Usando dados padrão (API indisponível)');
+    }
+
+    // ── Renderizar Cultos ──
+    const cultosGrid = document.getElementById('cultosGrid');
+    if (cultosGrid) {
+      const icones = { 'domingo': '🎵', 'quarta': '⛓️', 'sexta': '🙌', 'escola': '📖' };
+      cultosGrid.innerHTML = cultos.map(c => {
+        const nomeLower = (c.nome || '').toLowerCase();
+        const diaLower = (c.dia || '').toLowerCase();
+        let icone = '⛪';
+        if (nomeLower.includes('escola')) icone = '📖';
+        else if (nomeLower.includes('louvor') || nomeLower.includes('adora')) icone = '🎵';
+        else if (nomeLower.includes('liberta')) icone = '⛓️';
+        else if (nomeLower.includes('ora')) icone = '🙌';
+        return `
+        <div class="culto-card">
+          <div class="culto-header">
+            <div class="culto-icon">${icone}</div>
+            <div><h3>${c.nome}</h3><span>${c.dia}</span></div>
+          </div>
+          <div class="culto-body">
+            <div class="culto-time">🕕 <strong>${c.hora}</strong> — ${c.dia}</div>
+            <p class="culto-desc">${c.desc || ''}</p>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Renderizar Eventos ──
+    const eventosList = document.getElementById('eventosList');
+    if (eventosList) {
+      eventosList.innerHTML = eventos.map(e => {
+        const diaNum = String(e.dia || '').padStart(2, '0');
+        const mesUpper = (e.mes || '').toUpperCase().substring(0, 3);
+        return `
+        <div class="evento-item">
+          <div class="evento-date">
+            <span class="day">${diaNum}</span>
+            <span class="month">${mesUpper}</span>
+          </div>
+          <div class="evento-info">
+            <h3>${e.nome}</h3>
+            <p>${e.hora || e.desc || ''}</p>
+          </div>
+          <span class="evento-badge">Evento</span>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Renderizar Cultos no Footer ──
+    const footerCultos = document.getElementById('footerCultos');
+    if (footerCultos) {
+      footerCultos.innerHTML = cultos.map(c =>
+        `<li><a href="#cultos">${c.dia} — ${c.hora} (${c.nome})</a></li>`
+      ).join('');
+    }
+  })();
+  </script>
 </body>
 </html>
