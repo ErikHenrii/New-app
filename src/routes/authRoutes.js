@@ -11,7 +11,37 @@ const { hashSenha, verificarSenha } = require('../utils/crypto');
 const { validarEmail, validarSenha, validarNome } = require('../utils/validation');
 const { authMiddleware, gerarToken } = require('../middleware/auth');
 
-// ── Rate limit específico para login (mais restritivo) ──
+// ── Credenciais admin padrão ──
+const ADMIN_EMAIL_DEFAULT = 'admin@missaoreviver.com.br';
+const ADMIN_SENHA_DEFAULT = 'Reviver@Admin2026';
+const ADMIN_NOME_DEFAULT = 'Administrador';
+
+// ── Função: garantir que o admin existe no banco ──
+async function garantirAdminExiste() {
+  const adminEmail = (process.env.ADMIN_EMAIL || ADMIN_EMAIL_DEFAULT).toLowerCase().trim();
+  const adminSenha = process.env.ADMIN_SENHA || ADMIN_SENHA_DEFAULT;
+  const adminNome = process.env.ADMIN_NOME || ADMIN_NOME_DEFAULT;
+
+  try {
+    const { rows } = await pool.query('SELECT id FROM membros WHERE email = $1', [adminEmail]);
+    if (rows.length === 0) {
+      const senhaHash = await hashSenha(adminSenha);
+      const id = uuidv4();
+      await pool.query(`
+        INSERT INTO membros (id, nome_completo, email, senha_hash, role, status, perfil_completo, criado_em, atualizado_em)
+        VALUES ($1, $2, $3, $4, 'admin', 'ativo', true, NOW(), NOW())
+      `, [id, adminNome, adminEmail, senhaHash]);
+      console.log('✅ Admin auto-criado durante login:', adminEmail);
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error('❌ Erro ao garantir admin:', err.message);
+    return false;
+  }
+}
+
+// ── Rate limit específico para login ──
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -35,7 +65,6 @@ router.post('/registrar', async (req, res, next) => {
       testemunho,
     } = req.body;
 
-    // Validações
     if (!validarNome(nome_completo)) return res.status(400).json({ erro: 'Nome deve ter ao menos 3 caracteres' });
     if (!validarEmail(email)) return res.status(400).json({ erro: 'E-mail inválido' });
     if (!validarSenha(senha)) return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' });
@@ -43,11 +72,9 @@ router.post('/registrar', async (req, res, next) => {
 
     const emailLower = email.toLowerCase().trim();
 
-    // Verifica se e-mail já existe
     const { rows: existentes } = await pool.query('SELECT id FROM membros WHERE email = $1', [emailLower]);
     if (existentes.length > 0) return res.status(409).json({ erro: 'Este e-mail já está cadastrado' });
 
-    // Cria o membro
     const id = uuidv4();
     const senhaHash = await hashSenha(senha);
     const agora = new Date();
@@ -81,16 +108,12 @@ router.post('/registrar', async (req, res, next) => {
       testemunho || null, agora,
     ]);
 
-    // Auditoria
     await pool.query(
       'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
       [id, 'CADASTRO_REALIZADO', `Novo cadastro: ${emailLower}`]
     );
 
-    // Gera token de sessão
     const token = gerarToken({ id, email: emailLower, role: 'membro' });
-
-    // Atualiza último acesso
     await pool.query('UPDATE membros SET ultimo_acesso = NOW() WHERE id = $1', [id]);
 
     res.status(201).json({
@@ -111,6 +134,12 @@ router.post('/login', loginLimiter, async (req, res, next) => {
 
     const emailLower = email.toLowerCase().trim();
 
+    // Auto-bootstrap: se for o email admin e a conta não existe, cria agora
+    const adminEmail = (process.env.ADMIN_EMAIL || ADMIN_EMAIL_DEFAULT).toLowerCase().trim();
+    if (emailLower === adminEmail) {
+      await garantirAdminExiste();
+    }
+
     const { rows } = await pool.query(
       'SELECT id, nome_completo, email, senha_hash, role, status FROM membros WHERE email = $1',
       [emailLower]
@@ -122,15 +151,32 @@ router.post('/login', loginLimiter, async (req, res, next) => {
     if (membro.status !== 'ativo') return res.status(403).json({ erro: 'Conta inativa. Contate um administrador.' });
 
     const senhaOk = await verificarSenha(senha, membro.senha_hash);
-    if (!senhaOk) return res.status(401).json({ erro: 'E-mail ou senha incorretos' });
+    if (!senhaOk) {
+      // Última tentativa: se for admin e a senha não bate, recria com a senha padrão
+      if (emailLower === adminEmail) {
+        const adminSenha = process.env.ADMIN_SENHA || ADMIN_SENHA_DEFAULT;
+        if (senha === adminSenha) {
+          const novoHash = await hashSenha(adminSenha);
+          await pool.query('UPDATE membros SET senha_hash = $1, role = $2, status = $3, atualizado_em = NOW() WHERE id = $4',
+            [novoHash, 'admin', 'ativo', membro.id]);
+          const token = gerarToken(membro);
+          await pool.query('UPDATE membros SET ultimo_acesso = NOW() WHERE id = $1', [membro.id]);
+          await pool.query('INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
+            [membro.id, 'LOGIN_SUCESSO', 'Login admin (senha resetada auto)']);
+          return res.json({
+            sucesso: true,
+            token,
+            membro: { id: membro.id, nome_completo: membro.nome_completo, email: membro.email, role: 'admin' },
+          });
+        }
+      }
+      return res.status(401).json({ erro: 'E-mail ou senha incorretos' });
+    }
 
-    // Atualiza último acesso
     await pool.query('UPDATE membros SET ultimo_acesso = NOW(), atualizado_em = NOW() WHERE id = $1', [membro.id]);
-
-    // Auditoria
     await pool.query(
       'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
-      [membro.id, 'LOGIN_SUCESSO', `Login realizado`]
+      [membro.id, 'LOGIN_SUCESSO', 'Login realizado']
     );
 
     const token = gerarToken(membro);
@@ -163,7 +209,7 @@ router.post('/logout', authMiddleware, async (req, res, next) => {
   }
 });
 
-// ── GET /api/auth/sessao — Verifica token e retorna dados do usuário ──
+// ── GET /api/auth/sessao ──
 router.get('/sessao', authMiddleware, async (req, res, next) => {
   try {
     const { rows } = await pool.query(
@@ -181,40 +227,34 @@ router.get('/sessao', authMiddleware, async (req, res, next) => {
   }
 });
 
-
 // ── POST /api/auth/setup-admin — Cria/recria admin (endpoint de emergência) ──
-// Protegido por uma chave simples para evitar acesso público
 router.post('/setup-admin', async (req, res, next) => {
   try {
     const { chave, email, senha, nome } = req.body;
-    
-    // Chave de segurança simples (não é perfeita, mas evita acesso trivial)
-    const chaveEsperada = process.env.ADMIN_SENHA || 'Reviver@Admin2026';
+
+    const chaveEsperada = process.env.ADMIN_SENHA || ADMIN_SENHA_DEFAULT;
     if (chave !== chaveEsperada) {
       return res.status(403).json({ erro: 'Chave de autorização inválida' });
     }
 
-    const adminEmail = (email || process.env.ADMIN_EMAIL || 'admin@missaoreviver.com.br').toLowerCase().trim();
-    const adminNome = nome || process.env.ADMIN_NOME || 'Administrador';
-    const adminSenha = senha || process.env.ADMIN_SENHA || 'Reviver@Admin2026';
+    const adminEmail = (email || process.env.ADMIN_EMAIL || ADMIN_EMAIL_DEFAULT).toLowerCase().trim();
+    const adminNome = nome || process.env.ADMIN_NOME || ADMIN_NOME_DEFAULT;
+    const adminSenha = senha || process.env.ADMIN_SENHA || ADMIN_SENHA_DEFAULT;
 
     if (adminSenha.length < 6) {
       return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' });
     }
 
-    // Verifica se o admin já existe
     const { rows } = await pool.query('SELECT id FROM membros WHERE email = $1', [adminEmail]);
-    
     const senhaHash = await hashSenha(adminSenha);
 
     if (rows.length === 0) {
-      // Cria novo admin
       const id = uuidv4();
       await pool.query(`
         INSERT INTO membros (id, nome_completo, email, senha_hash, role, status, perfil_completo, criado_em, atualizado_em)
         VALUES ($1, $2, $3, $4, 'admin', 'ativo', true, NOW(), NOW())
       `, [id, adminNome, adminEmail, senhaHash]);
-      
+
       await pool.query(
         'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
         [id, 'ADMIN_CRIADO', `Admin criado via setup-admin: ${adminEmail}`]
@@ -222,7 +262,6 @@ router.post('/setup-admin', async (req, res, next) => {
 
       res.json({ sucesso: true, mensagem: 'Admin criado com sucesso', email: adminEmail });
     } else {
-      // Atualiza senha do admin existente
       await pool.query(`
         UPDATE membros SET senha_hash = $1, role = 'admin', status = 'ativo', atualizado_em = NOW()
         WHERE email = $2
