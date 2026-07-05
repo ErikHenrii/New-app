@@ -187,6 +187,7 @@
       <button class="tab" onclick="switchTab('audit', this)">📋 Auditoria</button>
       <button class="tab" onclick="switchTab('conteudo', this)">📝 Conteúdo</button>
       <button class="tab" onclick="switchTab('config', this)">⚙️ Configurações</button>
+      <button class="tab" onclick="switchTab('senha', this)">🔒 Senha</button>
     </div>
 
     <!-- USUÁRIOS -->
@@ -478,6 +479,30 @@
         </div>
         <button onclick="salvarConfig()" class="btn btn-primary" style="width:auto;padding:14px 40px;">💾 Salvar Configurações</button>
         <div id="configAlert" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- ════════ ALTERAR SENHA ════════ -->
+    <div class="tab-content" id="tab-senha">
+      <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">🔒 Alterar Senha</h3>
+      <div class="auth-card" style="max-width:500px;box-shadow:none;border:1px solid var(--gray-light);padding:28px;">
+        <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
+          Após alterar sua senha, você será desconectado e precisará fazer login novamente.
+        </p>
+        <div id="adminSenhaAlert" style="margin-bottom:16px;"></div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label for="adminSenhaAtual">Senha atual</label>
+          <input type="password" id="adminSenhaAtual" placeholder="••••••••" />
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label for="adminNovaSenha">Nova senha (mín. 6 caracteres)</label>
+          <input type="password" id="adminNovaSenha" placeholder="••••••••" />
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+          <label for="adminConfirmarSenha">Confirmar nova senha</label>
+          <input type="password" id="adminConfirmarSenha" placeholder="••••••••" />
+        </div>
+        <button onclick="adminAlterarSenha()" class="btn btn-primary" style="width:auto;padding:12px 32px;">Alterar Senha</button>
       </div>
     </div>
 
@@ -1440,6 +1465,39 @@
 
     // ── Start ──
     initAdmin();
+    // ── Alterar Senha (Admin) ──
+    async function adminAlterarSenha() {
+      const atual = document.getElementById('adminSenhaAtual').value;
+      const nova = document.getElementById('adminNovaSenha').value;
+      const confirmar = document.getElementById('adminConfirmarSenha').value;
+      const alertEl = document.getElementById('adminSenhaAlert');
+
+      if (!atual || !nova) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ Preencha todos os campos.</div>';
+        return;
+      }
+      if (nova !== confirmar) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ As senhas não conferem.</div>';
+        return;
+      }
+      if (nova.length < 6) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ A nova senha deve ter ao menos 6 caracteres.</div>';
+        return;
+      }
+
+      try {
+        alertEl.innerHTML = '<div style="padding:10px;background:#d1ecf1;border-radius:8px;color:#0c5460;">⏳ Alterando...</div>';
+        await API.perfil.alterarSenha(atual, nova);
+        alertEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ Senha alterada! Redirecionando para login...</div>';
+        setTimeout(() => {
+          API.setToken(null);
+          window.location.href = 'login.html';
+        }, 2000);
+      } catch (err) {
+        alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+      }
+    }
+
   </script>
 </body>
 </html>

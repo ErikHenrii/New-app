@@ -181,4 +181,63 @@ router.get('/sessao', authMiddleware, async (req, res, next) => {
   }
 });
 
+
+// ── POST /api/auth/setup-admin — Cria/recria admin (endpoint de emergência) ──
+// Protegido por uma chave simples para evitar acesso público
+router.post('/setup-admin', async (req, res, next) => {
+  try {
+    const { chave, email, senha, nome } = req.body;
+    
+    // Chave de segurança simples (não é perfeita, mas evita acesso trivial)
+    const chaveEsperada = process.env.ADMIN_SENHA || 'Reviver@Admin2026';
+    if (chave !== chaveEsperada) {
+      return res.status(403).json({ erro: 'Chave de autorização inválida' });
+    }
+
+    const adminEmail = (email || process.env.ADMIN_EMAIL || 'admin@missaoreviver.com.br').toLowerCase().trim();
+    const adminNome = nome || process.env.ADMIN_NOME || 'Administrador';
+    const adminSenha = senha || process.env.ADMIN_SENHA || 'Reviver@Admin2026';
+
+    if (adminSenha.length < 6) {
+      return res.status(400).json({ erro: 'Senha deve ter ao menos 6 caracteres' });
+    }
+
+    // Verifica se o admin já existe
+    const { rows } = await pool.query('SELECT id FROM membros WHERE email = $1', [adminEmail]);
+    
+    const senhaHash = await hashSenha(adminSenha);
+
+    if (rows.length === 0) {
+      // Cria novo admin
+      const id = uuidv4();
+      await pool.query(`
+        INSERT INTO membros (id, nome_completo, email, senha_hash, role, status, perfil_completo, criado_em, atualizado_em)
+        VALUES ($1, $2, $3, $4, 'admin', 'ativo', true, NOW(), NOW())
+      `, [id, adminNome, adminEmail, senhaHash]);
+      
+      await pool.query(
+        'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
+        [id, 'ADMIN_CRIADO', `Admin criado via setup-admin: ${adminEmail}`]
+      );
+
+      res.json({ sucesso: true, mensagem: 'Admin criado com sucesso', email: adminEmail });
+    } else {
+      // Atualiza senha do admin existente
+      await pool.query(`
+        UPDATE membros SET senha_hash = $1, role = 'admin', status = 'ativo', atualizado_em = NOW()
+        WHERE email = $2
+      `, [senhaHash, adminEmail]);
+
+      await pool.query(
+        'INSERT INTO auditoria (membro_id, acao, detalhes) VALUES ($1, $2, $3)',
+        [rows[0].id, 'ADMIN_SENHA_RESET', `Senha do admin resetada via setup-admin: ${adminEmail}`]
+      );
+
+      res.json({ sucesso: true, mensagem: 'Senha do admin atualizada com sucesso', email: adminEmail });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
