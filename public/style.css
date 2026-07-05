@@ -965,7 +965,7 @@ footer {
 }
 
 .ministerio-modal {
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-lg);
@@ -1035,113 +1035,28 @@ footer {
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 900;
-  color: var(--blue-dark);
+  color: var(--text-dark);
   margin-bottom: 10px;
 }
 
 .ministerio-modal-tag {
   display: inline-block;
-  background: rgba(10, 42, 110, 0.12);
-  color: var(--blue-dark);
+  background: rgba(0,180,200,0.1);
+  color: var(--teal);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   padding: 6px 16px;
   border-radius: var(--squircle);
-  border: 1px solid rgba(10, 42, 110, 0.25);
+  border: 1px solid rgba(0,180,200,0.2);
   margin-bottom: 18px;
 }
 
 .ministerio-modal-content p {
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: var(--gray-text);
   line-height: 1.7;
-}
-
-
-
-/* ═══ CARROSSEL DE IMAGENS DENTRO DO MODAL MINISTÉRIO ═══ */
-.ministerio-modal-carousel {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  overflow: hidden;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.ministerio-modal-carousel-track {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.ministerio-modal-carousel-slide {
-  min-width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.ministerio-modal-carousel-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.ministerio-modal-carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: var(--squircle);
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  color: var(--blue-dark);
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-  transition: all 0.25s;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-}
-
-.ministerio-modal-carousel-btn:hover {
-  background: var(--white);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.ministerio-modal-carousel-btn.prev { left: 12px; }
-.ministerio-modal-carousel-btn.next { right: 12px; }
-
-.ministerio-modal-carousel-dots {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 3;
-}
-
-.ministerio-modal-carousel-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.ministerio-modal-carousel-dot.active {
-  background: var(--white);
-  width: 24px;
-  border-radius: 4px;
 }
 
 body.modal-open {

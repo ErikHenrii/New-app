@@ -440,8 +440,8 @@ async function salvarPerfil() {
 
 async function alterarSenha() {
   const atual = document.getElementById('senhaAtual').value;
-  const nova = document.getElementById('novaSenha').value;
-  const confirmar = document.getElementById('confirmarSenha').value;
+  const nova = document.getElementById('senhaNova').value;
+  const confirmar = document.getElementById('senhaConfirmar').value;
 
   if (!atual || !nova) { showAlert('senhaAlert', 'Preencha todos os campos.'); return; }
   if (nova !== confirmar) { showAlert('senhaAlert', 'As senhas não conferem.'); return; }
@@ -451,8 +451,8 @@ async function alterarSenha() {
     await API.perfil.alterarSenha(atual, nova);
     showAlert('senhaAlert', 'Senha alterada com sucesso!', 'success');
     document.getElementById('senhaAtual').value = '';
-    document.getElementById('novaSenha').value = '';
-    document.getElementById('confirmarSenha').value = '';
+    document.getElementById('senhaNova').value = '';
+    document.getElementById('senhaConfirmar').value = '';
   } catch (err) {
     showAlert('senhaAlert', err.message);
   }
