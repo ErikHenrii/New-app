@@ -108,6 +108,15 @@ const API = {
     atualizar: (secao, dados) => request(`/conteudo/${secao}`, { method: 'PUT', body: { dados } }),
   },
 
+  // ── Tesouraria ──
+  tesouraria: {
+    listar: (mes_ref) => request(`/tesouraria${mes_ref ? `?mes_ref=${mes_ref}` : ''}`),
+    resumo: (mes_ref) => request(`/tesouraria/resumo${mes_ref ? `?mes_ref=${mes_ref}` : ''}`),
+    criar: (dados) => request('/tesouraria', { method: 'POST', body: dados }),
+    atualizar: (id, dados) => request(`/tesouraria/${id}`, { method: 'PUT', body: dados }),
+    excluir: (id) => request(`/tesouraria/${id}`, { method: 'DELETE' }),
+  },
+
   // ── LGPD ──
   lgpd: {
     exportarDados: () => request('/lgpd/exportar-dados'),

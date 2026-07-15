@@ -19,6 +19,7 @@ const anivRoutes = require('./src/routes/aniversariantesRoutes');
 const lgpdRoutes = require('./src/routes/lgpdRoutes');
 const liderancaRoutes = require('./src/routes/liderancaRoutes');
 const conteudoRoutes = require('./src/routes/conteudoRoutes');
+const tesourariaRoutes = require('./src/routes/tesourariaRoutes');
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use('/api/aniversariantes', anivRoutes);
 app.use('/api/lgpd', lgpdRoutes);
 app.use('/api/liderancas', liderancaRoutes);
 app.use('/api/conteudo', conteudoRoutes);
+app.use('/api/tesouraria', tesourariaRoutes);
 
 // ── Arquivos estáticos (frontend) ──
 app.use(express.static(path.join(__dirname, 'public')));

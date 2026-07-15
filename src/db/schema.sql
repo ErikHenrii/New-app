@@ -180,6 +180,28 @@ SELECT * FROM (VALUES
 ) AS t(nome, cargo, descricao, ordem)
 WHERE NOT EXISTS (SELECT 1 FROM liderancas LIMIT 1);
 
+
+-- ── Tabela: transacoes_financeiras (Tesouraria) ──
+CREATE TABLE IF NOT EXISTS transacoes_financeiras (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tipo            VARCHAR(10) NOT NULL,  -- 'entrada' ou 'saida'
+  categoria       VARCHAR(50) NOT NULL,  -- dízimo, oferta, doação, despesa, conta, manutenção, etc
+  descricao       VARCHAR(255) NOT NULL,
+  valor           DECIMAL(10,2) NOT NULL,
+  data_transacao  DATE NOT NULL,
+  forma_pagamento VARCHAR(30),  -- pix, dinheiro, cartao, transferencia
+  referencia      VARCHAR(100), -- mês de referência: "2026-07"
+  observacoes     TEXT,
+  registrado_por  UUID REFERENCES membros(id) ON DELETE SET NULL,
+  criado_em       TIMESTAMP NOT NULL DEFAULT NOW(),
+  atualizado_em   TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_transacoes_tipo ON transacoes_financeiras(tipo);
+CREATE INDEX IF NOT EXISTS idx_transacoes_data ON transacoes_financeiras(data_transacao);
+CREATE INDEX IF NOT EXISTS idx_transacoes_categoria ON transacoes_financeiras(categoria);
+CREATE INDEX IF NOT EXISTS idx_transacoes_referencia ON transacoes_financeiras(referencia);
+
 -- ── Índices ──
 CREATE INDEX IF NOT EXISTS idx_membros_email ON membros(email);
 CREATE INDEX IF NOT EXISTS idx_membros_status ON membros(status);

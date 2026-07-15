@@ -186,6 +186,7 @@
       <button class="tab" onclick="switchTab('liderancas', this)">✝️ Lideranças</button>
       <button class="tab" onclick="switchTab('audit', this)">📋 Auditoria</button>
       <button class="tab" onclick="switchTab('conteudo', this)">📝 Conteúdo</button>
+      <button class="tab" onclick="switchTab('tesouraria', this)">💰 Tesouraria</button>
       <button class="tab" onclick="switchTab('config', this)">⚙️ Configurações</button>
     </div>
 
@@ -431,6 +432,146 @@
     </div>
 
     <!-- CONFIGURAÇÕES DA IGREJA -->
+
+    <!-- ════════════ TESOURARIA ════════════ -->
+    <div class="tab-content" id="tab-tesouraria">
+      <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">💰 Tesouraria</h3>
+      <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
+        Gestão financeira da igreja — entradas, saídas e relatórios.
+      </p>
+
+      <!-- Cards de resumo -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:20px;">
+          <p style="font-size:0.78rem;color:var(--gray-text);margin-bottom:4px;">📊 Total de Entradas</p>
+          <p style="font-size:1.5rem;font-weight:700;color:#28a745;" id="totalEntradas">R$ 0,00</p>
+          <p style="font-size:0.75rem;color:var(--gray-text);" id="numEntradas">0 transações</p>
+        </div>
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:20px;">
+          <p style="font-size:0.78rem;color:var(--gray-text);margin-bottom:4px;">💸 Total de Saídas</p>
+          <p style="font-size:1.5rem;font-weight:700;color:#dc3545;" id="totalSaidas">R$ 0,00</p>
+          <p style="font-size:0.75rem;color:var(--gray-text);" id="numSaidas">0 transações</p>
+        </div>
+        <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:20px;">
+          <p style="font-size:0.78rem;color:var(--gray-text);margin-bottom:4px;">🏦 Saldo Atual</p>
+          <p style="font-size:1.5rem;font-weight:700;color:var(--blue-mid);" id="saldoAtual">R$ 0,00</p>
+        </div>
+      </div>
+
+      <!-- Filtro por mês -->
+      <div style="display:flex;gap:12px;align-items:end;margin-bottom:20px;flex-wrap:wrap;">
+        <div class="form-group" style="margin:0;">
+          <label style="font-size:0.78rem;">Filtrar por mês</label>
+          <input type="month" id="filtroMes" style="padding:8px 12px;" />
+        </div>
+        <button onclick="carregarTesouraria()" class="btn btn-primary" style="width:auto;padding:10px 20px;height:42px;">🔍 Filtrar</button>
+        <button onclick="limparFiltroMes()" class="btn" style="width:auto;padding:10px 20px;height:42px;border:1px solid var(--gray-light);background:var(--white);">Ver tudo</button>
+      </div>
+
+      <!-- Botão nova transação -->
+      <button onclick="abrirModalTransacao()" class="btn btn-primary" style="width:auto;padding:12px 28px;margin-bottom:16px;">➕ Nova Transação</button>
+
+      <!-- Tabela de transações -->
+      <div class="auth-card" style="max-width:none;box-shadow:none;border:1px solid var(--gray-light);padding:0;overflow:hidden;">
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.84rem;">
+            <thead>
+              <tr style="background:var(--blue-dark);color:white;">
+                <th style="padding:12px;text-align:left;">Data</th>
+                <th style="padding:12px;text-align:left;">Tipo</th>
+                <th style="padding:12px;text-align:left;">Categoria</th>
+                <th style="padding:12px;text-align:left;">Descrição</th>
+                <th style="padding:12px;text-align:left;">Forma</th>
+                <th style="padding:12px;text-align:right;">Valor</th>
+                <th style="padding:12px;text-align:center;">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tesourariaTabela">
+              <tr><td colspan="7" style="padding:24px;text-align:center;color:var(--gray-text);">Nenhuma transação registrada.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal de transação -->
+      <div id="modalTransacao" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+        <div class="auth-card" style="max-width:480px;width:90%;padding:28px;">
+          <h4 style="color:var(--blue-dark);margin-bottom:16px;" id="modalTitulo">➕ Nova Transação</h4>
+          <div id="transacaoAlert" style="margin-bottom:12px;"></div>
+          <input type="hidden" id="transacaoId" value="" />
+          <div class="form-group">
+            <label>Tipo *</label>
+            <select id="transTipo" style="padding:10px 12px;border:1px solid var(--gray-light);border-radius:8px;width:100%;">
+              <option value="entrada">💰 Entrada</option>
+              <option value="saida">💸 Saída</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Categoria *</label>
+            <select id="transCategoria" style="padding:10px 12px;border:1px solid var(--gray-light);border-radius:8px;width:100%;">
+              <optgroup label="Entradas">
+                <option value="Dízimo">Dízimo</option>
+                <option value="Oferta">Oferta</option>
+                <option value="Doação">Doação</option>
+                <option value="Evento">Receita de Evento</option>
+                <option value="Outros - Entrada">Outros</option>
+              </optgroup>
+              <optgroup label="Saídas">
+                <option value="Conta">Conta (água, luz, etc)</option>
+                <option value="Manutenção">Manutenção</option>
+                <option value="Salário">Salário/Estipêndio</option>
+                <option value="Evento">Despesa de Evento</option>
+                <option value="Material">Material</option>
+                <option value="Missões">Missões</option>
+                <option value="Outros - Saída">Outros</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Descrição *</label>
+            <input type="text" id="transDescricao" placeholder="Descrição da transação" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group">
+              <label>Valor (R$) *</label>
+              <input type="number" id="transValor" step="0.01" min="0" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label>Data *</label>
+              <input type="date" id="transData" />
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group">
+              <label>Forma de Pagamento</label>
+              <select id="transForma" style="padding:10px 12px;border:1px solid var(--gray-light);border-radius:8px;width:100%;">
+                <option value="">—</option>
+                <option value="Pix">PIX</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão">Cartão</option>
+                <option value="Transferência">Transferência</option>
+                <option value="Boleto">Boleto</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Mês de Referência</label>
+              <input type="month" id="transReferencia" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Observações</label>
+            <textarea id="transObs" rows="2" placeholder="Observações (opcional)"></textarea>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+            <button onclick="fecharModalTransacao()" class="btn" style="width:auto;padding:10px 24px;border:1px solid var(--gray-light);background:var(--white);">Cancelar</button>
+            <button onclick="salvarTransacao()" class="btn btn-primary" style="width:auto;padding:10px 24px;">💾 Salvar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="tesourariaAlert" style="margin-top:16px;"></div>
+    </div>
+
     <div class="tab-content" id="tab-config">
       <h3 style="font-family:var(--font-display);color:var(--blue-dark);margin-bottom:16px;">⚙️ Configurações da Igreja</h3>
       <p style="font-size:0.86rem;color:var(--gray-text);margin-bottom:20px;">
@@ -541,6 +682,7 @@
           loadAdminAniversariantes(),
           loadLiderancas(),
           carregarConteudoAdmin(),
+          carregarTesouraria(),
         ]);
       } catch (err) {
         console.error('Erro initAdmin:', err);
@@ -1529,3 +1671,153 @@
   </script>
 </body>
 </html>
+    // ═══════════════════════════════════════════════════════════
+    //  TESOURARIA — JavaScript
+    // ═══════════════════════════════════════════════════════════
+
+    async function carregarTesouraria() {
+      try {
+        const filtroMes = document.getElementById('filtroMes')?.value;
+        const mesRef = filtroMes || undefined;
+
+        // Carregar resumo
+        const resumo = await API.tesouraria.resumo(mesRef);
+
+        document.getElementById('totalEntradas').textContent = 'R$ ' + (resumo.total_entradas || 0).toFixed(2).replace('.', ',');
+        document.getElementById('totalSaidas').textContent = 'R$ ' + (resumo.total_saidas || 0).toFixed(2).replace('.', ',');
+        document.getElementById('saldoAtual').textContent = 'R$ ' + (resumo.saldo || 0).toFixed(2).replace('.', ',');
+        document.getElementById('numEntradas').textContent = (resumo.num_entradas || 0) + ' transações';
+        document.getElementById('numSaidas').textContent = (resumo.num_saidas || 0) + ' transações';
+
+        // Carregar lista de transações
+        const data = await API.tesouraria.listar(mesRef);
+        renderTabelaTransacoes(data.transacoes || []);
+      } catch (err) {
+        console.error('Erro ao carregar tesouraria:', err);
+        const alertEl = document.getElementById('tesourariaAlert');
+        if (alertEl) alertEl.innerHTML = '<div style="padding:10px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ Erro ao carregar dados: ' + err.message + '</div>';
+      }
+    }
+
+    function renderTabelaTransacoes(transacoes) {
+      const tbody = document.getElementById('tesourariaTabela');
+      if (!transacoes || transacoes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--gray-text);">Nenhuma transação registrada.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = transacoes.map(t => {
+        const data = new Date(t.data_transacao).toLocaleDateString('pt-BR');
+        const valor = parseFloat(t.valor).toFixed(2).replace('.', ',');
+        const cor = t.tipo === 'entrada' ? '#28a745' : '#dc3545';
+        const sinal = t.tipo === 'entrada' ? '+' : '-';
+        return `
+          <tr style="border-bottom:1px solid var(--gray-light);">
+            <td style="padding:10px;">${data}</td>
+            <td style="padding:10px;"><span style="color:${cor};font-weight:600;">${t.tipo === 'entrada' ? '💰 Entrada' : '💸 Saída'}</span></td>
+            <td style="padding:10px;">${t.categoria}</td>
+            <td style="padding:10px;">${t.descricao}</td>
+            <td style="padding:10px;">${t.forma_pagamento || '-'}</td>
+            <td style="padding:10px;text-align:right;font-weight:600;color:${cor};">${sinal} R$ ${valor}</td>
+            <td style="padding:10px;text-align:center;">
+              <button onclick="editarTransacao('${t.id}')" class="btn btn-sm" style="padding:4px 10px;font-size:0.78rem;width:auto;border:1px solid var(--gray-light);background:var(--white);">✏️</button>
+              <button onclick="excluirTransacao('${t.id}')" class="btn btn-sm" style="padding:4px 10px;font-size:0.78rem;width:auto;border:1px solid var(--gray-light);background:var(--white);">🗑️</button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function abrirModalTransacao(dados) {
+      const modal = document.getElementById('modalTransacao');
+      document.getElementById('modalTitulo').textContent = dados ? '✏️ Editar Transação' : '➕ Nova Transação';
+      document.getElementById('transacaoId').value = dados?.id || '';
+      document.getElementById('transTipo').value = dados?.tipo || 'entrada';
+      document.getElementById('transDescricao').value = dados?.descricao || '';
+      document.getElementById('transValor').value = dados?.valor || '';
+      document.getElementById('transData').value = dados?.data_transacao ? dados.data_transacao.substring(0, 10) : new Date().toISOString().substring(0, 10);
+      document.getElementById('transForma').value = dados?.forma_pagamento || '';
+      document.getElementById('transObs').value = dados?.observacoes || '';
+
+      if (dados?.referencia) {
+        document.getElementById('transReferencia').value = dados.referencia.substring(0, 7);
+      }
+
+      // Selecionar categoria corretamente
+      const sel = document.getElementById('transCategoria');
+      const opt = Array.from(sel.options).find(o => o.value === dados?.categoria);
+      if (opt) opt.selected = true;
+      else sel.selectedIndex = 0;
+
+      document.getElementById('transacaoAlert').innerHTML = '';
+      modal.style.display = 'flex';
+    }
+
+    function fecharModalTransacao() {
+      document.getElementById('modalTransacao').style.display = 'none';
+    }
+
+    async function editarTransacao(id) {
+      try {
+        const data = await API.tesouraria.listar();
+        const t = (data.transacoes || []).find(x => x.id === id);
+        if (t) abrirModalTransacao(t);
+      } catch (err) {
+        console.error('Erro ao buscar transação:', err);
+      }
+    }
+
+    async function salvarTransacao() {
+      const id = document.getElementById('transacaoId').value;
+      const alertEl = document.getElementById('transacaoAlert');
+
+      const dados = {
+        tipo: document.getElementById('transTipo').value,
+        categoria: document.getElementById('transCategoria').value,
+        descricao: document.getElementById('transDescricao').value.trim(),
+        valor: document.getElementById('transValor').value,
+        data_transacao: document.getElementById('transData').value,
+        forma_pagamento: document.getElementById('transForma').value || null,
+        referencia: document.getElementById('transReferencia').value || null,
+        observacoes: document.getElementById('transObs').value.trim() || null
+      };
+
+      if (!dados.descricao || !dados.valor || !dados.data_transacao) {
+        alertEl.innerHTML = '<div style="padding:8px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ Preencha todos os campos obrigatórios.</div>';
+        return;
+      }
+
+      try {
+        if (id) {
+          await API.tesouraria.atualizar(id, dados);
+        } else {
+          await API.tesouraria.criar(dados);
+        }
+
+        fecharModalTransacao();
+        carregarTesouraria();
+        const aEl = document.getElementById('tesourariaAlert');
+        aEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ Transação salva com sucesso!</div>';
+        setTimeout(() => { aEl.innerHTML = ''; }, 3000);
+      } catch (err) {
+        alertEl.innerHTML = '<div style="padding:8px;background:#f8d7da;border-radius:8px;color:#721c24;">❌ ' + err.message + '</div>';
+      }
+    }
+
+    async function excluirTransacao(id) {
+      if (!confirm('Tem certeza que deseja excluir esta transação?')) return;
+      try {
+        await API.tesouraria.excluir(id);
+        carregarTesouraria();
+        const aEl = document.getElementById('tesourariaAlert');
+        aEl.innerHTML = '<div style="padding:10px;background:#d4edda;border-radius:8px;color:#155724;">✅ Transação excluída.</div>';
+        setTimeout(() => { aEl.innerHTML = ''; }, 3000);
+      } catch (err) {
+        alert('Erro: ' + err.message);
+      }
+    }
+
+    function limparFiltroMes() {
+      document.getElementById('filtroMes').value = '';
+      carregarTesouraria();
+    }
+
+
