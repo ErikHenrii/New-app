@@ -110,11 +110,36 @@ const API = {
 
   // ── Tesouraria ──
   tesouraria: {
-    listar: (mes_ref) => request(`/tesouraria${mes_ref ? `?mes_ref=${mes_ref}` : ''}`),
+    listar: (filtros) => {
+      let qs = '';
+      if (filtros) {
+        const parts = [];
+        if (filtros.mes_ref) parts.push('mes_ref=' + filtros.mes_ref);
+        if (filtros.tipo) parts.push('tipo=' + filtros.tipo);
+        if (filtros.categoria) parts.push('categoria=' + filtros.categoria);
+        if (filtros.data_inicio) parts.push('data_inicio=' + filtros.data_inicio);
+        if (filtros.data_fim) parts.push('data_fim=' + filtros.data_fim);
+        if (parts.length) qs = '?' + parts.join('&');
+      }
+      return request('/tesouraria' + qs);
+    },
     resumo: (mes_ref) => request(`/tesouraria/resumo${mes_ref ? `?mes_ref=${mes_ref}` : ''}`),
     criar: (dados) => request('/tesouraria', { method: 'POST', body: dados }),
     atualizar: (id, dados) => request(`/tesouraria/${id}`, { method: 'PUT', body: dados }),
     excluir: (id) => request(`/tesouraria/${id}`, { method: 'DELETE' }),
+    exportarCSV: (mes_ref) => {
+      const token = getToken();
+      const url = `/api/tesouraria/exportar-csv${mes_ref ? '?mes_ref=' + mes_ref : ''}`;
+      return fetch(url, { headers: token ? { Authorization: 'Bearer ' + token } : {} })
+        .then(r => r.blob())
+        .then(blob => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'tesouraria' + (mes_ref ? '_' + mes_ref : '') + '.csv';
+          a.click();
+          URL.revokeObjectURL(a.href);
+        });
+    },
   },
 
   // ── LGPD ──
