@@ -676,17 +676,24 @@
           }
         }
 
-        await Promise.all([
-          loadStats(),
-          loadAdminUsers(''),
-          loadAdminAniversariantes(),
-          loadLiderancas(),
-          carregarConteudoAdmin(),
-          carregarTesouraria(),
-        ]);
+        // Carregar cada seção de forma independente — se uma falha, não derruba as outras
+        const secoes = [
+          () => loadStats(),
+          () => loadAdminUsers(''),
+          () => loadAdminAniversariantes(),
+          () => loadLiderancas(),
+          () => carregarConteudoAdmin(),
+          () => carregarTesouraria(),
+        ];
+        for (const fn of secoes) {
+          try { await fn(); } catch (e) { console.warn('Seção falhou (não crítica):', e.message); }
+        }
       } catch (err) {
-        console.error('Erro initAdmin:', err);
-        window.location.href = 'login.html';
+        console.error('Erro CRÍTICO initAdmin:', err);
+        // Só redireciona se for erro de autenticação (401/403)
+        if (err.message && (err.message.includes('401') || err.message.includes('403') || err.message.includes('Token') || err.message.includes('Sessão'))) {
+          window.location.href = 'login.html';
+        }
       }
     }
 
